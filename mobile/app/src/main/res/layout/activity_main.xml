@@ -16,7 +16,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="75dp"
                 android:src="@drawable/ic_username" />
 
             <ImageView
@@ -58,8 +58,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Đăng nhập"
-                android:textColor="#ffffff"
-                android:background="#8D8C8C"
+                android:textColor="@color/colorWhite"
+                android:background="@color/colorGray"
                 android:layout_below="@+id/imgPassword"
                 android:layout_marginTop="20dp"/>
 
