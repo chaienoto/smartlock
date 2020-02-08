@@ -1,50 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegisterActivity">
 
-    <RadioGroup
-        android:id="@+id/toggle"
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center" />
+
+    <TabHost
+        android:id="@+id/tabHost"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginRight="50dp"
-        android:background="@drawable/gray_line"
-        android:checkedButton="@+id/rdSoDienThoai"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/rdSoDienThoai"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="1dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginBottom="1dp"
-            android:layout_weight="1"
-            android:background="@drawable/toggle_widget_background"
-            android:button="@null"
-            android:gravity="center"
-            android:text="Số Điện Thoại"
-            android:textColor="#000000" />
-
-        <RadioButton
-            android:id="@+id/rdEmail"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="1dp"
-            android:layout_marginRight="1dp"
-            android:layout_marginBottom="1dp"
-            android:layout_weight="1"
-            android:background="@drawable/toggle_widget_background"
-            android:button="@null"
-            android:gravity="center"
-            android:text="Email"
-            android:textColor="#000000" />
-    </RadioGroup>
+        android:layout_height="match_parent">
 
 
-</RelativeLayout>
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </TabWidget>
+
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!--TAB1-->
+            <RelativeLayout
+                android:id="@+id/tab1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tvQuocGia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="130dp"
+                    android:textSize="16dp"
+                    android:text="Quốc gia"
+                    android:textColor="@color/colorBlack" />
+
+                <Spinner
+                    android:id="@+id/spiner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="130dp" />
+
+<!--&#45;&#45;&#45;&#45;-->
+
+
+                <ImageView
+                    android:id="@+id/imgUsername"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/logo"
+                    android:layout_marginTop="200dp"
+                    android:src="@drawable/ic_username" />
+
+                <ImageView
+                    android:id="@+id/imgPassword"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/imgUsername"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_password" />
+
+                <ImageView
+                    android:id="@+id/imgPasswordReview"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/imgPassword"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_password" />
+
+                <EditText
+                    android:id="@+id/etUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/logo"
+                    android:layout_marginStart="70dp"
+                    android:layout_marginTop="200dp"
+                    android:hint="Nhập số điện thoại của bạn" />
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/etUsername"
+                    android:layout_marginStart="70dp"
+                    android:layout_marginTop="20dp"
+                    android:hint="Mật khẩu" />
+
+                <EditText
+                    android:id="@+id/etPasswordReview"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/etPassword"
+                    android:layout_marginStart="70dp"
+                    android:layout_marginTop="20dp"
+                    android:hint="Nhập lại mật khẩu" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/etRequestCode"
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@+id/etPasswordReview"
+                    android:hint="Mã xác nhận" />
+
+                <Button
+                    android:id="@+id/btnRequestCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/etPasswordReview"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="270dp"
+                    android:text="Lấy mã"
+                    android:textColor="@color/colorWhite" />
+
+                <Button
+                    android:id="@+id/btnLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/etRequestCode"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/bogocne"
+                    android:text="Đăng nhập"
+                    android:textColor="@color/colorWhite" />
+
+
+            </RelativeLayout>
+            <!--TAB2-->
+            <RelativeLayout
+                android:id="@+id/tab2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <ImageView
+                    android:id="@+id/imgUsername2"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/logo"
+                    android:layout_marginTop="200dp"
+                    android:src="@drawable/ic_username" />
+
+                <ImageView
+                    android:id="@+id/imgPassword2"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/imgUsername2"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_password" />
+
+                <ImageView
+                    android:id="@+id/imgPasswordReview2"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/imgPassword2"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_password" />
+
+                <EditText
+                    android:id="@+id/etUsername2"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/logo"
+                    android:layout_marginStart="70dp"
+                    android:layout_marginTop="200dp"
+                    android:hint="Nhập số điện thoại của bạn" />
+
+                <EditText
+                    android:id="@+id/etPassword2"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/etUsername2"
+                    android:layout_marginStart="70dp"
+                    android:layout_marginTop="20dp"
+                    android:hint="Mật khẩu" />
+
+                <EditText
+                    android:id="@+id/etPasswordReview2"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/etPassword2"
+                    android:layout_marginStart="70dp"
+                    android:layout_marginTop="20dp"
+                    android:hint="Nhập lại mật khẩu" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/etRequestCode2"
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@+id/etPasswordReview2"
+                    android:hint="Mã xác nhận" />
+
+                <Button
+                    android:id="@+id/btnRequestCode2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/etPasswordReview2"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="270dp"
+                    android:text="Lấy mã"
+                    android:textColor="@color/colorWhite" />
+
+                <Button
+                    android:id="@+id/btnLogin2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/etRequestCode2"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/bogocne"
+                    android:text="Đăng nhập"
+                    android:textColor="@color/colorWhite" />
+
+
+            </RelativeLayout>
+
+        </FrameLayout>
+
+
+    </TabHost>
+
+
+</LinearLayout>
