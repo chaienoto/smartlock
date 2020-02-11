@@ -42,9 +42,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="130dp"
-                    android:textSize="16dp"
                     android:text="Quốc gia"
-                    android:textColor="@color/colorBlack" />
+                    android:textColor="@color/colorBlack"
+                    android:textSize="16dp" />
 
                 <Spinner
                     android:id="@+id/spiner"
@@ -53,7 +53,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="130dp" />
 
-<!--&#45;&#45;&#45;&#45;-->
+                <!--&#45;&#45;&#45;&#45;-->
 
 
                 <ImageView
@@ -108,11 +108,11 @@
                     android:hint="Nhập lại mật khẩu" />
 
                 <EditText
+                    android:id="@+id/etRequestCode"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:id="@+id/etRequestCode"
-                    android:layout_marginTop="20dp"
                     android:layout_below="@+id/etPasswordReview"
+                    android:layout_marginTop="20dp"
                     android:hint="Mã xác nhận" />
 
                 <Button
@@ -120,8 +120,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/etPasswordReview"
-                    android:layout_marginTop="20dp"
                     android:layout_marginStart="270dp"
+                    android:layout_marginTop="20dp"
                     android:text="Lấy mã"
                     android:textColor="@color/colorWhite" />
 
@@ -197,11 +197,11 @@
                     android:hint="Nhập lại mật khẩu" />
 
                 <EditText
+                    android:id="@+id/etRequestCode2"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:id="@+id/etRequestCode2"
-                    android:layout_marginTop="20dp"
                     android:layout_below="@+id/etPasswordReview2"
+                    android:layout_marginTop="20dp"
                     android:hint="Mã xác nhận" />
 
                 <Button
@@ -209,8 +209,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/etPasswordReview2"
-                    android:layout_marginTop="20dp"
                     android:layout_marginStart="270dp"
+                    android:layout_marginTop="20dp"
                     android:text="Lấy mã"
                     android:textColor="@color/colorWhite" />
 
