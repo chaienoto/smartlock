@@ -7,11 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class CheckSignActivity extends AppCompatActivity {
+public class RegisterDialog extends AppCompatActivity {
 
     public EditText etSDT;
     public Button btnTiepTuc;
-//    private DialogLoginListener listener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,13 +37,10 @@ public class CheckSignActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString("SDT",a);
         dialogLogin.setArguments(bundle);
-        dialogLogin.show((CheckSignActivity.this).getSupportFragmentManager(), "thong bao");
+        dialogLogin.show((RegisterDialog.this).getSupportFragmentManager(), "thong bao");
 
 
     }
 
 
-//    public interface DialogLoginListener{
-//        void applyTexts(String sdt);
-//    }
 }
