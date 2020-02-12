@@ -2,9 +2,7 @@ package com.lyoko.smartlock;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +18,7 @@ public class SignUpDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.login_dialog, null);
+        View view = inflater.inflate(R.layout.sign_dialog, null);
 
         tvSDT = view.findViewById(R.id.tvSDT);
         Bundle bundle = getArguments();
