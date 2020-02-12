@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    tools:context=".RegisterDialog">
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bạn đã nhập"
+        android:text="Đăng kí SmartLock với số điện thoại"
         android:textColor="@color/colorBlack" />
 
     <TextView
@@ -20,10 +24,12 @@
         android:textColor="@color/colorBlack"
         android:textSize="20dp" />
 
-    <TextView
+    <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checked="true"
         android:layout_marginTop="10dp"
-        android:text="Chúng tôi sẽ gửi mã xác thực đến số điện thoại bạn đã nhập. Bạn có muốn tiếp tục?"
-        android:textColor="@color/colorBlack" />
+        android:text="Tôi đã đọc và đồng ý với điều khoản sử dụng của SmartLock" />
+
+
 </LinearLayout>
