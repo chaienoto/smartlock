@@ -19,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
     Button btn_door_lock,btn_lock_otp, btn_lock_history;
     RelativeLayout main_bg;
     TextView tv_lh,tv_otp,tv_find_info,tv_state_lock_info;
-    byte lock_found = 0;
-    byte door_state = 1;
+    private boolean lock_found = false;
+    private boolean door_state = false; //fasle : close | true: open
     int lock_color= Color.parseColor("#f95843");
     int unlock_color= Color.parseColor("#2ecc71");
     int find_lock_color= Color.parseColor("#3498db");
@@ -44,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
         btn_door_lock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (lock_found == 0){
+                if (!lock_found){
                     if(find_lock()){
-                        lock_found = 1;
+                        lock_found = true;
                         inviHOTP(false);
                         setToFixWRT();
                     }
@@ -86,15 +86,15 @@ public class MainActivity extends AppCompatActivity {
     }
     @SuppressLint("ResourceAsColor")
     private void setToFixWRT() {
-        if(lock_found == 0){
+        if(!lock_found){
             getWindow().setStatusBarColor(find_lock_color);
             btn_door_lock.setText("FIND");
             main_bg.setBackgroundResource(R.drawable.find_lock_background);
             img_find.setBackgroundResource(R.drawable.ic_add_lock);
             inviHOTP(true);
-        } else {
-            if (door_state == 1){
-                door_state = 0;
+        } else
+            if (!door_state){
+                door_state = true;
                 getWindow().setStatusBarColor(lock_color);
                 btn_door_lock.setText("UNLOCK");
                 tv_state_lock_info.setText("LOCKED");
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                 main_bg.setBackgroundResource(R.drawable.lock_background);
                 img_find.setBackgroundResource(R.drawable.ic_locked);
             } else {
-                door_state = 1;
+                door_state = false ;
                 btn_door_lock.setText("LOCK");
                 tv_state_lock_info.setText("UNLOCKED");
                 tv_state_lock_info.setTextColor(unlock_color);
@@ -110,13 +110,10 @@ public class MainActivity extends AppCompatActivity {
                 main_bg.setBackgroundResource(R.drawable.unlock_background);
                 img_find.setBackgroundResource(R.drawable.ic_unlocked);
             }
-        }
-
-
     }
 
-    private void inviHOTP(boolean a) {
-        if (a){
+    private void inviHOTP(boolean DoUwantToInvi) {
+        if (DoUwantToInvi){
             btn_lock_history.setVisibility(View.INVISIBLE);
             btn_lock_otp.setVisibility(View.INVISIBLE);
             tv_lh.setVisibility(View.INVISIBLE);

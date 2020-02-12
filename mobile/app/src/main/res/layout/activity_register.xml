@@ -7,7 +7,7 @@
     android:layout_gravity="center"
     android:background="@color/colorPrimary"
     android:padding="40dp"
-    tools:context=".CheckSignActivity">
+    tools:context=".RegisterActivity">
 
     <TextView
         android:id="@+id/tv1"
@@ -15,10 +15,10 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:textStyle="bold"
-        android:text="Nhập số điện thoại"
+
+        android:text="Tạo mật khẩu (Gồm 6 chữ số)"
         android:textColor="@color/colorWhite"
-        android:textSize="18dp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/tv2"
@@ -27,30 +27,44 @@
         android:layout_below="@+id/tv1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Dùng số điện thoại để đăng kí hoặc \n đăng nhập vào Smart Lock"
+        android:text="Lưu ý đây cũng là mã pin \n để đăng nhập vào Smart Lock"
         android:textAlignment="center"
         android:textColor="@color/colorWhite" />
 
     <EditText
-        android:id="@+id/et_UID_csign"
+        android:id="@+id/et_PWD"
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:layout_below="@+id/tv2"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/bogocne"
+        android:gravity="center"
+        android:hint="Nhập mật khẩu"
+        android:inputType="number"
+        android:maxLength="6"
+        android:textColorHighlight="@color/colorBlack"
+        android:textSize="20dp" />
+
+    <EditText
+        android:id="@+id/et_PWD_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:layout_below="@+id/et_PWD"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         android:textSize="20dp"
         android:background="@drawable/bogocne"
         android:gravity="center"
-        android:maxLength="10"
-        android:hint="Nhập số điện thoại"
+        android:maxLength="6"
+        android:hint="Nhập lại mật khẩu"
         android:inputType="number"
         android:textColorHighlight="@color/colorBlack" />
 
     <Button
-        android:id="@+id/btn_Continue_csign"
+        android:id="@+id/btn_Continue_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/et_UID_csign"
+        android:layout_below="@+id/et_PWD_confirm"
         android:layout_marginTop="10dp"
         android:background="@drawable/bogocne"
         android:backgroundTint="@color/colorPrimaryDark"
