@@ -49,7 +49,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/bogocne"
         android:gravity="center"
-        android:hint="Nhập số điện thoại"
+        android:hint="Mã xác thực"
         android:inputType="number"
         android:maxLength="10"
         android:textColorHighlight="@color/colorBlack"
