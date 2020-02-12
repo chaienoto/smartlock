@@ -33,11 +33,11 @@ public class CheckSignActivity extends AppCompatActivity {
 
     public void openDialog(String a){
 
-        SignUpDialog signUpDialog = new SignUpDialog();
+        SignUpDialog dialogLogin = new SignUpDialog();
         Bundle bundle = new Bundle();
         bundle.putString("SDT",a);
-        signUpDialog.setArguments(bundle);
-        signUpDialog.show((CheckSignActivity.this).getSupportFragmentManager(), "thong bao");
+        dialogLogin.setArguments(bundle);
+        dialogLogin.show((CheckSignActivity.this).getSupportFragmentManager(), "thong bao");
 
 
     }
