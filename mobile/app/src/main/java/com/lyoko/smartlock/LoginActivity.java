@@ -2,12 +2,15 @@ package com.lyoko.smartlock;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-public class CheckSignActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     public EditText etSDT;
     public Button btnTiepTuc;
@@ -33,11 +36,11 @@ public class CheckSignActivity extends AppCompatActivity {
 
     public void openDialog(String a){
 
-        SignUpDialog signUpDialog = new SignUpDialog();
+        SignUpDialog dialogLogin = new SignUpDialog();
         Bundle bundle = new Bundle();
         bundle.putString("SDT",a);
-        signUpDialog.setArguments(bundle);
-        signUpDialog.show((CheckSignActivity.this).getSupportFragmentManager(), "thong bao");
+        dialogLogin.setArguments(bundle);
+        dialogLogin.show((LoginActivity.this).getSupportFragmentManager(), "thong bao");
 
 
     }
