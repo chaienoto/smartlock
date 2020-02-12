@@ -1,90 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
     tools:context=".MainActivity">
 
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="75dp"
-        android:src="@drawable/ic_username" />
-
-    <ImageView
-        android:id="@+id/imgUsername"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_below="@+id/logo"
-        android:layout_marginTop="50dp"
-        android:src="@drawable/ic_username" />
-
-    <ImageView
-        android:id="@+id/imgPassword"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_below="@+id/imgUsername"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/ic_password" />
-
-    <EditText
-        android:id="@+id/etUsername"
+    <RelativeLayout
+        android:id="@+id/main_bg"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@+id/logo"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="50dp"
-        android:hint="Email" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="180dp"
+        android:background="@drawable/unlock_background"
+        android:elevation="1.5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
 
-    <EditText
-        android:id="@+id/etPassword"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@+id/etUsername"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="20dp"
-        android:hint="Mật khẩu" />
+        <RelativeLayout
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="230dp"
+            android:background="@drawable/background_lock"
+            android:elevation="1.5dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/img_find"
+                android:layout_width="110dp"
+                android:layout_height="120dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </RelativeLayout>
+    </RelativeLayout>
 
     <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imgPassword"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/bogocne"
-        android:text="Đăng nhập"
-        android:textColor="@color/colorWhite" />
+        android:id="@+id/btn_door_lock"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="@drawable/lock_button_background"
+        android:elevation="1.5dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="UNLOCK"
+        android:textColor="@color/colorWhite"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.8"></Button>
 
     <Button
-        android:id="@+id/btnRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btnLogin"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/bogocne"
-        android:text="Đăng ký"
-        android:textColor="@color/colorWhite" />
-<!--&#45;&#45;&#45;&#45;-->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btnLogin"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:text="Quên mật khẩu"
-        android:textColor="#00BCD4" />
+        android:id="@+id/btn_lock_otp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="64dp"
+        android:background="@drawable/ic_one_time_key"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.838"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_lock_history"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints"></Button>
+
+    <Button
+        android:id="@+id/btn_lock_history"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/ic_lock_history"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_lock_otp"
+        app:layout_constraintHorizontal_bias="0.295"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.894"></Button>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:text="By Smart Lock" />
+        android:id="@+id/textView"
+        android:layout_width="94dp"
+        android:layout_height="52dp"
+        android:gravity="center"
+        android:text="One Time Key"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btn_lock_otp"
+        app:layout_constraintStart_toStartOf="@+id/btn_lock_otp"
+        app:layout_constraintTop_toBottomOf="@+id/btn_lock_otp"
+        app:layout_constraintVertical_bias="0.0">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="64dp"
+        android:layout_height="52dp"
+        android:gravity="center"
+        android:text="History"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btn_lock_history"
+        app:layout_constraintHorizontal_bias="0.207"
+        app:layout_constraintStart_toStartOf="@+id/btn_lock_history"
+        app:layout_constraintTop_toBottomOf="@+id/btn_lock_history"
+        app:layout_constraintVertical_bias="0.0">
+
+    </TextView>
 
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

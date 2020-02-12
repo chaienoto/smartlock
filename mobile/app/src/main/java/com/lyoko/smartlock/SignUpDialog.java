@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-public class DialogLogin extends AppCompatDialogFragment {
+public class SignUpDialog extends AppCompatDialogFragment {
 
     public TextView tvSDT;
 

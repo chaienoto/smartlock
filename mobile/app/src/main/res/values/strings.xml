@@ -1,11 +1,5 @@
 <resources>
     <string name="app_name">Lyoko Lock</string>
-    <string name="lable_register">Đăng ký</string>
 
-    <string-array name="list_quoc_gia">
-        <item>Việt Nam</item>
-        <item>Trung Quốc</item>
-        <item>Hàn Quốc</item>
-    </string-array>
 
 </resources>
