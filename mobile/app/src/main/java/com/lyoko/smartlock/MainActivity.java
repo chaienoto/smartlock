@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView img_find ;
     Button btn_door_lock,btn_lock_otp, btn_lock_history;
     RelativeLayout main_bg;
-    TextView tv_lh,tv_otp,tv_find_info;
+    TextView tv_lh,tv_otp,tv_find_info,tv_state_lock_info;
     byte lock_found = 0;
     byte door_state = 1;
     int lock_color= Color.parseColor("#f95843");
@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         tv_lh = findViewById(R.id.tv_lh);
         tv_otp = findViewById(R.id.tv_otp);
         tv_find_info = findViewById(R.id.tv_find_info);
+        tv_state_lock_info = findViewById(R.id.tv_state_lock_info);
     }
 
     private boolean find_lock() {
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private void setToFixWRT() {
         if(lock_found == 0){
             getWindow().setStatusBarColor(find_lock_color);
-            btn_door_lock.setText("FIND"); 
+            btn_door_lock.setText("FIND");
             main_bg.setBackgroundResource(R.drawable.find_lock_background);
             img_find.setBackgroundResource(R.drawable.ic_add_lock);
             inviHOTP(true);
@@ -96,11 +97,15 @@ public class MainActivity extends AppCompatActivity {
                 door_state = 0;
                 getWindow().setStatusBarColor(lock_color);
                 btn_door_lock.setText("UNLOCK");
+                tv_state_lock_info.setText("LOCKED");
+                tv_state_lock_info.setTextColor(lock_color);
                 main_bg.setBackgroundResource(R.drawable.lock_background);
                 img_find.setBackgroundResource(R.drawable.ic_locked);
             } else {
                 door_state = 1;
                 btn_door_lock.setText("LOCK");
+                tv_state_lock_info.setText("UNLOCKED");
+                tv_state_lock_info.setTextColor(unlock_color);
                 getWindow().setStatusBarColor(unlock_color);
                 main_bg.setBackgroundResource(R.drawable.unlock_background);
                 img_find.setBackgroundResource(R.drawable.ic_unlocked);
@@ -123,8 +128,6 @@ public class MainActivity extends AppCompatActivity {
             tv_lh.setVisibility(View.VISIBLE);
             tv_otp.setVisibility(View.VISIBLE);
             tv_find_info.setVisibility(View.INVISIBLE);
-
         }
-
     }
 }

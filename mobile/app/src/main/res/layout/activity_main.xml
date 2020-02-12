@@ -16,12 +16,12 @@
         android:elevation="1.5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.0">
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="180dp"
             android:layout_height="180dp"
             android:layout_alignParentTop="true"
@@ -31,15 +31,35 @@
             android:elevation="1.5dp"
             android:gravity="center">
 
+
             <ImageView
                 android:id="@+id/img_find"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        </RelativeLayout>
+            <TextView
+                android:id="@+id/tv_state_lock_info"
+                android:layout_width="64dp"
+                android:layout_height="24dp"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/img_find"
+                app:layout_constraintVertical_bias="0.95">
+
+            </TextView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
     </RelativeLayout>
 
     <Button
@@ -124,11 +144,13 @@
         android:visibility="invisible"
         android:text="Bấm Vào FIND để tìm Smart Lock của bạn\n Lưu ý: đứng trong phạm vi 2m "
         app:layout_constraintEnd_toEndOf="@+id/btn_door_lock"
-        app:layout_constraintHorizontal_bias="0.482"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/btn_door_lock"
         app:layout_constraintTop_toBottomOf="@+id/btn_door_lock">
 
     </TextView>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
