@@ -3,6 +3,7 @@ package com.lyoko.smartlock;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -64,6 +65,14 @@ public class MainActivity extends AppCompatActivity {
         });
         setToFixWRT();
 
+
+        btn_lock_history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               Intent i = new Intent(MainActivity.this, HistoryActivity.class);
+               startActivity(i);
+            }
+        });
 
 
     }
