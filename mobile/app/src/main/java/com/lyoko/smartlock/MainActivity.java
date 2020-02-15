@@ -3,6 +3,7 @@ package com.lyoko.smartlock;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -14,16 +15,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static com.lyoko.smartlock.R.string.ble_not_supported;
+
 public class MainActivity extends AppCompatActivity {
+    public static final int REQUEST_ENABLE_BT = 1;
+
     ImageView img_find ;
     Button btn_door_lock,btn_lock_otp, btn_lock_history;
     RelativeLayout main_bg;
     TextView tv_lh,tv_otp,tv_find_info,tv_state_lock_info;
     private boolean lock_found = false;
-    private boolean door_state = false; //fasle : close | true: open
+//    false : close | true: open
+    private boolean door_state = false;
     int lock_color= Color.parseColor("#f95843");
     int unlock_color= Color.parseColor("#2ecc71");
-    int find_lock_color= Color.parseColor("#3498db");
 
 
     @Override
@@ -33,26 +38,6 @@ public class MainActivity extends AppCompatActivity {
         UIRegister();
 
 
-
-
-        btn_lock_otp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Đang chuẩn bị", Toast.LENGTH_SHORT).show();
-            }
-        });
-        btn_door_lock.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!lock_found){
-                    if(find_lock()){
-                        lock_found = true;
-                        inviHOTP(false);
-                        setToFixWRT();
-                    }
-                }
-            }
-        });
         btn_door_lock.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -82,17 +67,10 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean find_lock() {
 
-        return true;
+        return false;
     }
     @SuppressLint("ResourceAsColor")
     private void setToFixWRT() {
-        if(!lock_found){
-            getWindow().setStatusBarColor(find_lock_color);
-            btn_door_lock.setText("FIND");
-            main_bg.setBackgroundResource(R.drawable.find_lock_background);
-            img_find.setBackgroundResource(R.drawable.ic_add_lock);
-            inviHOTP(true);
-        } else
             if (!door_state){
                 door_state = true;
                 getWindow().setStatusBarColor(lock_color);
@@ -112,19 +90,5 @@ public class MainActivity extends AppCompatActivity {
             }
     }
 
-    private void inviHOTP(boolean DoUwantToInvi) {
-        if (DoUwantToInvi){
-            btn_lock_history.setVisibility(View.INVISIBLE);
-            btn_lock_otp.setVisibility(View.INVISIBLE);
-            tv_lh.setVisibility(View.INVISIBLE);
-            tv_otp.setVisibility(View.INVISIBLE);
-            tv_find_info.setVisibility(View.VISIBLE);
-        } else {
-            btn_lock_history.setVisibility(View.VISIBLE);
-            btn_lock_otp.setVisibility(View.VISIBLE);
-            tv_lh.setVisibility(View.VISIBLE);
-            tv_otp.setVisibility(View.VISIBLE);
-            tv_find_info.setVisibility(View.INVISIBLE);
-        }
-    }
+
 }
