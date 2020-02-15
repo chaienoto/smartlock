@@ -9,9 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
-
-public class AuthenticalActivity extends AppCompatActivity {
+public class AuthenticationActivity extends AppCompatActivity {
     TextView tv_UID_auth,tv_change_uid,tv_OTP_resend;
     EditText ed_OTP;
     Button btn_Continue_auth;
@@ -31,7 +29,7 @@ public class AuthenticalActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String otp = ed_OTP.getText().toString();
                 if(opt_check(otp)){
-                    Intent intent = new Intent(AuthenticalActivity.this, RegisterActivity.class);
+                    Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
                     intent.putExtra("UID", uid);
                     startActivity(intent);
                 }

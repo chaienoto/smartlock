@@ -38,7 +38,7 @@ public class SignUpDialog extends AppCompatDialogFragment {
                 .setPositiveButton("Tiếp tục", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getContext(), AuthenticalActivity.class);
+                        Intent intent = new Intent(getContext(), AuthenticationActivity.class);
                         intent.putExtra("UID", uid);
                         startActivity(intent);
                     }

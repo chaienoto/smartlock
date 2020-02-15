@@ -4,9 +4,6 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -20,23 +17,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.lyoko.smartlock.Utils.REQUEST_LOCATION_PERMISSION;
 import static com.lyoko.smartlock.MainActivity.REQUEST_ENABLE_BT;
+import static com.lyoko.smartlock.Utils.REQUEST_LOCATION_PERMISSION;
 
 
-public class BLE_ScannerActivity extends AppCompatActivity {
-    //private static final UUID uuid = UUID.nameUUIDFromBytes("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
+public class FindLockActivity extends AppCompatActivity {
+    private static String MAC_LOCK = "24:62:AB:D7:D9:A6";
     private static final int FIND_LOCK_COLOR = Color.parseColor("#3498db");
     private static final long SCAN_PERIOD = 1000;
     private static final int SIGNAL_TRENGTH = -60;
     public Utils utils = new Utils(this);
     private Button btn_find_device;
     private BluetoothAdapter bluetoothAdapter;
-    private BluetoothLeScanner bluetoothLeScanner;
     public boolean mScanning = false;
+    public boolean mfounded = false;
 
 
     private Handler handler;
@@ -48,12 +42,11 @@ public class BLE_ScannerActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            final int new_rssi = rssi;
-                            if (rssi >= SIGNAL_TRENGTH){
+                            if (rssi >= SIGNAL_TRENGTH) {
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        show(device,new_rssi);
+                                        show(device, rssi);
                                     }
                                 });
 
@@ -64,9 +57,15 @@ public class BLE_ScannerActivity extends AppCompatActivity {
             };
 
 
-    private void show(BluetoothDevice device, int rssi) {
-        Log.d("Founded","Device: "+device.getName()+"\t"+"Address: "+device.getAddress()+ "\tRSSI: "+String.valueOf(rssi));
+    private void show(final BluetoothDevice device, final int rssi) {
 
+        String new_mac = device.getAddress();
+        if (new_mac.equalsIgnoreCase(MAC_LOCK)) {
+            Toast.makeText(this, "Tìm Thấy Thành công", Toast.LENGTH_SHORT).show();
+            Log.d("Founded", "Device: " + device.getName() + "\t" + "Address: " + new_mac + "\tRSSI: " + String.valueOf(rssi) + "\tLength: " + new_mac.length());
+
+            scanLeDevice(false);
+        }
     }
 
     @Override
@@ -79,22 +78,19 @@ public class BLE_ScannerActivity extends AppCompatActivity {
         utils.startCheckPermission();
 
 
-
         // Check if BLE is supported on the device. enable bluetooth if !enable
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(BLE_ScannerActivity.this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
+            Toast.makeText(FindLockActivity.this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
-        } else
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+        } else if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
         // setUpBLE adapter_scanner
         final BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(BLE_ScannerActivity.BLUETOOTH_SERVICE);
+                (BluetoothManager) getSystemService(FindLockActivity.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
-        bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
         mScanning = false;
         handler = new Handler();
 
@@ -110,7 +106,7 @@ public class BLE_ScannerActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_LOCATION_PERMISSION: {
                 // If request is cancelled, the result arrays are empty.
                 if (permissions.length == 1
@@ -118,8 +114,6 @@ public class BLE_ScannerActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                } else {
-                    Toast.makeText(this, "Vui lòng bật Location Trong App Info ", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -128,18 +122,16 @@ public class BLE_ScannerActivity extends AppCompatActivity {
 
     private void scanLeDevice(final boolean enable) {
         if (enable) {
-            Toast.makeText(BLE_ScannerActivity.this, "Starting...", Toast.LENGTH_SHORT).show();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(BLE_ScannerActivity.this, "Stopping...", Toast.LENGTH_SHORT).show();
                     mScanning = false;
                     bluetoothAdapter.stopLeScan(leScanCallback);
                 }
             }, SCAN_PERIOD);
             mScanning = true;
             bluetoothAdapter.startLeScan(leScanCallback);
-//
+
         } else {
             mScanning = false;
             bluetoothAdapter.stopLeScan(leScanCallback);
