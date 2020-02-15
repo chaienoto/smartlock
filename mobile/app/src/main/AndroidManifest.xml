@@ -24,6 +24,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".RegisterActivity" />
         <activity
             android:name=".CheckSignActivity"
             android:screenOrientation="portrait" />
