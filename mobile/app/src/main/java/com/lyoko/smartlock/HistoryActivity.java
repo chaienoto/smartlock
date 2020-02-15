@@ -5,6 +5,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -13,6 +15,7 @@ public class HistoryActivity extends AppCompatActivity {
     private ArrayList<History> historyActivityArr ;
     private RecyclerView recyclerView;
     private HistoryAdapter historyAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,4 +39,9 @@ public class HistoryActivity extends AppCompatActivity {
         historyActivityArr.add(new History("Tieu de 2", "Mo ta 2",R.drawable.ic_username));
         historyActivityArr.add(new History("Tieu de 2", "Mo ta 2",R.drawable.ic_username));
     }
+
+//    public void showData(){
+//        HistoryService historyService = new HistoryService();
+//    }
+
 }

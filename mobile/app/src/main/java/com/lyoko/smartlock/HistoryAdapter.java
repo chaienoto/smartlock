@@ -20,6 +20,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private Context context;
     private ArrayList<History> historyActivityArr;
 
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -35,7 +36,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         History history = historyActivityArr.get(position);
 //chu y
-        holder.ic.setImageResource(history.getIc());
+//        holder.ic.setImageResource(history.getIc());
         holder.tvTitle.setText(history.getTitle());
         holder.tvDescription.setText(history.getDescription());
 
@@ -56,9 +57,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public ViewHolder(View view) {
 
             super(view);
-            ic = itemView.findViewById(R.id.ic);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvDescription = itemView.findViewById(R.id.tvDescription);
+            this.ic = itemView.findViewById(R.id.ic);
+            this.tvTitle = itemView.findViewById(R.id.tvTitle);
+            this.tvDescription = itemView.findViewById(R.id.tvDescription);
         }
     }
 
