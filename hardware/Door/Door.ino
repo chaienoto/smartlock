@@ -15,6 +15,7 @@
    4. Create a BLE Descriptor on the characteristic
    5. Start the service.
    6. Start advertising.
+   7. test git
 
    A connect hander associated with the server starts a background task that performs notification
    every couple of seconds.
