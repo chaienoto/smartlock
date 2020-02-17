@@ -6,6 +6,10 @@ public class History {
     private String Title, Description;
     private int Ic;
 
+    public History(){
+
+    }
+
     public History(String Title, String Description, int ic) {
         this.Title = Title;
         this.Description = Description;

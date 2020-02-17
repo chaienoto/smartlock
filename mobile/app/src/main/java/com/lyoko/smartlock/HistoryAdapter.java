@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
@@ -40,6 +41,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.tvTitle.setText(history.getTitle());
         holder.tvDescription.setText(history.getDescription());
 
+
     }
 
     @Override
@@ -48,7 +50,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
 
-
+//1
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         private TextView tvTitle, tvDescription;
@@ -62,11 +64,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             this.tvDescription = itemView.findViewById(R.id.tvDescription);
         }
     }
-
+//2
     public HistoryAdapter(Context context, ArrayList<History> historyActivityArr) {
-
         this.context = context;
         this.historyActivityArr = historyActivityArr;
 
+
+
     }
+
+
+
 }
