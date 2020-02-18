@@ -18,21 +18,25 @@ public class HistoryService extends AppCompatActivity {
 
     private static final String TAG = "HistoryService";
 
-    public static final String KEY_TITLE = "title";
-    public static final String KEY_DESCRIPTION = "description";
+    public static final String KEY_COVERNAME = "cover_name";
+    public static final String KEY_STATE= "state";
+    public static final String KEY_TIME = "time";
+    public static final String KEY_UNLOCKTYPE = "unlocktype";
 
-    private TextView tvTitle, tvDescription;
+    private TextView tvCover_Name, tvState, tvTime, tvUnlock_Type;
 
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-    private DocumentReference noteRef = firebaseFirestore.document("History/HistoryUser");
+    private DocumentReference noteRef = firebaseFirestore.document("/door/history/files");
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.item_history);
 
-        tvTitle = findViewById(R.id.tvTitle);
-        tvDescription = findViewById(R.id.tvDescription);
+        tvCover_Name = findViewById(R.id.tvCover_Name);
+        tvState = findViewById(R.id.tvState);
+        tvTime = findViewById(R.id.tvTime);
+        tvUnlock_Type = findViewById(R.id.tvUnlock_Type);
 
     }
 
@@ -51,13 +55,17 @@ public class HistoryService extends AppCompatActivity {
                     return;
                 }
                 if (documentSnapshot.exists()) {
-                    String title = documentSnapshot.getString(KEY_TITLE);
-                    String description = documentSnapshot.getString(KEY_DESCRIPTION);
+                    String Cover_Name = documentSnapshot.getString(KEY_COVERNAME);
+                    String State = documentSnapshot.getString(KEY_STATE);
+                    String Time = documentSnapshot.getString(KEY_TIME);
+                    String UnlockType = documentSnapshot.getString(KEY_UNLOCKTYPE);
 
 //                            Map<String, Object> note = documentSnapshot.getData();
 
-                    tvTitle.setText("Title: " + title);
-                    tvDescription.setText("Description: " + description);
+                    tvCover_Name.setText("Title: " + Cover_Name);
+                    tvState.setText("Description: " + State);
+                    tvTime.setText("Title: " + Time);
+                    tvUnlock_Type.setText("Description: " + UnlockType);
 
                 }
             }
