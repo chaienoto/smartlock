@@ -1,41 +1,61 @@
 package com.lyoko.smartlock.Models;
 
-import android.widget.ImageView;
+import java.sql.Timestamp;
 
 public class History {
-    private String Title, Description;
+    private String Cover_Name, Unlock_Type;
+    private Timestamp Time;
+    private boolean State;
     private int Ic;
 
-    public History(String Title, String Description, int ic) {
-        this.Title = Title;
-        this.Description = Description;
-        this.Ic = Ic;
+    public History(){
+
     }
 
-    public String getTitle() {
-        return Title;
+    public History(String Cover_Name, Boolean State, Timestamp Time, String Unlock_Type, int Ic) {
+        this.Cover_Name = Cover_Name;
+        this.State = State;
+        this.Time = Time;
+        this.Unlock_Type = Unlock_Type;
+//        this.Ic = Ic;
     }
 
-    public void setTitle(String Title) {
-        this.Title = Title;
+    public String getCover_Name() {
+        return Cover_Name;
     }
 
-    public String getDescription() {
-        return Description;
+    public void setCover_Name(String cover_Name) {
+        Cover_Name = cover_Name;
     }
 
-    public void setDescription(String Description) {
-        this.Description = Description;
+    public boolean getState() {
+        return State;
     }
 
-    public int getIc() {
-        return Ic;
+    public void setState(Boolean state) {
+        State = state;
     }
 
-    public void setIc(int Ic) {
-        this.Ic = Ic;
+    public Timestamp getTime() {
+        return Time;
+    }
+//    public void setTime(Timestamp time) {
+//        Time = time;
+//    }
+
+    public String getUnlock_Type() {
+        return Unlock_Type;
     }
 
+    public void setUnlock_Type(String unlock_Type) {
+        Unlock_Type = unlock_Type;
+    }
 
-
+//    public int getIc() {
+//        return Ic;
+//    }
+//
+//    public void setIc(int ic) {
+//        Ic = ic;
+//    }
 }

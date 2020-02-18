@@ -38,8 +38,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         History history = historyActivityArr.get(position);
 //chu y
 //        holder.ic.setImageResource(history.getIc());
-        holder.tvTitle.setText(history.getTitle());
-        holder.tvDescription.setText(history.getDescription());
+        holder.tvCover_Name.setText(history.getCover_Name());
+//        holder.tvState.setText(history.getState());
+//        holder.tvTime.setText(history.getTime());
+        holder.tvUnlock_Type.setText(history.getUnlock_Type());
+
 
     }
 
@@ -49,25 +52,31 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
 
-
+    //1
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView tvTitle, tvDescription;
+        private TextView tvCover_Name, tvState, tvTime, tvUnlock_Type;
         private ImageView ic;
 
         public ViewHolder(View view) {
 
             super(view);
             this.ic = itemView.findViewById(R.id.ic);
-            this.tvTitle = itemView.findViewById(R.id.tvTitle);
-            this.tvDescription = itemView.findViewById(R.id.tvDescription);
+            this.tvCover_Name = itemView.findViewById(R.id.tvCover_Name);
+            this.tvState = itemView.findViewById(R.id.tvState);
+//            this.tvTime = itemView.findViewById(R.id.tvTime);
+            this.tvUnlock_Type = itemView.findViewById(R.id.tvUnlock_Type);
         }
     }
-
+    //2
     public HistoryAdapter(Context context, ArrayList<History> historyActivityArr) {
-
         this.context = context;
         this.historyActivityArr = historyActivityArr;
 
+
+
     }
+
+
+
 }
