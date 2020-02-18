@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Lyoko Lock</string>
     <string name="ble_not_supported">BlutoothLE not supported by Device</string>
+    <string name="MAC_OF_DEVICE">24:62:AB:D7:D9:A6</string>
 
 
 </resources>

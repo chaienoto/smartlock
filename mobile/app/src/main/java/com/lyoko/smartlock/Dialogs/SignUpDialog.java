@@ -1,4 +1,4 @@
-package com.lyoko.smartlock;
+package com.lyoko.smartlock.Dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.lyoko.smartlock.AuthenticationActivity;
+import com.lyoko.smartlock.R;
 
 
 public class SignUpDialog extends AppCompatDialogFragment {
