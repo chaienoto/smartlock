@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.lyoko.smartlock.Dialogs.SignUpDialog;
+
 public class CheckSignActivity extends AppCompatActivity {
 
     public EditText et_UID_csign;
