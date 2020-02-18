@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.lyoko.smartlock.Models.BLE_Device;
+import com.lyoko.smartlock.Services.BLE_Service;
 import com.lyoko.smartlock.Services.Find_Lock;
 import com.lyoko.smartlock.Utils.Request;
 
@@ -24,9 +25,10 @@ public class FindLockActivity extends AppCompatActivity {
     private Request request = new Request(this);
     private Find_Lock bleScanService;
     private Button btn_find_device;
-    private BLE_Device ble_device;
+    private BLE_Device ble_deviceGATT;
     private HashMap<String, BLE_Device> bleDeviceHashMap = new HashMap<>();
     private ArrayList<BLE_Device> bleDeviceList = new ArrayList<>();
+    private BLE_Service ble_service;
 
 
     @Override
@@ -62,7 +64,10 @@ public class FindLockActivity extends AppCompatActivity {
     public void checkafterscan() {
         Log.d("after scan: ", String.valueOf(bleDeviceList.size()));
         if( bleDeviceHashMap.containsKey(MAC_LOCK)){
+            bleDeviceHashMap.get(MAC_LOCK).getBluetoothDevice();
             Toast.makeText(this, "Founded", Toast.LENGTH_SHORT).show();
+
+            ble_service = new BLE_Service(this,true, bleDeviceHashMap.get(MAC_LOCK).getBluetoothDevice());
         }
 
     }
@@ -70,11 +75,11 @@ public class FindLockActivity extends AppCompatActivity {
     public void addDevice(BluetoothDevice device, int rssi) {
         String address = device.getAddress();
         if (!bleDeviceHashMap.containsKey(address)) {
-            ble_device = new BLE_Device(device);
-            ble_device.setRssi(rssi);
+            ble_deviceGATT = new BLE_Device(device);
+            ble_deviceGATT.setRssi(rssi);
             Log.d("device: ", address + "\tRSSI: " + rssi);
-            bleDeviceHashMap.put(address, ble_device);
-            bleDeviceList.add(ble_device);
+            bleDeviceHashMap.put(address, ble_deviceGATT);
+            bleDeviceList.add(ble_deviceGATT);
             Log.d("list scan: ", String.valueOf(bleDeviceList.size()));
 
         } else bleDeviceHashMap.get(address).setRssi(rssi);

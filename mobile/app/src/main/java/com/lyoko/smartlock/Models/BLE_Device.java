@@ -14,6 +14,10 @@ public class BLE_Device {
         return bluetoothDevice.getAddress();
     }
 
+    public BluetoothDevice getBluetoothDevice() {
+        return bluetoothDevice;
+    }
+
     public void setRssi(int rssi) {
         this.rssi = rssi;
     }

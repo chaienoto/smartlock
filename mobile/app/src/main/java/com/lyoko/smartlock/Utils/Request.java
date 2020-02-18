@@ -51,6 +51,16 @@ public class Request {
 
     }
 
+    public static String hexToString(byte[] data) {
+        final StringBuilder sb = new StringBuilder(data.length);
+
+        for(byte byteChar : data) {
+            sb.append(String.format("%02X ", byteChar));
+        }
+
+        return sb.toString();
+    }
+
     public boolean BLESupport() {
         if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(context, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
