@@ -64,7 +64,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             this.ic = itemView.findViewById(R.id.ic);
             this.tvCover_Name = itemView.findViewById(R.id.tvCover_Name);
             this.tvState = itemView.findViewById(R.id.tvState);
-//            this.tvTime = itemView.findViewById(R.id.tvTime);
+            this.tvTime = itemView.findViewById(R.id.tvTime);
             this.tvUnlock_Type = itemView.findViewById(R.id.tvUnlock_Type);
         }
     }

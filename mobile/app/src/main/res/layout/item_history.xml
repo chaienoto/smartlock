@@ -25,27 +25,28 @@
             <TextView
                 android:id="@+id/tvCover_Name"
                 android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:text="Title"
+                android:layout_height="wrap_content"
+                android:text="Name"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvState"
                 android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:text="Description" />
+                android:layout_height="wrap_content"
+                android:text="State" />
+
             <TextView
                 android:id="@+id/tvTime"
                 android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:text="Title"
+                android:layout_height="wrap_content"
+                android:text="Time"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvUnlock_Type"
                 android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:text="Description" />
+                android:layout_height="wrap_content"
+                android:text="Type" />
 
         </LinearLayout>
 

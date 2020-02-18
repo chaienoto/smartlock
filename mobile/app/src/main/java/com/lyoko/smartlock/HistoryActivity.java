@@ -62,8 +62,8 @@ public class HistoryActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull HistoryViewHolder holder, int position, @NonNull History model) {
 
                 holder.tvCover_Name.setText(model.getCover_Name());
-//                holder.tvState.setText(model.getState());
-//                holder.tvTime.setText(model.getTime());
+                holder.tvState.setText(model.getState() + "");
+                holder.tvTime.setText(model.getTime()+ "");
                 holder.tvUnlock_Type.setText(model.getUnlock_Type());
 
             }
@@ -91,9 +91,8 @@ public class HistoryActivity extends AppCompatActivity {
 
             tvCover_Name = itemView.findViewById(R.id.tvCover_Name);
             tvState = itemView.findViewById(R.id.tvState);
-//            tvTime = itemView.findViewById(R.id.tvTime);
+            tvTime = itemView.findViewById(R.id.tvTime);
             tvUnlock_Type = itemView.findViewById(R.id.tvUnlock_Type);
-
         }
 
     }
