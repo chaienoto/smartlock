@@ -1,7 +1,9 @@
 package com.lyoko.smartlock.Models;
 
 import com.google.firebase.firestore.PropertyName;
+import com.google.firebase.firestore.ServerTimestamp;
 
+import java.util.Date;
 import java.sql.Timestamp;
 
 public class History {
@@ -9,15 +11,16 @@ public class History {
     private String Cover_Name;
     @PropertyName("state")
     private boolean State;
-//    @PropertyName("time")
+    //@PropertyName("time")
+//    @ServerTimestamp
     private Timestamp Time;
     @PropertyName("unlock_type")
-    private String  Unlock_Type;
+    private String Unlock_Type;
 
 
     private int Ic;
 
-    public History(){
+    public History() {
 
     }
 

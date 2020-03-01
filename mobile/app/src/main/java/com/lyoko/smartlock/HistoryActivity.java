@@ -4,7 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,14 +18,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.lyoko.smartlock.Adapters.HistoryAdapter;
 import com.lyoko.smartlock.Models.History;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private ArrayList<History> historyActivityArr;
     private RecyclerView recyclerView;
@@ -33,6 +45,23 @@ public class HistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
+        //Spinner
+        Spinner spinner = findViewById(R.id.spinner);
+        String compareValue = "Cover_Name";
+
+        ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(this, R.array.history_options, android.R.layout.simple_spinner_item);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(arrayAdapter);
+        //lay theo gia tri
+        if (compareValue != null) {
+            int spinnerPos = arrayAdapter.getPosition(compareValue);
+            spinner.setSelection(spinnerPos);
+        }
+
+        spinner.setOnItemSelectedListener(this);
+
+
 
         firebaseFirestore = FirebaseFirestore.getInstance();
         recyclerView = findViewById(R.id.recyclerView);
@@ -61,9 +90,19 @@ public class HistoryActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull HistoryViewHolder holder, int position, @NonNull History model) {
 
+
+
                 holder.tvCover_Name.setText(model.getCover_Name());
                 holder.tvState.setText(model.getState() + "");
+
                 holder.tvTime.setText(model.getTime()+ "");
+
+//                Date date = model.getTime();
+//                DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.CHINA);
+//                String creationDate = dateFormat.format(date);
+//
+//                holder.tvTime.setText(creationDate);
+
                 holder.tvUnlock_Type.setText(model.getUnlock_Type());
 
             }
@@ -72,6 +111,19 @@ public class HistoryActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+    }
+
+//sap xep theo loai
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String text = parent.getItemAtPosition(position).toString();
+        Toast.makeText(parent.getContext(), text, Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
 
     }
 
@@ -96,6 +148,7 @@ public class HistoryActivity extends AppCompatActivity {
         }
 
     }
+
 
     protected void onStop() {
         super.onStop();
