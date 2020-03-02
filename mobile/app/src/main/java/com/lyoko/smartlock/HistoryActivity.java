@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,16 +49,16 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
 
         //Spinner
         Spinner spinner = findViewById(R.id.spinner);
-        String compareValue = "Cover_Name";
+//        String compareValue = "Cover_Name";
 
         ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(this, R.array.history_options, android.R.layout.simple_spinner_item);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(arrayAdapter);
         //lay theo gia tri
-        if (compareValue != null) {
-            int spinnerPos = arrayAdapter.getPosition(compareValue);
-            spinner.setSelection(spinnerPos);
-        }
+//        if (compareValue != null) {
+//            int spinnerPos = arrayAdapter.getPosition(compareValue);
+//            spinner.setSelection(spinnerPos);
+//        }
 
         spinner.setOnItemSelectedListener(this);
 
@@ -115,6 +116,18 @@ public class HistoryActivity extends AppCompatActivity implements AdapterView.On
     }
 
 //sap xep theo loai
+
+    public static void selectSpinnerItem(Spinner spinner, long Cover_name) {
+        SimpleCursorAdapter adapter = (SimpleCursorAdapter) spinner.getAdapter();
+        for (int pos = 0; pos < adapter.getCount(); pos++) {
+            if (adapter.getItemId(pos) == Cover_name){
+                spinner.setSelection(pos);
+                return;
+            }
+
+        }
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
