@@ -57,7 +57,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     //1
     public class ViewHolder extends RecyclerView.ViewHolder{
-        private TextView tvCover_Name, tvState, tvTime, tvUnlock_Type;
+        private TextView tvCover_Name, tvTime, tvUnlock_Type;
         public ViewHolder(View view) {
             super(view);
             this.tvCover_Name = itemView.findViewById(R.id.tvCover_Name);

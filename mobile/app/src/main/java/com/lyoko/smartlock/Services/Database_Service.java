@@ -16,8 +16,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.lyoko.smartlock.Models.History;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 public class Database_Service {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -30,23 +35,34 @@ public class Database_Service {
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 final ArrayList<History> list = new ArrayList<>();
                 if (e == null) {
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots ) {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String cover_name = document.getString("cover_name");
                         String unlock_type = document.getString("unlock_type");
                         Date date = document.getTimestamp("time").toDate();
-                        list.add(new History(cover_name,date,unlock_type));
+                        list.add(new History(cover_name, date, unlock_type));
                     }
                     iHistory.show_history(list);
 //                    list.clear();
-                } else{
+                } else {
                     Log.w("get History", "Listen failed.", e);
                     return;
                 }
 
             }
+
         });
+
+//        List<Date> myList = new ArrayList<>();
+//
+//        Collections.sort(myList, new Comparator<Date>() {
+//            @Override
+//            public int compare(Date o1, Date o2) {
+//                return o1.compareTo(o2);
+//            }
+//        });
+//        for (int e = 0; e < myList.size(); e++){
+//        }
 
     }
 
-};
-
+}
