@@ -1,4 +1,4 @@
-package com.lyoko.smartlock;
+package com.lyoko.smartlock.Activities;
 
 public class UIHelper {
     MainActivity mainActivity;

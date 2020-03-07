@@ -1,4 +1,4 @@
-package com.lyoko.smartlock;
+package com.lyoko.smartlock.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.lyoko.smartlock.R;
 
 public class RegisterActivity extends AppCompatActivity {
     EditText et_PWD, et_PWD_confirm;

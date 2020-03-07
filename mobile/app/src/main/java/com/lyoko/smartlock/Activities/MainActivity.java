@@ -1,8 +1,7 @@
-package com.lyoko.smartlock;
+package com.lyoko.smartlock.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.appcompat.widget.ToolbarWidgetWrapper;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -15,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.lyoko.smartlock.R;
 
 public class MainActivity extends AppCompatActivity {
     ImageView img_find ;

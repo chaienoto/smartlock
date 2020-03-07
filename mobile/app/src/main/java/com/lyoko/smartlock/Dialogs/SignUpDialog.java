@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.lyoko.smartlock.AuthenticationActivity;
+import com.lyoko.smartlock.Activities.AuthenticationActivity;
 import com.lyoko.smartlock.R;
 
 

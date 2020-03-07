@@ -1,4 +1,4 @@
-package com.lyoko.smartlock;
+package com.lyoko.smartlock.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.lyoko.smartlock.Dialogs.SignUpDialog;
+import com.lyoko.smartlock.R;
 
 public class CheckSignActivity extends AppCompatActivity {
 

@@ -1,10 +1,12 @@
-package com.lyoko.smartlock;
+package com.lyoko.smartlock.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
+
+import com.lyoko.smartlock.R;
 
 public class LoginActivity extends AppCompatActivity {
 

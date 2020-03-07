@@ -1,10 +1,11 @@
 package com.lyoko.smartlock.Models;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.PropertyName;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
-import java.sql.Timestamp;
+
 
 public class History {
     @PropertyName("cover_name")
@@ -18,18 +19,13 @@ public class History {
     private String Unlock_Type;
 
 
-    private int Ic;
 
-    public History() {
 
-    }
-
-    public History(String Cover_Name, Boolean State, Timestamp Time, String Unlock_Type, int Ic) {
+    public History(String Cover_Name, Boolean State, Timestamp Time, String Unlock_Type) {
         this.Cover_Name = Cover_Name;
         this.State = State;
         this.Time = Time;
         this.Unlock_Type = Unlock_Type;
-//        this.Ic = Ic;
     }
 
     public String getCover_Name() {
@@ -51,9 +47,9 @@ public class History {
     public Timestamp getTime() {
         return Time;
     }
-//    public void setTime(Timestamp time) {
-//        Time = time;
-//    }
+    public void setTime(Timestamp time) {
+        Time = time;
+    }
 
     public String getUnlock_Type() {
         return Unlock_Type;
@@ -63,11 +59,5 @@ public class History {
         Unlock_Type = unlock_Type;
     }
 
-//    public int getIc() {
-//        return Ic;
-//    }
 //
-//    public void setIc(int ic) {
-//        Ic = ic;
-//    }
 }

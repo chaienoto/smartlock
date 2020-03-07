@@ -1,4 +1,4 @@
-package com.lyoko.smartlock;
+package com.lyoko.smartlock.Activities;
 
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.lyoko.smartlock.Models.BLE_Device;
+import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.BLE_Service;
 import com.lyoko.smartlock.Services.Find_Lock;
 import com.lyoko.smartlock.Utils.Request;

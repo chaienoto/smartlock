@@ -19,7 +19,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
 
     private Context context;
-    private ArrayList<History> historyActivityArr;
+    private ArrayList<History> list;
+
+    public HistoryAdapter(Context context, ArrayList<History> historyActivityArr) {
+        this.context = context;
+        this.list = historyActivityArr;
+
+    }
 
 
     @NonNull
@@ -35,12 +41,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        History history = historyActivityArr.get(position);
-//chu y
-//        holder.ic.setImageResource(history.getIc());
+        History history = list.get(position);
         holder.tvCover_Name.setText(history.getCover_Name());
-//        holder.tvState.setText(history.getState());
-//        holder.tvTime.setText(history.getTime());
+        holder.tvState.setText(String.valueOf(history.getState()));
+        holder.tvTime.setText(String.valueOf(history.getTime()));
         holder.tvUnlock_Type.setText(history.getUnlock_Type());
 
 
@@ -48,34 +52,23 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return historyActivityArr.size();
+        return list.size();
     }
 
 
     //1
     public class ViewHolder extends RecyclerView.ViewHolder{
-
         private TextView tvCover_Name, tvState, tvTime, tvUnlock_Type;
-        private ImageView ic;
-
         public ViewHolder(View view) {
-
             super(view);
-            this.ic = itemView.findViewById(R.id.ic);
             this.tvCover_Name = itemView.findViewById(R.id.tvCover_Name);
             this.tvState = itemView.findViewById(R.id.tvState);
             this.tvTime = itemView.findViewById(R.id.tvTime);
             this.tvUnlock_Type = itemView.findViewById(R.id.tvUnlock_Type);
         }
     }
-    //2
-    public HistoryAdapter(Context context, ArrayList<History> historyActivityArr) {
-        this.context = context;
-        this.historyActivityArr = historyActivityArr;
 
 
-
-    }
 
 
 

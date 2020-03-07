@@ -1,4 +1,4 @@
-package com.lyoko.smartlock;
+package com.lyoko.smartlock.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.lyoko.smartlock.R;
 
 public class AuthenticationActivity extends AppCompatActivity {
     TextView tv_UID_auth,tv_change_uid,tv_OTP_resend;

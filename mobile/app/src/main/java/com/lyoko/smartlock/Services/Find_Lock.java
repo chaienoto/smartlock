@@ -6,7 +6,7 @@ import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.lyoko.smartlock.FindLockActivity;
+import com.lyoko.smartlock.Activities.FindLockActivity;
 
 public class Find_Lock {
     public static final int REQUEST_ENABLE_BT = 1;
