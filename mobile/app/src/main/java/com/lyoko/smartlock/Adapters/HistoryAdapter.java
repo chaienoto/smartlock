@@ -43,7 +43,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         History history = list.get(position);
         holder.tvCover_Name.setText(history.getCover_Name());
-        holder.tvState.setText(String.valueOf(history.getState()));
         holder.tvTime.setText(String.valueOf(history.getTime()));
         holder.tvUnlock_Type.setText(history.getUnlock_Type());
 
@@ -62,7 +61,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public ViewHolder(View view) {
             super(view);
             this.tvCover_Name = itemView.findViewById(R.id.tvCover_Name);
-            this.tvState = itemView.findViewById(R.id.tvState);
             this.tvTime = itemView.findViewById(R.id.tvTime);
             this.tvUnlock_Type = itemView.findViewById(R.id.tvUnlock_Type);
         }

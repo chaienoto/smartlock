@@ -17,6 +17,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.lyoko.smartlock.Models.History;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Database_Service {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -32,9 +33,8 @@ public class Database_Service {
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots ) {
                         String cover_name = document.getString("cover_name");
                         String unlock_type = document.getString("unlock_type");
-                        Boolean state = document.getBoolean("state");
-                        Timestamp time = document.getTimestamp("time");
-                        list.add(new History(cover_name,state,time,unlock_type));
+                        Date date = document.getTimestamp("time").toDate();
+                        list.add(new History(cover_name,date,unlock_type));
                     }
                     iHistory.show_history(list);
 //                    list.clear();
