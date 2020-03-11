@@ -80,8 +80,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 default: return R.drawable.ic_username;
         }
     }
-
-
+    
     public String getDateFormatTo(String to,Date date){
         String pattern;
         Locale locale = new Locale("vi", "VN");
