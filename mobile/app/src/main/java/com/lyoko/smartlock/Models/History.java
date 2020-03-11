@@ -5,13 +5,13 @@ import java.util.Date;
 
 public class History {
     private String Cover_Name;
-    private Date Time;
+    private Date Timestamp;
     private String Unlock_Type;
 
 
     public History(String cover_Name, Date time, String unlock_Type) {
         Cover_Name = cover_Name;
-        Time = time;
+        Timestamp = time;
         Unlock_Type = unlock_Type;
     }
 
@@ -19,13 +19,14 @@ public class History {
         return Cover_Name;
     }
 
-    public Date getTime() {
-        return Time;
+    public Date getTimestamp() {
+        return Timestamp;
     }
 
     public String getUnlock_Type() {
         return Unlock_Type;
     }
+
 
 
 //
