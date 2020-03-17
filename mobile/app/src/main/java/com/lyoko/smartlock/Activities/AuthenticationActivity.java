@@ -1,10 +1,12 @@
 package com.lyoko.smartlock.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +19,7 @@ import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.lyoko.smartlock.R;
@@ -29,7 +32,8 @@ public class AuthenticationActivity extends AppCompatActivity {
     EditText ed_OTP;
     Button btn_Continue_auth;
     String verificationId;
-    FirebaseAuth mAuth;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,44 +41,30 @@ public class AuthenticationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_authentical);
         UIRegister();
         Bundle bundle = getIntent().getExtras();
+
+        // hồi nãy ko có getInstance nên nó éo chạy đc cái này..... làm tới đâu commit tới đó
+        mAuth.setLanguageCode("vi"); // cái này là khi nó gửi cho mình code thì nó sẽ là tiếng của hành tinh nào
+
         final BigInteger uid = BigInteger.valueOf(Integer.parseInt(bundle.getString("UID", "")));
         tv_UID_auth.setText(uid.toString());
-//        String uid = getIntent().getStringExtra("uid");
+//        FirebaseAuthSettings firebaseAuthSettings = mAuth.getFirebaseAuthSettings();
+//        firebaseAuthSettings.setAutoRetrievedSmsCodeForPhoneNumber("+84"+uid,124356+"" );  //neu co cai nay thi no auto vao luon ma ko can xac nhận nhưng tuyệt đối ko sử dung cai này nhé
+
         sendVerificationCode(uid.toString());
-
-
-
-//        btn_Continue_auth.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String otp = ed_OTP.getText().toString();
-//                if (opt_check(otp)) {
-//                    Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
-//                    intent.putExtra("UID", uid);
-//                    startActivity(intent);
-//                }
-//            }
-//        });
 
         btn_Continue_auth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String otp = ed_OTP.getText().toString().trim();
-
+                String otp = ed_OTP.getText().toString();
                 if (otp.isEmpty() || otp.length() < 6) {
                     ed_OTP.setError("Enter otp");
                     ed_OTP.requestFocus();
                     return;
-
                 }
                 verifyCode(otp);
             }
         });
 
-    }
-
-    private boolean opt_check(String otp) {
-        return true;
     }
 
     private void UIRegister() {
@@ -89,6 +79,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private void verifyCode(String otp) {
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, otp);
         signInWithCredential(credential);
+
     }
 
     private void signInWithCredential(PhoneAuthCredential credential) {
@@ -98,9 +89,8 @@ public class AuthenticationActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
+                            Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class); // cái này sai rồi, phải check xem thằng này muốn đăng kí/nhập đã nha
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
                             startActivity(intent);
 
                         } else {
@@ -108,7 +98,6 @@ public class AuthenticationActivity extends AppCompatActivity {
                         }
                     }
                 });
-        mAuth.setLanguageCode("vi");
     }
 
 
@@ -127,11 +116,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            String otp = phoneAuthCredential.getSmsCode();
-            if (otp != null) {
-                ed_OTP.setText(otp);
-                verifyCode(otp);
-            }
+//            signInWithCredential(phoneAuthCredential);
         }
 
         @Override
@@ -143,6 +128,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
             verificationId = s;
+
         }
 
     };
