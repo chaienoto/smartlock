@@ -87,25 +87,25 @@ void setup() {
 }
 
 void loop() {
-  // notify changed value 
-  if (deviceConnected) {
-    pCharacteristic->setValue((uint8_t*)&value, 4);
-    pCharacteristic->notify();
-    value++;
-    delay(10); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
-  }
-  // disconnecting
-  if (!deviceConnected && oldDeviceConnected) {
-    delay(500); // give the bluetooth stack the chance to get things ready
-    pServer->startAdvertising(); // restart advertising
-    Serial.println("start advertising");
-    oldDeviceConnected = deviceConnected;
-  }
-  // connecting
-  if (deviceConnected && !oldDeviceConnected) {
-    // do stuff here on connecting
-    oldDeviceConnected = deviceConnected;
-  }
+//  // notify changed value 
+//  if (deviceConnected) {
+//    pCharacteristic->setValue((uint8_t*)&value, 4);
+//    pCharacteristic->notify();
+//    value++;
+//    delay(10); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
+//  }
+//  // disconnecting
+//  if (!deviceConnected && oldDeviceConnected) {
+//    delay(500); // give the bluetooth stack the chance to get things ready
+//    pServer->startAdvertising(); // restart advertising
+//    Serial.println("start advertising");
+//    oldDeviceConnected = deviceConnected;
+//  }
+//  // connecting
+//  if (deviceConnected && !oldDeviceConnected) {
+//    // do stuff here on connecting
+//    oldDeviceConnected = deviceConnected;
+//  }
 
   pBattery_Level.setValue(&level, 1);
   pBattery_Level.notify();
