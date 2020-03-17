@@ -22,15 +22,7 @@ public class Request {
         this.context = context;
     }
 
-    public static boolean bluetooth(BluetoothAdapter bluetoothAdapter) {
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public static void startCheckPermission() {
+    public static void checkPermission() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             new AlertDialog.Builder(context)
@@ -61,13 +53,14 @@ public class Request {
         return sb.toString();
     }
 
-    public boolean BLESupport() {
+    public boolean checkBLESupport() {
         if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(context, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             ((Activity) context).finish();
             return false;
-        } else
+        } else{
             return true;
+        }
     }
 }
     

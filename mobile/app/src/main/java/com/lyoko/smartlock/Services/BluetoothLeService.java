@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
@@ -17,7 +18,9 @@ import androidx.annotation.Nullable;
 
 import com.lyoko.smartlock.Utils.Request;
 
-public class BLE_Service extends Service {
+import java.util.UUID;
+
+public class BluetoothLeService extends Service {
     private final static String TAG = "BLE_SERVICE";
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
@@ -32,17 +35,27 @@ public class BLE_Service extends Service {
     private  boolean autoConnect;
     private BluetoothDevice bluetoothDevice;
 
-    public final static String ACTION_GATT_CONNECTED = "com.lyoko.smartlock.BLE_Service.ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED = "com.lyoko.smartlock.BLE_Service.ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED = "com.lyoko.smartlock.BLE_Service.ACTION_GATT_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE = "com.lyoko.smartlock.BLE_Service.ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_UUID = "com.lyoko.smartlock.BLE_Service.EXTRA_UUID";
-    public final static String EXTRA_DATA = "com.lyoko.smartlock.BLE_Service.EXTRA_DATA";
 
-    public BLE_Service(Context context, boolean autoConnect, BluetoothDevice bluetoothDevice) {
+    public final static String ACTION_GATT_CONNECTED =
+            "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
+    public final static String ACTION_GATT_DISCONNECTED =
+            "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
+    public final static String ACTION_GATT_SERVICES_DISCOVERED =
+            "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
+    public final static String ACTION_DATA_AVAILABLE =
+            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public final static String EXTRA_DATA =
+            "com.example.bluetooth.le.EXTRA_DATA";
+    public final static String EXTRA_UUID =
+            "com.example.bluetooth.le.EXTRA_DATA";
+
+
+    public BluetoothLeService(Context context, boolean autoConnect, BluetoothDevice bluetoothDevice) {
         this.context = context;
         this.autoConnect = autoConnect;
         this.bluetoothDevice = bluetoothDevice;
+    }
+    public void connectDevice(){
         bluetoothGatt = bluetoothDevice.connectGatt(context,autoConnect, gattCallback);
     }
 
@@ -53,7 +66,7 @@ public class BLE_Service extends Service {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 intentAction = ACTION_GATT_CONNECTED;
                 connectionState = STATE_CONNECTED;
-                broadcastUpdate(intentAction);
+//                broadcastUpdate(intentAction);
                 Log.i(TAG, "Connected to GATT server.");
                 Log.i(TAG, "Attempting to start service discovery:" +
                         bluetoothGatt.discoverServices());
@@ -70,7 +83,13 @@ public class BLE_Service extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
+//                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
+                for (BluetoothGattService gattService : gatt.getServices()){
+//                    if (gattService.getUuid()==)
+                    Log.d("service_uuid",gattService.getUuid().toString());
+                    Log.d("service_characteristic", String.valueOf(gattService.getCharacteristics().get(0).FORMAT_UINT16));
+
+                }
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
@@ -95,7 +114,7 @@ public class BLE_Service extends Service {
         // This is special handling for the Heart Rate Measurement profile. Data
         // parsing is carried out as per profile specifications.
         intent.putExtra(EXTRA_UUID, characteristic.getUuid().toString());
-
+        Log.i("EXTRA_UUID", characteristic.getUuid().toString());
         // For all other profiles, writes the data formatted in HEX.
         final byte[] data = characteristic.getValue();
 

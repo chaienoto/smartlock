@@ -3,28 +3,36 @@ package com.lyoko.smartlock.Services;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.lyoko.smartlock.Activities.FindLockActivity;
 
+
+
 public class Find_Lock {
+    private static String MAC_LOCK = "24:62:AB:D7:D9:A6";
     public static final int REQUEST_ENABLE_BT = 1;
     private FindLockActivity findLockActivity;
     private BluetoothAdapter bluetoothAdapter;
-    public boolean mScanning;
-    private Handler handler;
+    private IFindLock iFindLock;
     private static final long SCAN_PERIOD = 1000;
     private static final int SIGNAL_STRENGTH = -60;
+    public boolean mScanning;
+    private Handler handler;
 
 
-    public Find_Lock(FindLockActivity findLockActivity) {
+    public Find_Lock(FindLockActivity findLockActivity, IFindLock iFindLock) {
         this.findLockActivity = findLockActivity;
+        this.iFindLock = iFindLock;
         mScanning = false;
         handler = new Handler();
         final BluetoothManager bluetoothManager =
-                (BluetoothManager) findLockActivity.getSystemService(findLockActivity.BLUETOOTH_SERVICE);
-        bluetoothAdapter = bluetoothManager.getAdapter();
+                (BluetoothManager) findLockActivity.getSystemService(Context.BLUETOOTH_SERVICE);
+        this.bluetoothAdapter = bluetoothManager.getAdapter();
 
     }
 
@@ -36,7 +44,12 @@ public class Find_Lock {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        findLockActivity.addDevice(device, rssi);
+                        if (device.getAddress().equalsIgnoreCase(MAC_LOCK)){
+                            Log.d("bleName",device.getName());
+                            iFindLock.onfound(device, rssi);
+                            stopScan();
+
+                        }
                     }
                 });
             }
@@ -51,7 +64,6 @@ public class Find_Lock {
                 public void run() {
                     mScanning = false;
                     bluetoothAdapter.stopLeScan(leScanCallback);
-                    findLockActivity.checkafterscan();
                 }
             }, SCAN_PERIOD);
             mScanning = true;
@@ -63,15 +75,11 @@ public class Find_Lock {
         }
     }
 
-
     public void startScan() {
-
         scanLeDevice(true);
-
-
     }
 
-    private void stopScan() {
+    public void stopScan() {
         scanLeDevice(false);
     }
 

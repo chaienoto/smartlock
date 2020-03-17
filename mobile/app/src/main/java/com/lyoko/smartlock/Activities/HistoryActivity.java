@@ -15,7 +15,6 @@ import java.util.Comparator;
 
 public class HistoryActivity extends AppCompatActivity implements IHistory {
     Database_Service db_service = new Database_Service();
-
     RecyclerView recyclerView;
     HistoryAdapter historyAdapter;
 

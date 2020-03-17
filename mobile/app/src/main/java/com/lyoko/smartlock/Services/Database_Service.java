@@ -14,7 +14,6 @@ import java.util.Date;
 
 public class Database_Service {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     public void getHistories(final IHistory iHistory) {
 
         CollectionReference collection = db.collection("/door/history/files");
