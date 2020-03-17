@@ -16,19 +16,18 @@ public class CheckSignActivity extends AppCompatActivity {
     public EditText et_UID_csign;
     public Button btn_Continue_csign;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_sign);
         UIRegister();
 
-
         btn_Continue_csign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String uid = et_UID_csign.getText().toString();
+                String uid = et_UID_csign.getText().toString().trim();
                 if (uid_check_exist(uid)){
+
                     Intent intent = new Intent(CheckSignActivity.this, LoginActivity.class);
                     intent.putExtra("UID", uid);
                     startActivity(intent);

@@ -35,8 +35,9 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Activities.CheckSignActivity"
-            android:screenOrientation="fullSensor" />
+            android:name=".Activities.FindLockActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".Activities.AuthenticationActivity"
             android:screenOrientation="portrait"
@@ -46,7 +47,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Activities.FindLockActivity"
+            android:name=".Activities.CheckSignActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
