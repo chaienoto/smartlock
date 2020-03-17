@@ -49,10 +49,11 @@ public class FindLockActivity extends AppCompatActivity implements IFindLock {
     public void onfound(final BluetoothDevice device, int rssi) {
         final BluetoothLeService bluetoothLeService = new BluetoothLeService(this,false,device);
         btn_find_device.setText("CONNECT");
+        bluetoothLeService.connectDevice();
+
         btn_find_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bluetoothLeService.connectDevice();
             }
         });
 
