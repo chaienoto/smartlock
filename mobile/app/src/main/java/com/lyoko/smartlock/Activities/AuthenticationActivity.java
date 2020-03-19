@@ -23,8 +23,10 @@ import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.lyoko.smartlock.R;
+import com.lyoko.smartlock.Services.Database_Service;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class AuthenticationActivity extends AppCompatActivity {
@@ -33,7 +35,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     Button btn_Continue_auth;
     String verificationId;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
+    BigInteger uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +43,10 @@ public class AuthenticationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_authentical);
         UIRegister();
         Bundle bundle = getIntent().getExtras();
+        //ngon ngu cua tin nhan gui code
+        mAuth.setLanguageCode("vi");
 
-        // hồi nãy ko có getInstance nên nó éo chạy đc cái này..... làm tới đâu commit tới đó
-        mAuth.setLanguageCode("vi"); // cái này là khi nó gửi cho mình code thì nó sẽ là tiếng của hành tinh nào
-
-        final BigInteger uid = BigInteger.valueOf(Integer.parseInt(bundle.getString("UID", "")));
+        uid = BigInteger.valueOf(Integer.parseInt(bundle.getString("UID", "")));
         tv_UID_auth.setText(uid.toString());
 //        FirebaseAuthSettings firebaseAuthSettings = mAuth.getFirebaseAuthSettings();
 //        firebaseAuthSettings.setAutoRetrievedSmsCodeForPhoneNumber("+84"+uid,124356+"" );  //neu co cai nay thi no auto vao luon ma ko can xac nhận nhưng tuyệt đối ko sử dung cai này nhé
@@ -82,17 +83,14 @@ public class AuthenticationActivity extends AppCompatActivity {
 
     }
 
-    private void signInWithCredential(PhoneAuthCredential credential) {
+    private void signInWithCredential(final PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
-                            Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class); // cái này sai rồi, phải check xem thằng này muốn đăng kí/nhập đã nha
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-
+                            Database_Service database_service = new Database_Service();
+                            database_service.getPhoneNumbers(AuthenticationActivity.this);
                         } else {
                             Toast.makeText(AuthenticationActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }
@@ -103,7 +101,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
     private void sendVerificationCode(String phoneNumber) {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                "+84"+phoneNumber,        // Phone number to verify
+                "+84" + phoneNumber,        // Phone number to verify
                 60,                 // Timeout duration
                 TimeUnit.SECONDS,   // Unit of timeout
                 this,               // Activity (for callback binding)
@@ -132,5 +130,25 @@ public class AuthenticationActivity extends AppCompatActivity {
         }
 
     };
+
+    public void checkPhoneNumber(ArrayList<String> list) {
+
+        Byte check = 0;
+
+        for (String phoneNumber : list) {
+            if (phoneNumber.equals(uid.toString())) {
+                check = 1;
+                Intent intent = new Intent(AuthenticationActivity.this, LoginActivity.class); // cái này sai rồi, phải check xem thằng này muốn đăng kí/nhập đã nha
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+
+        }
+        if (check == 0) {
+            Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class); // cái này sai rồi, phải check xem thằng này muốn đăng kí/nhập đã nha
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+    }
 
 }

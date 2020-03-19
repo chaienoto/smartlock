@@ -27,7 +27,6 @@ public class CheckSignActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String uid = et_UID_csign.getText().toString().trim();
                 if (uid_check_exist(uid)){
-
                     Intent intent = new Intent(CheckSignActivity.this, LoginActivity.class);
                     intent.putExtra("UID", uid);
                     startActivity(intent);

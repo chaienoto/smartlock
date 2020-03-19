@@ -19,8 +19,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         UIRegister();
-        Bundle bundle = getIntent().getExtras();
-        UID = bundle.getString("UID","");
+//        Bundle bundle = getIntent().getExtras();
+//        UID = bundle.getString("UID","");
         PWD = et_PWD.getText().toString();
 
         btn_Continue_register.setOnClickListener(new View.OnClickListener() {
