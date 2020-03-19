@@ -136,17 +136,17 @@ public class AuthenticationActivity extends AppCompatActivity {
         Byte check = 0;
 
         for (String phoneNumber : list) {
-            if (phoneNumber.equals(uid.toString())) {
+            if (phoneNumber.equals( uid.toString())) {
                 check = 1;
                 Intent intent = new Intent(AuthenticationActivity.this, LoginActivity.class); // cái này sai rồi, phải check xem thằng này muốn đăng kí/nhập đã nha
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
-
         }
         if (check == 0) {
             Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class); // cái này sai rồi, phải check xem thằng này muốn đăng kí/nhập đã nha
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra("phoneNumber", uid.toString());
             startActivity(intent);
         }
     }

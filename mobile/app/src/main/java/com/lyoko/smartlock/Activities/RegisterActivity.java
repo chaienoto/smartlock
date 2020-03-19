@@ -4,14 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.lyoko.smartlock.R;
 
 public class RegisterActivity extends AppCompatActivity {
-    EditText et_PWD, et_PWD_confirm;
+    EditText et_PWD, et_PWD_confirm, et_CoverName;
     Button btn_Continue_register;
     String UID,PWD;
     @Override
@@ -20,7 +22,11 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         UIRegister();
 //        Bundle bundle = getIntent().getExtras();
-//        UID = bundle.getString("UID","");
+//        UID = bundle.getString("phoneNumber","");
+        Intent i = this.getIntent();
+        UID = i.getStringExtra("phoneNumber");
+//        Toast.makeText(this, "phone number: " + UID, Toast.LENGTH_SHORT).show();
+        Log.d("phone :", UID);
         PWD = et_PWD.getText().toString();
 
         btn_Continue_register.setOnClickListener(new View.OnClickListener() {
@@ -32,14 +38,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
-
-
-
-
-
     }
 
     private boolean UID_Register() {
@@ -49,7 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void UIRegister() {
         et_PWD = findViewById(R.id.et_PWD);
         et_PWD_confirm = findViewById(R.id.et_PWD_confirm);
+        et_CoverName = findViewById(R.id.et_CoverName);
         btn_Continue_register = findViewById(R.id.btn_Continue_register);
-
     }
 }
