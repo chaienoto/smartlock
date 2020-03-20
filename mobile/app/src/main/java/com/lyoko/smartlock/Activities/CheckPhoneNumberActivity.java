@@ -71,6 +71,7 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
                         intent.putExtra("phoneNumber", phoneNumber);
                         intent.putExtra("isExist", true);
                         startActivity(intent);
+                        finish();
                     }
                 });
         builder.create().show();
@@ -83,8 +84,8 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
         Log.d("phoneNumNotExist: ",phoneNumber);
         View view = inflater.inflate(R.layout.register_dialog,null);
         TextView dialogPhone = view.findViewById(R.id.tv_register_dialog);
-        final TextView dialogBack = view.findViewById(R.id.tv_back_dialog);
-        final TextView dialogContinue = view.findViewById(R.id.tv_continue_dialog);
+        final TextView tv_dialogBack = view.findViewById(R.id.tv_back_dialog);
+        final TextView tv_dialogContinue = view.findViewById(R.id.tv_continue_dialog);
         final CheckBox checkBox = view.findViewById(R.id.cb_checkbox);
         builder.setView(view);
         dialogPhone.setText("0"+phoneNumber);
@@ -92,35 +93,29 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
             @Override
             public void onClick(View v) {
                 if (!checkBox.isChecked()){
-                    dialogContinue.setEnabled(false);
-                    dialogContinue.setTextColor(Color.parseColor("#8D8C8C"));
+                    tv_dialogContinue.setEnabled(false);
+                    tv_dialogContinue.setTextColor(Color.parseColor("#8D8C8C"));
                 } else{
-                    dialogContinue.setEnabled(true);
-                    dialogContinue.setTextColor(Color.parseColor("#2ecc71"));
+                    tv_dialogContinue.setEnabled(true);
+                    tv_dialogContinue.setTextColor(Color.parseColor("#2ecc71"));
                 }
             }
         });
-        dialogBack.setOnClickListener(new View.OnClickListener() {
+        tv_dialogBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
             }
         });
-        dialogContinue.setOnClickListener(new View.OnClickListener() {
+        tv_dialogContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CheckPhoneNumberActivity.this, RegisterActivity.class); // cái này sai rồi, phải check xem thằng này muốn đăng kí/nhập đã nha
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Intent intent = new Intent(CheckPhoneNumberActivity.this, RegisterActivity.class);
                 intent.putExtra("phoneNumber", phoneNumber);
                 intent.putExtra("isExist", false);
                 startActivity(intent);
+                finish();
             }
         });
-
         builder.create().show();
-
-
-//
-
     }
 }

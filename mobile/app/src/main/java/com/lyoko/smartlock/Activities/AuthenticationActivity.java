@@ -54,6 +54,23 @@ public class AuthenticationActivity extends AppCompatActivity {
         tv_phoneNumForVerify.setText("0"+phoneNumber);
         sendVerificationCode(phoneNumber);
 
+
+        tv_change_phoneNum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AuthenticationActivity.this, CheckPhoneNumberActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        tv_resend_otp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendVerificationCode(phoneNumber);
+            }
+        });
+
         btn_Continue_auth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,11 +98,9 @@ public class AuthenticationActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             if (isExist){
                                 Intent intent = new Intent(AuthenticationActivity.this, LoginActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                             } else {
                                 Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                             }
                         } else {
@@ -123,7 +138,6 @@ public class AuthenticationActivity extends AppCompatActivity {
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
             verificationId = s;
-
         }
 
     };
