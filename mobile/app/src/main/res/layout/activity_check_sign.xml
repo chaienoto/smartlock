@@ -7,7 +7,7 @@
     android:layout_gravity="center"
     android:background="@color/colorPrimary"
     android:padding="40dp"
-    tools:context=".Activities.CheckSignActivity">
+    tools:context=".Activities.CheckPhoneNumberActivity">
 
     <TextView
         android:id="@+id/tv1"
@@ -32,7 +32,7 @@
         android:textColor="@color/colorWhite" />
 
     <EditText
-        android:id="@+id/et_UID_csign"
+        android:id="@+id/et_phoneNumForCheck"
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:layout_below="@+id/tv2"
@@ -47,10 +47,10 @@
         android:textColorHighlight="@color/colorBlack" />
 
     <Button
-        android:id="@+id/btn_Continue_csign"
+        android:id="@+id/btn_checkPhoneNum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/et_UID_csign"
+        android:layout_below="@+id/et_phoneNumForCheck"
         android:layout_marginTop="10dp"
         android:background="@drawable/bogocne"
         android:backgroundTint="@color/colorPrimaryDark"

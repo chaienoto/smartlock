@@ -1,6 +1,7 @@
 package com.lyoko.smartlock.Services;
 
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -21,6 +22,7 @@ import java.util.Date;
 public class Database_Service {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+
     public void getHistories(final IHistory iHistory) {
 
         CollectionReference collection = db.collection("/door/history/files");
@@ -30,7 +32,6 @@ public class Database_Service {
                 final ArrayList<History> list = new ArrayList<>();
                 if (e == null) {
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-
                         String cover_name = document.getString("cover_name");
                         String unlock_type = document.getString("unlock_type");
                         Date date = document.getTimestamp("time").toDate();
@@ -48,30 +49,28 @@ public class Database_Service {
 
     }
 
-    public ArrayList<String> getPhoneNumbers(final AuthenticationActivity a ) {
-
+    public void checkPhoneNumber(final ICheckPhoneNumber iCheckPhoneNumber, final String phoneNumber ) {
         CollectionReference collection = db.collection("/door/phoneNumber/list");
         collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                final ArrayList<String> list = new ArrayList<>();
                 if (e == null) {
+                    Boolean check = false;
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-
-                        list.add(document.getId());
-                        Log.d("PhoneNumber: ", document.getId());
+                        if (phoneNumber.equals(document.getId())&&!check){
+                            check = true;
+                            iCheckPhoneNumber.phoneNumExist(phoneNumber);
+                        }
                     }
-                    a.checkPhoneNumber(list);
+                    if (!check)
+                        iCheckPhoneNumber.phoneNumNotExist(phoneNumber);
+
                 } else {
                     Log.w("get History", "Listen failed.", e);
                     return;
                 }
-
             }
-
         });
-
-        return null;
     }
 
 

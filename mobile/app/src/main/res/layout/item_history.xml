@@ -22,14 +22,14 @@
 
         <TextView
             android:id="@+id/tv_date"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:paddingLeft="5dp"/>
+            android:paddingLeft="5dp" />
 
         <TextView
             android:id="@+id/tvTime"
-            android:layout_width="80dp"
+            android:layout_width="70dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:textAlignment="center"
@@ -37,13 +37,11 @@
 
         <ImageView
             android:id="@+id/iv_unlockType"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="left|center_vertical"
-            android:paddingRight="10dp"
-            />
-
-
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_weight="0"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:layout_marginHorizontal="10dp"/>
 
 
     </LinearLayout>

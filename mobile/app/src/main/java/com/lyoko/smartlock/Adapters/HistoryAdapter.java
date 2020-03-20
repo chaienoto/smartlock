@@ -1,6 +1,7 @@
 package com.lyoko.smartlock.Adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private Context context;
     private ArrayList<History> list;
 
-    public HistoryAdapter(Context context, ArrayList<History> historyActivityArr) {
+    public HistoryAdapter(Context context, ArrayList<History> list) {
         this.context = context;
-        this.list = historyActivityArr;
+        this.list = list;
 
     }
 
@@ -72,27 +73,28 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public int getBackgroundRes(String unlock_type){
         switch (unlock_type){
             case "smartphone":
-                return R.drawable.ic_phone_unlock;
+                return R.drawable.ic_phone_unlock ;
             case "fingerprint":
                 return R.drawable.ic_fingerprint;
             case "otp":
                 return R.drawable.ic_otp;
-                default: return R.drawable.ic_username;
+            default:
+                throw new IllegalStateException("Unexpected value: " + unlock_type);
         }
     }
 
-    public String getDateFormatTo(String to,Date date){
+    public String getDateFormatTo(String formatTo,Date date){
         String pattern;
         Locale locale = new Locale("vi", "VN");
-        switch (to){
+        switch (formatTo){
             case "day":
-                pattern = "E, dd MMMM/yyyy";
+                pattern = "EEE, dd-MM-yyyy";
                 break;
             case "time":
                 pattern = "HH:mm";
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + to);
+                throw new IllegalStateException("Unexpected value: " + formatTo);
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, locale);
         return simpleDateFormat.format(date);
