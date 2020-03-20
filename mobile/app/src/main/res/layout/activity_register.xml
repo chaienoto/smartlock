@@ -46,7 +46,7 @@
         android:textSize="20dp" />
 
     <EditText
-        android:id="@+id/et_PWD"
+        android:id="@+id/et_password"
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:layout_below="@+id/et_CoverName"
@@ -60,10 +60,10 @@
         android:textSize="20dp" />
 
     <EditText
-        android:id="@+id/et_PWD_confirm"
+        android:id="@+id/et_password_confirm"
         android:layout_width="match_parent"
         android:layout_height="58dp"
-        android:layout_below="@+id/et_PWD"
+        android:layout_below="@+id/et_password"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
         android:textSize="20dp"
@@ -75,10 +75,10 @@
         android:textColorHighlight="@color/colorBlack" />
 
     <Button
-        android:id="@+id/btn_Continue_register"
+        android:id="@+id/btn_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/et_PWD_confirm"
+        android:layout_below="@+id/et_password_confirm"
         android:layout_marginTop="10dp"
         android:background="@drawable/bogocne"
         android:backgroundTint="@color/colorPrimaryDark"

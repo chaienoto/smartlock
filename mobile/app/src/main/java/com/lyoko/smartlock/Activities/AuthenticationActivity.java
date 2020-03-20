@@ -98,9 +98,11 @@ public class AuthenticationActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             if (isExist){
                                 Intent intent = new Intent(AuthenticationActivity.this, LoginActivity.class);
+                                intent.putExtra("phoneNumber", phoneNumber);
                                 startActivity(intent);
                             } else {
                                 Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
+                                intent.putExtra("phoneNumber", phoneNumber);
                                 startActivity(intent);
                             }
                         } else {

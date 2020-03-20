@@ -22,7 +22,7 @@
 
 
     <EditText
-        android:id="@+id/etSDT"
+        android:id="@+id/et_login_password"
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:layout_below="@+id/tv3"
@@ -37,10 +37,10 @@
         android:textSize="20dp" />
 
     <Button
-        android:id="@+id/btnTiepTuc"
+        android:id="@+id/btn_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/etSDT"
+        android:layout_below="@+id/et_login_password"
         android:layout_marginTop="10dp"
         android:background="@drawable/bogocne"
         android:backgroundTint="@color/colorPrimaryDark"
@@ -50,9 +50,10 @@
         android:textColor="@color/colorWhite" />
 
     <TextView
+        android:id="@+id/tv_change_login_phoneNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnTiepTuc"
+        android:layout_below="@+id/btn_login"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="20dp"
         android:text="Đổi SĐT"
