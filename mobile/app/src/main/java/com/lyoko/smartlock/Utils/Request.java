@@ -46,7 +46,6 @@ public class Request {
                     .create()
                     .show();
         }
-
     }
 
     public static String hexToString(byte[] data) {
