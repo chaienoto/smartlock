@@ -12,7 +12,7 @@ import com.lyoko.smartlock.Activities.AddLockActivity;
 
 
 public class Find_Lock {
-    private static String MAC_LOCK = "24:62:AB:D7:D9:A6";
+    private static String LOCK_ADDRESS ;
     public static final int REQUEST_ENABLE_BT = 1;
     private AddLockActivity addLockActivity;
     private BluetoothAdapter bluetoothAdapter;
@@ -44,7 +44,7 @@ public class Find_Lock {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (device.getAddress().equalsIgnoreCase(MAC_LOCK) && !isFound){
+                        if (device.getAddress().equalsIgnoreCase(LOCK_ADDRESS) && !isFound){
                             isFound = true;
                             iFindLock.onfound(device, rssi);
                         }
@@ -73,7 +73,8 @@ public class Find_Lock {
         }
     }
 
-    public void startScan() {
+    public void startScan(String device_address) {
+        LOCK_ADDRESS = device_address;
         scanLeDevice(true);
     }
 

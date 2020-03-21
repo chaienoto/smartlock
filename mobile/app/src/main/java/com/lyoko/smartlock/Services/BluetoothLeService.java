@@ -6,10 +6,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
@@ -17,11 +15,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.lyoko.smartlock.Utils.Request;
+import com.lyoko.smartlock.Utils.FormatData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 public class BluetoothLeService extends Service {
@@ -29,18 +24,18 @@ public class BluetoothLeService extends Service {
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private String bluetoothDeviceAddress;
+    FormatData formatData = new FormatData();
     private BluetoothGatt gatt;
     private int connectionState = STATE_DISCONNECTED;
-    private final UUID BATTERY_SERVICE_UUID = convertFromInteger(0x180F);
-    private final UUID BATTERY_LEVEL_CHARACTERISTIC_UUID = convertFromInteger(0x2A19);
-    private final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = convertFromInteger(0x2902);
+    private final UUID BATTERY_SERVICE_UUID = formatData.convertFromInteger(0x180F);
+    private final UUID BATTERY_LEVEL_CHARACTERISTIC_UUID = formatData.convertFromInteger(0x2A19);
+    private final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = formatData.convertFromInteger(0x2902);
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_CONNECTED = 2;
     private Context context;
     private  boolean autoConnect;
     private BluetoothDevice bluetoothDevice;
-
 
 
     public BluetoothLeService(Context context, boolean autoConnect, BluetoothDevice bluetoothDevice) {
@@ -51,12 +46,7 @@ public class BluetoothLeService extends Service {
     public void connectDevice(){
         gatt = bluetoothDevice.connectGatt(context,autoConnect, gattCallback);
     }
-    public UUID convertFromInteger(int i) {
-        final long MSB = 0x0000000000001000L;
-        final long LSB = 0x800000805f9b34fbL;
-        long value = i & 0xFFFFFFFF;
-        return new UUID(MSB | (value << 32), LSB);
-    }
+
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
