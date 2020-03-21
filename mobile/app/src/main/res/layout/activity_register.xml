@@ -40,8 +40,8 @@
         android:background="@drawable/bogocne"
         android:gravity="center"
         android:hint="Nhập tên của bạn"
-        android:inputType="number"
-        android:maxLength="6"
+        android:inputType="text"
+        android:maxLength="12"
         android:textColorHighlight="@color/colorBlack"
         android:textSize="20dp" />
 
