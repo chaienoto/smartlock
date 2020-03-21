@@ -19,6 +19,7 @@ public class Find_Lock {
     private FindLockActivity findLockActivity;
     private BluetoothAdapter bluetoothAdapter;
     private IFindLock iFindLock;
+    private Boolean isFound;
     private static final long SCAN_PERIOD = 1000;
     private static final int SIGNAL_STRENGTH = -60;
     public boolean mScanning;
@@ -29,6 +30,7 @@ public class Find_Lock {
         this.findLockActivity = findLockActivity;
         this.iFindLock = iFindLock;
         mScanning = false;
+        isFound = false;
         handler = new Handler();
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) findLockActivity.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -40,20 +42,18 @@ public class Find_Lock {
     private final BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
-            if (rssi >= SIGNAL_STRENGTH) {
+//            if (rssi >= SIGNAL_STRENGTH) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (device.getAddress().equalsIgnoreCase(MAC_LOCK)){
-                            Log.d("bleName",device.getName());
+                        if (device.getAddress().equalsIgnoreCase(MAC_LOCK) && !isFound){
+                            isFound = true;
                             iFindLock.onfound(device, rssi);
-                            stopScan();
-
                         }
                     }
                 });
             }
-        }
+//        }
     };
 
 

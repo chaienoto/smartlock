@@ -28,12 +28,14 @@ public class RegisterActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         phoneNumber = intent.getStringExtra("phoneNumber");  // lấy phoneNumber chỗ này để push lên database
 
-        password = et_password.getText().toString();
 
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // check password vs confirm password
+                password = et_password.getText().toString();
+                password_confirm = et_password_confirm.getText().toString();
+
+                // check password vs confirm password
                 // bắn dũ liệu lên database bao gồm cover name với pass
                 registerWithPhoneNumber();
             }
