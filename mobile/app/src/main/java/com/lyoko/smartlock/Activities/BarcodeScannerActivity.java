@@ -19,12 +19,12 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.gms.vision.barcode.BarcodeDetector.Builder;
 import com.lyoko.smartlock.R;
+import com.lyoko.smartlock.Utils.Request;
 
 import java.io.IOException;
 import java.nio.file.Files;
 
 public class BarcodeScannerActivity extends AppCompatActivity {
-
     SurfaceView surfaceView;
     TextView tvBarcode;
     CameraSource cameraSource;
@@ -41,7 +41,7 @@ public class BarcodeScannerActivity extends AppCompatActivity {
 
         barcodeDetector = new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE).build();
 
-        cameraSource = new CameraSource.Builder(this, barcodeDetector).setRequestedPreviewSize(640, 480).build();
+        cameraSource = new CameraSource.Builder(this, barcodeDetector).setRequestedPreviewSize(480, 480).build();
 
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override

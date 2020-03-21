@@ -15,7 +15,7 @@ import com.lyoko.smartlock.R;
 public class RegisterActivity extends AppCompatActivity {
     EditText et_password, et_password_confirm, et_CoverName;
     Button btn_register;
-    String phoneNumber,password;
+    String phoneNumber,password,password_confirm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

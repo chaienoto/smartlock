@@ -3,10 +3,9 @@ package com.lyoko.smartlock.Activities;
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.QuickContactBadge;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,17 +15,19 @@ import com.lyoko.smartlock.Services.Find_Lock;
 import com.lyoko.smartlock.Services.IFindLock;
 import com.lyoko.smartlock.Utils.Request;
 
-public class FindLockActivity extends AppCompatActivity implements IFindLock {
+public class AddLockActivity extends AppCompatActivity implements IFindLock {
     private static final int FIND_LOCK_COLOR = Color.parseColor("#3498db");
     private Request request;
+    ImageView img_find_device;
     private Find_Lock findLock;
     private Button btn_find_device;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ble_scanner);
+        setContentView(R.layout.activity_add_lock);
         btn_find_device = findViewById(R.id.btn_find_device);
+        img_find_device = findViewById(R.id.img_find_device);
         getWindow().setStatusBarColor(FIND_LOCK_COLOR);
 
         findLock = new Find_Lock(this,this);

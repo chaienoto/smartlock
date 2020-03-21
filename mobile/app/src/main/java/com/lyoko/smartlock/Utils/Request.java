@@ -17,6 +17,7 @@ import com.lyoko.smartlock.R;
 public class Request {
     private static Context context;
     public static final int REQUEST_LOCATION_PERMISSION = 111;
+    public static final int REQUEST_CAMERA_PERMISSION = 222;
 
     public Request(Context context) {
         this.context = context;
@@ -24,10 +25,11 @@ public class Request {
 
     public static void checkPermission() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED ) {
             new AlertDialog.Builder(context)
                     .setTitle("Thông Báo Quan Trọng")
-                    .setMessage("Chúng tôi cần sử dụng vị trí của bạn để tìm khóa thông minh")
+                    .setMessage("Chúng tôi cần bạn cấp quyền để có thể tìm Lyoko Smart Lock")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -35,6 +37,10 @@ public class Request {
                             ActivityCompat.requestPermissions((Activity) context,
                                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                     REQUEST_LOCATION_PERMISSION);
+                            ActivityCompat.requestPermissions((Activity) context,
+                                    new String[]{Manifest.permission.CAMERA},
+                                    REQUEST_CAMERA_PERMISSION);
+
                         }
                     })
                     .create()
