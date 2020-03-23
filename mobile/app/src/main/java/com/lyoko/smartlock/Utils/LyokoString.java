@@ -3,6 +3,8 @@ package com.lyoko.smartlock.Utils;
 public class LyokoString {
     public final static String MAC_DEFAULT = "24:62:AB";
     public static String MAC_DEVICE = null;
+    // DEVICE OWNER ATTRIBUTE
+    public final static String DEVICE_OWNER = "owner";
     // COLOR
     public final static String BLUE = "#3498db";
     public final static String COLOR_UNLOCK = "#2ecc71";
@@ -10,6 +12,7 @@ public class LyokoString {
     // DATABASE PATH
     public final static String PATH_C_HISTORY = "/door/history/files";
     public final static String PATH_C_PHONE_NUMBER = "/door/phoneNumber/list";
+    public final static String PATH_C_AUTH_MAC = "/mac_devices_authentic";
     // HISTORY ATTRIBUTE
     public final static String HISTORY_COVER_NAME = "cover_name";
     public final static String HISTORY_UNLOCK_TYPE = "unlock_type";
@@ -18,5 +21,6 @@ public class LyokoString {
     public final static String UNLOCK_TYPE_SMARTPHONE = "smartphone";
     public final static String UNLOCK_TYPE_OTP = "otp";
     public final static String UNLOCK_TYPE_FINGERPRINT = "fingerprint";
+
 
 }
