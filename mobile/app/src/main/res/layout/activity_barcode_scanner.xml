@@ -7,10 +7,10 @@
     tools:context=".Activities.BarcodeScannerActivity">
 
     <SurfaceView
+        android:id="@+id/surfaceView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:id="@+id/surfaceView"
-        android:layout_centerInParent="true"/>
+        android:layout_centerVertical="true" />
 
     <TextView
         android:layout_width="match_parent"
