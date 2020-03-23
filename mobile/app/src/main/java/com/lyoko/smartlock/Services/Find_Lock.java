@@ -46,7 +46,7 @@ public class Find_Lock {
                     public void run() {
                         if (device.getAddress().equalsIgnoreCase(LOCK_ADDRESS) && !isFound){
                             isFound = true;
-                            iFindLock.onfound(device, rssi);
+                            iFindLock.onFound(device, rssi);
                         }
                     }
                 });
@@ -88,4 +88,5 @@ public class Find_Lock {
             addLockActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
     }
+
 }

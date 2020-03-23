@@ -1,13 +1,22 @@
 <resources>
     <string name="app_name">Lyoko Lock</string>
     <string name="ble_not_supported">BlutoothLE not supported by Device</string>
-    <string name="MAC_OF_DEVICE">24:62:AB:D7:D9:A6</string>
+    <string name="SMARTPHONE">""</string>
+    <string name="OTP"></string>
+    <string name="FINGERPRINT"></string>
+    <string name="MAC_OF_DEVICE"></string>
+    <string name="STEP_1">Step 1/4</string>
+    <string name="STEP_2">Step 2/4</string>
+    <string name="STEP_3">Step 3/4</string>
+    <string name="STEP_4">Step 4/4</string>
+    <string name="STEP_DESCRIPTION_1">Tìm và quét mã QR của ổ khóa bên trong vỏ hộp</string>
+    <string name="STEP_DESCRIPTION_2">Tìm và quét mã QR của ổ khóa bên trong vỏ hộp</string>
+    <string name="STEP_DESCRIPTION_3">Chọn và điền mật khẩu wifi để ổ khóa có thể connect đến server và tự động setup</string>
+    <string name="STEP_DESCRIPTION_4">Setup thiết bị. Quá trình này diễn ra tự động</string>
 
-    <string-array name="history_options">
-        <item>Tên</item>
-        <item>Loại mở khóa</item>
-        <item>Thời gian</item>
 
-    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

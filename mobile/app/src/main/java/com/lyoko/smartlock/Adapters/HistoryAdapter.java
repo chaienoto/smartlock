@@ -2,6 +2,7 @@ package com.lyoko.smartlock.Adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lyoko.smartlock.Models.History;
 import com.lyoko.smartlock.R;
+import com.lyoko.smartlock.Utils.LyokoString;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+
 
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
@@ -72,11 +76,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     public int getBackgroundRes(String unlock_type){
         switch (unlock_type){
-            case "smartphone":
+            case LyokoString.UNLOCK_TYPE_SMARTPHONE:
                 return R.drawable.ic_phone_unlock ;
-            case "fingerprint":
+            case LyokoString.UNLOCK_TYPE_FINGERPRINT:
                 return R.drawable.ic_fingerprint;
-            case "otp":
+            case LyokoString.UNLOCK_TYPE_OTP:
                 return R.drawable.ic_otp;
             default:
                 throw new IllegalStateException("Unexpected value: " + unlock_type);

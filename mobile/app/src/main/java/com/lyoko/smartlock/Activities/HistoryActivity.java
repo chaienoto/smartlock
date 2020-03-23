@@ -38,12 +38,12 @@ public class HistoryActivity extends AppCompatActivity implements IHistory {
     @Override
     public void show_history(ArrayList<History> list) {
 
-            Collections.sort(list, new Comparator<History>() {
-                @Override
-                public int compare(History o1, History o2) {
-                    return o2.getTimestamp().compareTo(o1.getTimestamp());
-                }
-            });
+        Collections.sort(list, new Comparator<History>() {
+            @Override
+            public int compare(History o1, History o2) {
+                return o2.getTimestamp().compareTo(o1.getTimestamp());
+            }
+        });
 
         historyAdapter = new HistoryAdapter(this, list);
         recyclerView.setAdapter(historyAdapter);
