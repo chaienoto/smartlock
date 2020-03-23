@@ -54,13 +54,11 @@ public class RegisterActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         phoneNumber = intent.getStringExtra("phoneNumber");
 // lấy phoneNumber chỗ này để push lên database
-
         final String phoneNumberFake = "098123123";
 
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 covername = et_CoverName.getText().toString();
                 password = et_password.getText().toString();
                 password_confirm = et_password_confirm.getText().toString();
@@ -69,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Map<String, Object> saveInf = new HashMap<>();
                     saveInf.put("cover_name", covername);
                     saveInf.put("password", password);
-                    DocumentReference documentReference = firebaseFirestore.document("/door/phoneNumber/list/" + phoneNumberFake );
+                    DocumentReference documentReference = firebaseFirestore.document("/door/phoneNumber/list/" + phoneNumberFake);
                     if (documentReference.set(saveInf).isSuccessful()){
                         Toast.makeText(RegisterActivity.this, "Thanh cong", Toast.LENGTH_SHORT).show();
                         Intent i = new Intent(RegisterActivity.this, MainActivity.class);
@@ -81,58 +79,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                 }
 
-
-
-
-
-
-
-                    
-
-                // check password vs confirm password
-                // bắn dũ liệu lên database bao gồm cover name với pass
-
-//                documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-//                        if (e != null) {
-//                            Toast.makeText(RegisterActivity.this, "Error Loading", Toast.LENGTH_SHORT).show();
-//                            Log.d("TAG", e.toString());
-//                            return;
-//                        }
-//                        if (documentSnapshot.exists()) {
-
-//
-//
-//                        }
-//                    }
-//                });
-
-
-//                collectionReference.add(saveInf).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//
-//                    @Override
-//                    public void onSuccess(DocumentReference documentReference) {
-//
-////                            if (password.equalsIgnoreCase(password_confirm)){
-////
-////                                Intent i = new Intent(RegisterActivity.this, MainActivity.class);
-////                                startActivity(i);
-////                                finish();
-////                            }
-//
-//                        Log.d("TAG", "DocumentSnapshot written with ID: " + documentReference.getId());
-//
-//                    }
-//                })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.w("TAG", "Error adding document", e);
-//                            }
-//                        });
-
                 registerWithPhoneNumber();
+
             }
         });
     }
