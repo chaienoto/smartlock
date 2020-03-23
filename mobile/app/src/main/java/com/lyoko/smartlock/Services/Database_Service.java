@@ -74,10 +74,6 @@ public class Database_Service {
         });
     }
 
-//    public void savePassword(final String phoneNumber, final String password){
-//        DocumentReference documentReference = db.collection("/door/phoneNumber/list");
-//        documentReference.set()
-//    }
 
 
 }
