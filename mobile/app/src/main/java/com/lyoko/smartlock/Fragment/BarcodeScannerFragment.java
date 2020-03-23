@@ -27,6 +27,8 @@ import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.IFindLock;
 import com.lyoko.smartlock.Utils.LyokoString;
 
+import static com.lyoko.smartlock.Utils.LyokoString.MAC_DEFAULT;
+import static com.lyoko.smartlock.Utils.LyokoString.MAC_DEVICE_SCANNED;
 import java.io.IOException;
 
 /**
@@ -87,12 +89,9 @@ public class BarcodeScannerFragment extends Fragment {
                 final SparseArray<Barcode> qrCode = detections.getDetectedItems();
 
                 if (qrCode.size() != 0) {
-                    String address =(qrCode.valueAt(0).displayValue);
-
-                    Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-                    vibrator.vibrate(500);
-                    if (address.contains(LyokoString.MAC_DEFAULT)){
-                        callback.onAddressDeviceScanned(address);
+                    MAC_DEVICE_SCANNED =(qrCode.valueAt(0).displayValue);
+                    if (MAC_DEVICE_SCANNED.contains(MAC_DEFAULT)){
+                        callback.onAddressDeviceScannedSuitable();
                         getFragmentManager().beginTransaction().remove(BarcodeScannerFragment.this).commit();
                     } else {
                         callback.onAddressScannedUnsuitable();
@@ -104,7 +103,7 @@ public class BarcodeScannerFragment extends Fragment {
         return  view;
     }
     public  interface  OnGetDeviceAddress{
-        void onAddressDeviceScanned(String address);
+        void onAddressDeviceScannedSuitable();
         void onAddressScannedUnsuitable();
     }
 
@@ -113,6 +112,6 @@ public class BarcodeScannerFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        vibrator.vibrate(800);
+        vibrator.vibrate(500);
     }
 }

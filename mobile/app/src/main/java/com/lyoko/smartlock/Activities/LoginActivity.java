@@ -12,17 +12,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.lyoko.smartlock.R;
+
+import static com.lyoko.smartlock.Utils.LyokoString.PASSWORD;
+import static com.lyoko.smartlock.Utils.LyokoString.PATH_C_PHONE_NUMBER_REGISTERED;
+import static com.lyoko.smartlock.Utils.LyokoString.PHONE_LOGIN;
 
 public class LoginActivity extends AppCompatActivity {
     EditText et_login_password;
@@ -39,21 +38,17 @@ public class LoginActivity extends AppCompatActivity {
         et_login_password = findViewById(R.id.et_login_password);
         tv_change_login_phoneNumber = findViewById(R.id.tv_change_login_phoneNumber);
 
-        final String phoneNumberFake = "098123123";
         final String passwordFake = "123456";
 
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DocumentReference documentReference = firebaseFirestore.document("/door/phoneNumber/list/" + phoneNumberFake);
+                DocumentReference documentReference = firebaseFirestore.document(PATH_C_PHONE_NUMBER_REGISTERED + "/" + PHONE_LOGIN);
                 loginPassword = et_login_password.getText().toString();
-
-
-
-                documentReference.addSnapshotListener(LoginActivity.this, new EventListener<DocumentSnapshot>() {
+                documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                        String password = documentSnapshot.getString("password");
+                        String password = documentSnapshot.getString(PASSWORD);
 
                         //check password với pass trên database
                         // nếu đúng thì chuyển qua MainActivity

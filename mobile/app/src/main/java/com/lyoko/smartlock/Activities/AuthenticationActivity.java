@@ -21,18 +21,20 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Utils.LyokoString;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import static com.lyoko.smartlock.Utils.LyokoString.PHONE_LOGIN;
 
 public class AuthenticationActivity extends AppCompatActivity {
     TextView tv_phoneNumForVerify, tv_change_phoneNum, tv_resend_otp;
     EditText ed_otp_code;
     Button btn_Continue_auth;
     String verificationId;
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    String phoneNumber;
+    FirebaseAuth mAuth;
     Boolean isExist;
 
     @Override
@@ -45,14 +47,14 @@ public class AuthenticationActivity extends AppCompatActivity {
         ed_otp_code = findViewById(R.id.ed_otp_code);
         btn_Continue_auth = findViewById(R.id.btn_verify);
 
+        mAuth = FirebaseAuth.getInstance();
         mAuth.setLanguageCode("vi");
 
         Bundle bundle = getIntent().getExtras();
-        phoneNumber = bundle.getString("phoneNumber");
         isExist = bundle.getBoolean("isExist");
 
-        tv_phoneNumForVerify.setText("0"+phoneNumber);
-        sendVerificationCode(phoneNumber);
+        tv_phoneNumForVerify.setText("0"+PHONE_LOGIN);
+        sendVerificationCode(PHONE_LOGIN);
 
 
         tv_change_phoneNum.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +69,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         tv_resend_otp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendVerificationCode(phoneNumber);
+                sendVerificationCode(PHONE_LOGIN);
             }
         });
 
@@ -98,11 +100,10 @@ public class AuthenticationActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             if (isExist){
                                 Intent intent = new Intent(AuthenticationActivity.this, LoginActivity.class);
-                                intent.putExtra("phoneNumber", phoneNumber);
+//                                intent.putExtra("phoneNumber", phoneNumber);
                                 startActivity(intent);
                             } else {
                                 Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
-                                intent.putExtra("phoneNumber", phoneNumber);
                                 startActivity(intent);
                             }
                         } else {
