@@ -1,11 +1,13 @@
 package com.lyoko.smartlock.Services;
 
-import android.bluetooth.BluetoothDevice;
+        import android.bluetooth.BluetoothDevice;
 
 public interface IFindLock {
-    void onFound(BluetoothDevice device, int rssi);
-    void onHasOwner();
-    void onYouAreOwner();
-    void readyToAdd();
+    void onDeviceFound(BluetoothDevice device, int rssi);
+    void onNotOwner(String address);
+    void onAsOwner(String address);
+    void onConnected();
+    void onComplete();
+    void onReadyToAddDevice(String address);
 
 }

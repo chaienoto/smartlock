@@ -22,8 +22,6 @@ import java.util.Date;
 import java.util.Locale;
 
 
-
-
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
     private Context context;

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.AddLockActivity">
+    tools:context=".Activities.AddDeviceActivity">
 
 
     <RelativeLayout
@@ -26,19 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-<!--            <EditText-->
-<!--                android:id="@+id/add_lock_name"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="58dp"-->
-<!--                android:padding="5dp"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:layout_marginTop="20dp"-->
-<!--                android:background="@drawable/bogocne"-->
-<!--                android:gravity="center"-->
-<!--                android:hint="Nhập tên cho ổ khóa"-->
-<!--                android:ellipsize="middle"-->
-<!--                android:textColorHighlight="@color/colorBlack"-->
-<!--                android:textSize="20dp" />-->
         </FrameLayout>
 
         <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
@@ -68,7 +55,7 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/btn_find_device"
+        android:id="@+id/btn_next_step"
         android:layout_width="110dp"
         android:layout_height="110dp"
         android:background="@drawable/lock_button_background"
@@ -92,10 +79,10 @@
         android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="@string/STEP_1"
-        app:layout_constraintEnd_toEndOf="@+id/btn_find_device"
+        app:layout_constraintEnd_toEndOf="@+id/btn_next_step"
         app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintStart_toStartOf="@+id/btn_find_device"
-        app:layout_constraintTop_toBottomOf="@+id/btn_find_device" />
+        app:layout_constraintStart_toStartOf="@+id/btn_next_step"
+        app:layout_constraintTop_toBottomOf="@+id/btn_next_step" />
 
     <TextView
         android:id="@+id/add_lock_description"

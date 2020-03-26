@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
@@ -15,64 +16,78 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.lyoko.smartlock.Utils.FormatData;
-
-import java.util.UUID;
+import static com.lyoko.smartlock.Utils.FormatData.hexToString;
+import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_CLIENT_CONFIG_UUID;
+import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_WIFI_RX_UUID;
+import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_WIFI_TX_UUID;
+import static com.lyoko.smartlock.Utils.LyokoString.SERVICE_BATTERY_UUID;
+import static com.lyoko.smartlock.Utils.LyokoString.SERVICE_WIFI_UUID;
+import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_BATTERY_LEVEL_UUID;
 
 public class BluetoothLeService extends Service {
-    private final static String TAG = "BLE_SERVICE";
-    private BluetoothManager bluetoothManager;
-    private BluetoothAdapter bluetoothAdapter;
-    private String bluetoothDeviceAddress;
-    FormatData formatData = new FormatData();
+    private final static String TAG = BluetoothLeService.class.getSimpleName();
     private BluetoothGatt gatt;
-    private int connectionState = STATE_DISCONNECTED;
-    private final UUID BATTERY_SERVICE_UUID = formatData.convertFromInteger(0x180F);
-    private final UUID BATTERY_LEVEL_CHARACTERISTIC_UUID = formatData.convertFromInteger(0x2A19);
-    private final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = formatData.convertFromInteger(0x2902);
+    private IFindLock iFindLock;
+    private int mConnectionState = STATE_DISCONNECTED;
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_CONNECTED = 2;
     private Context context;
     private  boolean autoConnect;
     private BluetoothDevice bluetoothDevice;
+    BluetoothGattCharacteristic wifi_rx, wifi_tx, battery_level;
 
 
-    public BluetoothLeService(Context context, boolean autoConnect, BluetoothDevice bluetoothDevice) {
+    public final static String ACTION_GATT_CONNECTED = "com.lyoko.smartlock.Services.BluetoothLeService.ACTION_GATT_CONNECTED";
+    public final static String ACTION_GATT_DISCONNECTED = "com.lyoko.smartlock.Services.BluetoothLeService.ACTION_GATT_DISCONNECTED";
+    public final static String ACTION_GATT_SERVICES_DISCOVERED = "com.lyoko.smartlock.Services.BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED";
+    public final static String ACTION_DATA_AVAILABLE = "com.lyoko.smartlock.Services.BluetoothLeService.ACTION_DATA_AVAILABLE";
+    public final static String EXTRA_UUID = "com.lyoko.smartlock.Services.BluetoothLeService.EXTRA_UUID";
+    public final static String EXTRA_DATA = "com.lyoko.smartlock.Services.BluetoothLeService.EXTRA_DATA";
+
+
+    public BluetoothLeService(Context context, boolean autoConnect, BluetoothDevice bluetoothDevice, IFindLock iFindLock) {
         this.context = context;
         this.autoConnect = autoConnect;
+        this.iFindLock = iFindLock;
         this.bluetoothDevice = bluetoothDevice;
     }
     public void connectDevice(){
         gatt = bluetoothDevice.connectGatt(context,autoConnect, gattCallback);
     }
+    public void close(){
+        if (gatt == null) {
+            return;
+        }
+        gatt.close();
+        gatt = null;
+    }
 
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            String intentAction;
             super.onConnectionStateChange(gatt, status, newState);
-
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                connectionState = STATE_CONNECTED;
+//                intentAction = ACTION_GATT_CONNECTED;
+//                mConnectionState = STATE_CONNECTED;
+//                broadcastUpdate(intentAction);
                 Log.i(TAG, "Connected to GATT server.");
                 Log.i(TAG, "Attempting to start service discovery:" +
                         gatt.discoverServices());
-
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                connectionState = STATE_DISCONNECTED;
+//                intentAction = ACTION_GATT_DISCONNECTED;
+//                mConnectionState = STATE_DISCONNECTED;
+//                broadcastUpdate(intentAction);
                 Log.i(TAG, "Disconnected from GATT server.");
             }
-
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                BluetoothGattCharacteristic characteristic =
-                        gatt.getService(BATTERY_SERVICE_UUID)
-                                .getCharacteristic(BATTERY_LEVEL_CHARACTERISTIC_UUID);
-//                gatt.setCharacteristicNotification(characteristic,true);
-                gatt.readCharacteristic(characteristic);
+                iFindLock.onConnected();
+//                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
@@ -80,23 +95,74 @@ public class BluetoothLeService extends Service {
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic, int status) {
+                                         BluetoothGattCharacteristic characteristic,
+                                         int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-//                String value = characteristic.getStringValue(1);
-                String value = characteristic.toString();
-                Log.d("Value", value+" %, status: "+ status);
-
+//               broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             }
         }
 
         @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicWrite(gatt, characteristic, status);
+                battery_level =gatt.getService(SERVICE_BATTERY_UUID).getCharacteristic(CHARACTERISTIC_BATTERY_LEVEL_UUID);
+                wifi_tx = gatt.getService(SERVICE_WIFI_UUID).getCharacteristic(CHARACTERISTIC_WIFI_TX_UUID);
+                enableNotify(wifi_tx);
+                enableNotify(battery_level);
+        }
+
+        @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            //gatt.readCharacteristic(characteristic);
             super.onCharacteristicChanged(gatt, characteristic);
+
+            if ( CHARACTERISTIC_BATTERY_LEVEL_UUID.equals(characteristic.getUuid())) {
+                int flag = characteristic.getProperties();
+                int format = -1;
+                if ((flag & 0x01) != 0) {
+                    format = BluetoothGattCharacteristic.FORMAT_UINT16;
+                    Log.d("format", "UINT16");
+                    final int heartRate = characteristic.getIntValue(format, 0);
+                    Log.d("Value", String.format(heartRate+""));
+                } else {
+                    format = BluetoothGattCharacteristic.FORMAT_UINT8;
+                    Log.d("format", "UINT8");
+                    final int heartRate = characteristic.getIntValue(format, 0);
+                    Log.d("Value", String.format(heartRate+""));
+                }
+            }
+                String wifi_tx_result  = wifi_tx.getStringValue(0);
+
+                if(characteristic.getStringValue(0).equalsIgnoreCase("ok")){
+                    Log.d("wifi_tx",wifi_tx_result);
+
+//                    disableNotify(wifi_tx);
+//                    disableNotify(battery_level);
+//                    iFindLock.onComplete();
+                }
         }
     };
+
     private void broadcastUpdate(final String action) {
         final Intent intent = new Intent(action);
+        sendBroadcast(intent);
+    }
+    private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
+
+        final Intent intent = new Intent(action);
+
+        intent.putExtra(EXTRA_UUID, characteristic.getUuid().toString());
+
+        // For all other profiles, writes the data formatted in HEX.
+        final byte[] data = characteristic.getValue();
+
+        if (data != null && data.length > 0) {
+
+            intent.putExtra(EXTRA_DATA, new String(data) + "\n" + hexToString(data));
+        }
+        else {
+            intent.putExtra(EXTRA_DATA, "0");
+        }
+
         sendBroadcast(intent);
     }
 
@@ -162,5 +228,21 @@ public class BluetoothLeService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+    private void enableNotify(BluetoothGattCharacteristic characteristic){
+        gatt.setCharacteristicNotification(characteristic,true);
+        characteristic.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+    }
+    private void disableNotify(BluetoothGattCharacteristic characteristic){
+        gatt.setCharacteristicNotification(characteristic,false);
+        characteristic.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+
+    }
+
+
+    public void sendWifiData(String wifi_ssid, String wifi_password) {
+        wifi_rx = gatt.getService(SERVICE_WIFI_UUID).getCharacteristic(CHARACTERISTIC_WIFI_RX_UUID);
+        wifi_rx.setValue(wifi_ssid+"/"+wifi_password);
+        gatt.writeCharacteristic(wifi_rx);
     }
 }

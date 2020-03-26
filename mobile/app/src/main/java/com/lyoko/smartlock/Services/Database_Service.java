@@ -16,11 +16,11 @@ import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_OWNER;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_COVER_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_TIMESTAMP;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_TYPE;
-import static com.lyoko.smartlock.Utils.LyokoString.MAC_DEVICE_SCANNED;
 import static com.lyoko.smartlock.Utils.LyokoString.PATH_C_AUTH_MAC;
 import static com.lyoko.smartlock.Utils.LyokoString.PATH_C_HISTORY;
 import static com.lyoko.smartlock.Utils.LyokoString.PATH_C_PHONE_NUMBER_REGISTERED;
 import static com.lyoko.smartlock.Utils.LyokoString.PHONE_LOGIN;
+import static com.lyoko.smartlock.Utils.LyokoString.PHONE_NUMBER;
 
 public class Database_Service {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -58,7 +58,7 @@ public class Database_Service {
                 if (e == null) {
                     Boolean check = false;
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        if (PHONE_LOGIN.equals(document.getId())&&!check){
+                        if (PHONE_LOGIN.equals(document.getString(PHONE_NUMBER))&&!check){
                             check = true;
                             iCheckPhoneNumber.phoneNumExist();
                         }
@@ -74,21 +74,24 @@ public class Database_Service {
         });
     }
 
-    public void checkAuthenticDevice(final IFindLock iFindLock){
+    public void checkAuthenticDevice(final String address,final IFindLock iFindLock){
         CollectionReference collection = db.collection(PATH_C_AUTH_MAC);
         collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e == null){
                     for (QueryDocumentSnapshot document:queryDocumentSnapshots){
-                        if (MAC_DEVICE_SCANNED.equalsIgnoreCase(document.getId())) {
+                        if (address.equalsIgnoreCase(document.getId())) {
                             final String s = document.getString(DEVICE_OWNER);
                             if (s == null){
-                                iFindLock.readyToAdd();
+                                iFindLock.onReadyToAddDevice(address);
                             } else {
-                                if ("336471477".equalsIgnoreCase(s)) {
-                                    iFindLock.onYouAreOwner();
-                                } else iFindLock.onHasOwner();
+                                if (PHONE_LOGIN == null || PHONE_LOGIN == ""){
+                                    PHONE_LOGIN = "0";
+                                }
+                                if (PHONE_LOGIN.equalsIgnoreCase(s)) {
+                                    iFindLock.onAsOwner(address);
+                                } else iFindLock.onNotOwner(address);
                             }
                         }
                     }
