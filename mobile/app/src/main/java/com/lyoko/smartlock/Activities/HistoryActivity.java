@@ -18,32 +18,24 @@ public class HistoryActivity extends AppCompatActivity implements IHistory {
     RecyclerView recyclerView;
     HistoryAdapter historyAdapter;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
         recyclerView = findViewById(R.id.recyclerView);
-
 //        setSupportActionBar(toolbar);
-
         db_service.getHistories(this);
-
     }
-
-
-
 
     @Override
     public void show_history(ArrayList<History> list) {
 
-            Collections.sort(list, new Comparator<History>() {
-                @Override
-                public int compare(History o1, History o2) {
-                    return o2.getTimestamp().compareTo(o1.getTimestamp());
-                }
-            });
+        Collections.sort(list, new Comparator<History>() {
+            @Override
+            public int compare(History o1, History o2) {
+                return o2.getTimestamp().compareTo(o1.getTimestamp());
+            }
+        });
 
         historyAdapter = new HistoryAdapter(this, list);
         recyclerView.setAdapter(historyAdapter);

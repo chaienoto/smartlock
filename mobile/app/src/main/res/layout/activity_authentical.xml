@@ -41,19 +41,19 @@
         android:textColor="@color/colorWhite"/>
 
     <EditText
-        android:id="@+id/ed_otp_code"
-        android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:layout_below="@+id/tv_phoneNumForVerify"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/bogocne"
-        android:gravity="center"
-        android:hint="Mã xác thực"
-        android:inputType="number"
-        android:maxLength="10"
-        android:textColorHighlight="@color/colorBlack"
-        android:textSize="20dp" />
+    android:id="@+id/ed_otp_code"
+    android:layout_width="match_parent"
+    android:layout_height="58dp"
+    android:layout_below="@+id/tv_phoneNumForVerify"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="20dp"
+    android:background="@drawable/bogocne"
+    android:gravity="center"
+    android:hint="Mã xác thực"
+    android:inputType="number"
+    android:maxLength="10"
+    android:textColorHighlight="@color/colorBlack"
+    android:textSize="20dp" />
 
     <Button
         android:id="@+id/btn_verify"

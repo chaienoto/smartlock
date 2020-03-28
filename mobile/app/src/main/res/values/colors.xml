@@ -10,6 +10,7 @@
     <color name="colorBlack">#000000</color>
     <color name="colorBlueSky">#2E64FE</color>
     <color name="colorDrakBlue">#0097e6</color>
+    <color name="colorCameraBackground">#9A000000</color>
 
 
 </resources>

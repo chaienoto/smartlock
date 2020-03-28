@@ -32,6 +32,7 @@ import com.google.firestore.v1.WriteResult;
 import com.lyoko.smartlock.Models.History;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.IHistory;
+import com.lyoko.smartlock.Utils.LyokoString;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,10 +42,8 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-//    private static final String TAG = "MainActivity";
-//    public static final String KEY_COVERNAME = "cover_name";
-//    public static final String KEY_UNLOCKTYPE = "unlock_tyoe";
-//    public static final String KEY_TIME = "time";
+    private static final String TAG = "MainActivity";
+
 
     ArrayList<History> list = new ArrayList<>();
 
@@ -56,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean lock_found = false;
     //    false : close | true: open
     private boolean door_state = false;
-    int lock_color = Color.parseColor("#f95843");
-    int unlock_color = Color.parseColor("#2ecc71");
+    int lock_color = Color.parseColor(LyokoString.COLOR_LOCK);
+    int unlock_color = Color.parseColor(LyokoString.COLOR_UNLOCK);
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    CollectionReference collection = db.collection("/door/history/files");
+    CollectionReference collection = db.collection(LyokoString.PATH_C_HISTORY);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -2,7 +2,6 @@ package com.lyoko.smartlock.Utils;
 
 import android.Manifest;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -36,7 +35,7 @@ public class Permission {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             //Prompt the user once explanation has been shown
                             ActivityCompat.requestPermissions((Activity) context,
-                                    new String[]{Manifest.permission.CAMERA,Manifest.permission.ACCESS_FINE_LOCATION},
+                                    new String[] {Manifest.permission.CAMERA,Manifest.permission.ACCESS_FINE_LOCATION},
                                     REQUEST_PERMISSION);
                         }
                     })
