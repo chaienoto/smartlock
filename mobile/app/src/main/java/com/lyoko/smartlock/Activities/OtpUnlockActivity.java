@@ -20,6 +20,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -33,6 +35,8 @@ import org.w3c.dom.Document;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static com.lyoko.smartlock.Utils.LyokoString.PATH_C_AUTH_OTP;
 
 public class OtpUnlockActivity extends AppCompatActivity {
 
@@ -52,6 +56,12 @@ public class OtpUnlockActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp_unlock);
         mAuth.setLanguageCode("vi");
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference(PATH_C_AUTH_OTP);
+
+        myRef.setValue("Hello, World!");
+
         btn_OtpUnlock = findViewById(R.id.btn_OtpUnlock);
         et_OtpUnlock = findViewById(R.id.et_OtpUnlock);
         String otpUnlock = et_OtpUnlock.getText().toString();
@@ -155,7 +165,7 @@ public class OtpUnlockActivity extends AppCompatActivity {
             //code da gui thanh cong
             super.onCodeSent(s, forceResendingToken);
             verificationId = s;
-            Log.d("LOG: ", "code da gui" + verificationId);
+//            Log.d("LOG: ", "code da gui " + verificationId);
 //            OtpUnlockActivity.this.ena
         }
 

@@ -25,6 +25,7 @@ public class LyokoString {
     public final static String PATH_C_HISTORY = "/door/history/files";
     public final static String PATH_C_PHONE_NUMBER_REGISTERED = "/phone_number_registered";
     public final static String PATH_C_AUTH_MAC = "/mac_devices_authentic";
+    public final static String PATH_C_AUTH_OTP = "/otp";
     // HISTORY ATTRIBUTE
     public final static String HISTORY_COVER_NAME = "cover_name";
     public final static String HISTORY_UNLOCK_TYPE = "unlock_type";

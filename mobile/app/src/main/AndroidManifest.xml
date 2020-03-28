@@ -59,7 +59,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Activities.AddDeviceActivity"
+            android:name=".Activities.PhoneNumberUnlockActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
