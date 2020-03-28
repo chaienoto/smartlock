@@ -84,10 +84,10 @@ public class AuthenticationActivity extends AppCompatActivity {
             }
         });
     }
+
     private void verifyCode(String otp) {
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, otp);
         signInWithPhoneAuthCredential(credential);
-
     }
 
     private void signInWithPhoneAuthCredential(final PhoneAuthCredential credential) {
