@@ -81,8 +81,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                     ed_otp_code.setError("Enter otp");
                     ed_otp_code.requestFocus();
                     return;
-                }
-                    verifyCode(otp);
+                } else  verifyCode(otp);
             }
         });
     }
@@ -100,11 +99,12 @@ public class AuthenticationActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             if (isExist){
                                 Intent intent = new Intent(AuthenticationActivity.this, LoginActivity.class);
-//                                intent.putExtra("phoneNumber", phoneNumber);
                                 startActivity(intent);
+                                finish();
                             } else {
                                 Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
                                 startActivity(intent);
+                                finish();
                             }
                         } else {
                             Toast.makeText(AuthenticationActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="54dp"
-    android:layout_marginVertical="5dp"
-    android:elevation="20dp">
+    android:layout_height="54dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/item_history"
+        android:paddingHorizontal="5dp"
+        android:background="@color/colorEven"
         android:orientation="horizontal">
 
 
@@ -47,7 +48,7 @@
     </LinearLayout>
 
 
-</androidx.cardview.widget.CardView>
+</RelativeLayout>
 
 
 

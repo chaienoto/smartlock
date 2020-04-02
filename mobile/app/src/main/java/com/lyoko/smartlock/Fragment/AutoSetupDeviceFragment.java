@@ -44,7 +44,7 @@ public class AutoSetupDeviceFragment extends Fragment implements IFindLock {
         View view= inflater.inflate(R.layout.fragment_auto_setup_device, container, false);
         checkBluetoothEnable();
         databaseService = new Database_Service();
-        databaseService.checkAuthenticDevice(AddDeviceActivity.device_mac_address,this);
+//        databaseService.checkAuthenticDevice(AddDeviceActivity.device_mac_address,this);
         bluetoothManager = (BluetoothManager) getContext().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 

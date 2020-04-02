@@ -1,33 +1,28 @@
 package com.lyoko.smartlock.Models;
 
 
-import java.util.Date;
+
 
 public class History {
-    private String Cover_Name;
-    private Date Timestamp;
-    private String Unlock_Type;
+    private String unlock_name;
+    private Long unlock_time;
+    private String unlock_type;
 
-
-    public History(String cover_Name, Date time, String unlock_Type) {
-        Cover_Name = cover_Name;
-        Timestamp = time;
-        Unlock_Type = unlock_Type;
+    public History(String unlock_name, Long unlock_time, String unlock_type) {
+        this.unlock_name = unlock_name;
+        this.unlock_time = unlock_time;
+        this.unlock_type = unlock_type;
     }
 
-    public String getCover_Name() {
-        return Cover_Name;
+    public String getUnlock_name() {
+        return unlock_name;
     }
 
-    public Date getTimestamp() {
-        return Timestamp;
+    public Long getUnlock_time() {
+        return unlock_time;
     }
 
-    public String getUnlock_Type() {
-        return Unlock_Type;
+    public String getUnlock_type() {
+        return unlock_type;
     }
-
-
-
-//
 }

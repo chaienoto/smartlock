@@ -9,11 +9,10 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
-    <uses-feature android:name="android.hardware.camera."/>
-
+    <uses-feature android:name="android.hardware.camera." />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
@@ -21,7 +20,7 @@
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -30,14 +29,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".Activities.MainActivity"
+        <activity android:name=".Activities.DeviceListActivity">
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
-            android:name=".Activities.CheckPhoneNumberActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="LockedOrientationActivity"
+        </activity>
+
         <activity
             android:name=".Activities.BarcodeScannerActivity"
             android:screenOrientation="portrait"
@@ -45,6 +41,7 @@
         <activity
             android:name=".Activities.HistoryActivity"
             android:screenOrientation="portrait"
+            android:parentActivityName=".Activities.MainActivity"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".Activities.AuthenticationActivity"
@@ -59,7 +56,16 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Activities.PhoneNumberUnlockActivity"
+            android:name=".Activities.AddDeviceActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".Activities.MainActivity"
+            android:parentActivityName=".Activities.DeviceListActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".Activities.CheckPhoneNumberActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
@@ -69,14 +75,9 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".Services.BluetoothLeService"
-            android:enabled="true"
-            android:exported="true"></service>
-
         <meta-data
             android:name="com.google.android.gms.vision.DEFENDENCIES"
-            android:value="barcode"></meta-data>
+            android:value="barcode" />
     </application>
 
 </manifest>
