@@ -78,8 +78,6 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
                     }
                 });
         builder.create().show();
-
-
     }
 
     @Override

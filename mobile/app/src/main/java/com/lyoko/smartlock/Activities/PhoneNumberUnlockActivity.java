@@ -47,8 +47,6 @@ public class PhoneNumberUnlockActivity extends AppCompatActivity {
 
                 myRef.setValue(ngaunhien);
 
-                Log.d("LOG Ngau nhiuen", ngaunhien);
-
                 Intent sentIntent = new Intent(Intent.ACTION_SEND);
                 sentIntent.putExtra(Intent.EXTRA_TEXT, ngaunhien);
                 sentIntent.setType("text / plain");

@@ -47,7 +47,6 @@ public class OtpUnlockActivity extends AppCompatActivity {
     FirebaseAuthSettings firebaseAuthSettings = mAuth.getFirebaseAuthSettings();
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     String phoneNumOtpUnlock, verificationId;
-//    String otpFake = "123123";
 
     DocumentReference documentReference = firebaseFirestore.document("/door/otp");
 
@@ -68,14 +67,9 @@ public class OtpUnlockActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         phoneNumOtpUnlock = bundle.getString("phoneNumOtpUnlock");
-        Log.d("TAG","mess" + phoneNumOtpUnlock);
+        Log.d("TAG", "mess" + phoneNumOtpUnlock);
         sendVerificationCode(phoneNumOtpUnlock);
 
-
-
-//        otpUnlock = et_OtpUnlock.getText().toString();
-
-//        sendVerificationCode(phoneNumOtpUnlock);
 
         btn_OtpUnlock.setOnClickListener(new View.OnClickListener() {
 
@@ -107,7 +101,6 @@ public class OtpUnlockActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     //Xac thuc va dang nhap
@@ -124,7 +117,7 @@ public class OtpUnlockActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(OtpUnlockActivity.this, "Success!", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(OtpUnlockActivity.this,  task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OtpUnlockActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -165,8 +158,6 @@ public class OtpUnlockActivity extends AppCompatActivity {
             //code da gui thanh cong
             super.onCodeSent(s, forceResendingToken);
             verificationId = s;
-//            Log.d("LOG: ", "code da gui " + verificationId);
-//            OtpUnlockActivity.this.ena
         }
 
     };

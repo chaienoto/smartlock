@@ -55,12 +55,10 @@ public class BarcodeScannerActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
             }
 
             @Override
@@ -72,7 +70,6 @@ public class BarcodeScannerActivity extends AppCompatActivity {
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-
             }
 
             @Override
@@ -86,7 +83,6 @@ public class BarcodeScannerActivity extends AppCompatActivity {
                     returnIntent.putExtra("address",address);
                     setResult(Activity.RESULT_OK,returnIntent);
                     finish();
-
 
                 }
             }
