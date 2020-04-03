@@ -1,172 +1,139 @@
 package com.lyoko.smartlock.Activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firestore.v1.WriteResult;
-import com.lyoko.smartlock.Models.History;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.IHistory;
-import com.lyoko.smartlock.Utils.LyokoString;
+import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.ILock;
+import static com.lyoko.smartlock.Utils.LyokoString.COLOR_LOCK;
+import static com.lyoko.smartlock.Utils.LyokoString.COLOR_UNLOCK;
+import static com.lyoko.smartlock.Utils.LyokoString.UNLOCK_DELAY;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+public class MainActivity extends AppCompatActivity implements ILock {
 
-public class MainActivity extends AppCompatActivity {
-
-    private static final String TAG = "MainActivity";
-
-
-    ArrayList<History> list = new ArrayList<>();
-
-    ImageView img_find;
+    ImageView img_lock;
     Button btn_door_lock, btn_lock_otp, btn_lock_history;
     RelativeLayout main_bg;
-    TextView tv_lh, tv_otp, tv_find_info, tv_state_lock_info;
+    TextView tv_state_lock_info;
     Toolbar toolbar;
-    private boolean lock_found = false;
-    //    false : close | true: open
-    private boolean door_state = false;
-    int lock_color = Color.parseColor(LyokoString.COLOR_LOCK);
-    int unlock_color = Color.parseColor(LyokoString.COLOR_UNLOCK);
-
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    CollectionReference collection = db.collection(LyokoString.PATH_C_HISTORY);
+    String current_device_address;
+    String current_device_name;
+    String owner_name;
+    Database_Service db_service = new Database_Service();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        UIRegister();
+        main_bg = findViewById(R.id.main_bg);
+        toolbar = findViewById(R.id.toolbar);
+        img_lock = findViewById(R.id.img_lock);
+        btn_door_lock = findViewById(R.id.btn_door_lock);
+        btn_lock_otp = findViewById(R.id.btn_lock_otp);
+        btn_lock_history = findViewById(R.id.btn_lock_history);
+        tv_state_lock_info = findViewById(R.id.tv_state_lock_info);
+
+        Bundle bundle = getIntent().getExtras();
+        current_device_address = bundle.getString("address");
+        current_device_name = bundle.getString("name");
+        toolbar.setTitle(current_device_name);
+
+        db_service.getLockState(current_device_address,this);
+        db_service.getOwnerName(this);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         btn_door_lock.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (find_lock()) {
-                    setToFixWRT();
-                }
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        lock();
+                    }
+                },UNLOCK_DELAY);
+                unlock();
+                db_service.saveHistory(current_device_address,owner_name);
                 return true;
             }
         });
-        setToFixWRT();
 
         btn_lock_history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, HistoryActivity.class);
-                startActivity(i);
+                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                intent.putExtra("address", current_device_address);;
+                startActivity(intent);
             }
         });
 
-
     }
 
-    @SuppressLint("ResourceType")
+    private void unlock() {
+        db_service.changeLockState(current_device_address,1);
+    }
+    private void lock() {
+        db_service.changeLockState(current_device_address,0);
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu_lock_setting, menu);
         return true;
     }
 
-    private void UIRegister() {
-        main_bg = findViewById(R.id.main_bg);
-        toolbar = findViewById(R.id.toolbar);
-        img_find = findViewById(R.id.img_find);
-        btn_door_lock = findViewById(R.id.btn_door_lock);
-        btn_lock_otp = findViewById(R.id.btn_lock_otp);
-        btn_lock_history = findViewById(R.id.btn_lock_history);
-        tv_lh = findViewById(R.id.tv_lh);
-        tv_otp = findViewById(R.id.tv_otp);
-        tv_find_info = findViewById(R.id.tv_find_info);
-        tv_state_lock_info = findViewById(R.id.tv_state_lock_info);
-
-
-    }
-
-    private boolean find_lock() {
-
-        return true;
-    }
-
-    @SuppressLint("ResourceAsColor")
-    private void setToFixWRT() {
-        if (!door_state) {
-            door_state = true;
-            toolbar.setBackgroundColor(lock_color);
-            getWindow().setStatusBarColor(lock_color);
-            btn_door_lock.setText("UNLOCK");
-            tv_state_lock_info.setText("LOCKED");
-            tv_state_lock_info.setTextColor(lock_color);
-            main_bg.setBackgroundResource(R.drawable.lock_background);
-            img_find.setBackgroundResource(R.drawable.ic_locked);
-        } else {
-            door_state = false;
-            toolbar.setBackgroundColor(unlock_color);
-            btn_door_lock.setText("LOCK");
-            tv_state_lock_info.setText("UNLOCKED");
-            tv_state_lock_info.setTextColor(unlock_color);
-            getWindow().setStatusBarColor(unlock_color);
-            main_bg.setBackgroundResource(R.drawable.unlock_background);
-            img_find.setBackgroundResource(R.drawable.ic_unlocked);
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_lock_setting:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
     }
 
-    public void saveHistory(View view) {
-//        String cover_name = btn_door_lock.getText().toString();
-//        String time = btn_door_lock.getText().toString();
-////        String unlock_type = btn_door_lock.getText().toString();
-////
-////        final Map<String, Object> HistoryInf = new HashMap<>();
-////        HistoryInf.put(KEY_COVERNAME, cover_name);
-////        HistoryInf.put(KEY_TIME, time);
-////        HistoryInf.put(KEY_UNLOCKTYPE, unlock_type);
-////
-////        DocumentReference docRef = db.collection("files").document("time");
-////// Update the timestamp field with the value from the server
-////        ApiFuture<WriteResult> writeResult = docRef.update("timestamp", FieldValue.serverTimestamp());
-////        System.out.println("Update time : " + writeResult.get());
-
-//        list.clear();
-//
-//        Map<String, Object> sHis = new HashMap<>();
-//        sHis.put("cover_name", .getText().toString());
-//        house.put("house_phone", house_phone.getText().toString());
-//        house.put("house_address", house_address.getText().toString());
-//
-//        UUID hID = UUID.randomUUID();
-//        list.add()
-
+    @Override
+    public void onLock() {
+        Toast.makeText(this, "Đã Đóng", Toast.LENGTH_SHORT).show();
+        toolbar.setBackgroundColor(COLOR_LOCK);
+        getWindow().setStatusBarColor(COLOR_LOCK);
+        btn_door_lock.setText("UNLOCK");
+        tv_state_lock_info.setText("LOCKED");
+        tv_state_lock_info.setTextColor(COLOR_LOCK);
+        main_bg.setBackgroundResource(R.drawable.lock_background);
+        img_lock.setBackgroundResource(R.drawable.ic_locked);
     }
 
+    @Override
+    public void onUnlock() {
+        Toast.makeText(this, "Cửa đóng sau 5s", Toast.LENGTH_SHORT).show();
+        toolbar.setBackgroundColor(COLOR_UNLOCK);
+        btn_door_lock.setText("LOCK");
+        tv_state_lock_info.setText("UNLOCKED");
+        tv_state_lock_info.setTextColor(COLOR_UNLOCK);
+        getWindow().setStatusBarColor(COLOR_UNLOCK);
+        main_bg.setBackgroundResource(R.drawable.unlock_background);
+        img_lock.setBackgroundResource(R.drawable.ic_unlocked);
+    }
 
+    @Override
+    public void onGetOwnerName(String ownerName) {
+        owner_name = ownerName;
+    }
 }

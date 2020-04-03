@@ -9,6 +9,8 @@
     <color name="colorBlue">#3498db</color>
     <color name="colorBlack">#000000</color>
     <color name="colorBlueSky">#2E64FE</color>
+    <color name="colorEven">#dff9fb</color>
+    <color name="colorOdd">#7ed6df</color>
     <color name="colorDrakBlue">#0097e6</color>
     <color name="colorCameraBackground">#9A000000</color>
 

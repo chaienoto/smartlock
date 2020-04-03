@@ -24,14 +24,11 @@ import static com.lyoko.smartlock.Utils.LyokoString.COLOR_BLUE;
 
 public class AddDeviceActivity extends AppCompatActivity implements BarcodeScannerFragment.OnGetDeviceAddress {
     private Permission permission;
-    static FragmentManager manager ;
-    @SuppressLint("StaticFieldLeak")
-    static TextView add_lock_description;
-    @SuppressLint("StaticFieldLeak")
-    static TextView add_lock_step;
-    @SuppressLint("StaticFieldLeak")
+    public static FragmentManager manager ;
+    public static TextView add_lock_description;
+    public static TextView add_lock_step;
     public static Button btn_next_step;
-    EditText add_device_name;
+    public EditText add_device_name;
     public static String device_name;
     public static String device_mac_address;
     public static String wifi_ssid;
@@ -48,7 +45,7 @@ public class AddDeviceActivity extends AppCompatActivity implements BarcodeScann
         add_lock_step = findViewById(R.id.add_lock_step);
         add_device_name = findViewById(R.id.add_device_name);
 
-        getWindow().setStatusBarColor(Color.parseColor(COLOR_BLUE));
+        getWindow().setStatusBarColor(COLOR_BLUE);
         permission = new Permission(this);
         checkPermission();
 
@@ -87,7 +84,7 @@ public class AddDeviceActivity extends AppCompatActivity implements BarcodeScann
         }
     }
 
-    private static void displayFragment(Class fragmentName) {
+    public static void displayFragment(Class fragmentName) {
         try {
             if (fragmentName != null)
                 manager.beginTransaction().replace(R.id.add_lock_content, (Fragment) fragmentName.newInstance()).commit();
@@ -125,11 +122,9 @@ public class AddDeviceActivity extends AppCompatActivity implements BarcodeScann
             @Override
             public void run() {
                 Toast.makeText(getApplicationContext(), "Mã QR không phù hợp", Toast.LENGTH_SHORT).show();
-
             }
         });
 
     }
-
 
 }

@@ -12,23 +12,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+
 import com.lyoko.smartlock.R;
+import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.ILogin;
 
-import static com.lyoko.smartlock.Utils.LyokoString.PASSWORD;
-import static com.lyoko.smartlock.Utils.LyokoString.PATH_C_PHONE_NUMBER_REGISTERED;
-import static com.lyoko.smartlock.Utils.LyokoString.PHONE_LOGIN;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements ILogin {
     EditText et_login_password;
     TextView tv_change_login_phoneNumber;
     Button btn_login;
+    Database_Service service = new Database_Service();
     String loginPassword;
-    private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,34 +33,32 @@ public class LoginActivity extends AppCompatActivity {
         et_login_password = findViewById(R.id.et_login_password);
         tv_change_login_phoneNumber = findViewById(R.id.tv_change_login_phoneNumber);
 
-        final String passwordFake = "123456";
-
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DocumentReference documentReference = firebaseFirestore.document(PATH_C_PHONE_NUMBER_REGISTERED + "/" + PHONE_LOGIN);
                 loginPassword = et_login_password.getText().toString();
-                documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                        String password = documentSnapshot.getString(PASSWORD);
-
-                        //check password với pass trên database
-                        // nếu đúng thì chuyển qua MainActivity
-                        if (loginPassword.equals(password)) {
-                            Log.d("Tag", password);
-                            Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(i);
-                            finish();
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Server đang bận, bạn hãy thử lại sau", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                if (loginPassword == null || loginPassword ==""){
+                    return;
+                }
+                service.checkPassword(loginPassword,LoginActivity.this);
 
             }
         });
 
     }
+
+    @Override
+    public void onPasswordMatched() {
+        Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(LoginActivity.this, DeviceListActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onPasswordNotMatch() {
+        Toast.makeText(LoginActivity.this, "Sai mật khẩu", Toast.LENGTH_SHORT).show();
+        et_login_password.setText("");
+    }
+
 }

@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 
 import static com.lyoko.smartlock.Utils.FormatData.hexToString;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_CLIENT_CONFIG_UUID;
-import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_WIFI_RX_UUID;
+import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_WIFI_CREDENTIAL_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_WIFI_TX_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.SERVICE_BATTERY_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.SERVICE_WIFI_UUID;
@@ -241,8 +241,8 @@ public class BluetoothLeService extends Service {
 
 
     public void sendWifiData(String wifi_ssid, String wifi_password) {
-        wifi_rx = gatt.getService(SERVICE_WIFI_UUID).getCharacteristic(CHARACTERISTIC_WIFI_RX_UUID);
-        wifi_rx.setValue(wifi_ssid+"/"+wifi_password);
+        wifi_rx = gatt.getService(SERVICE_WIFI_UUID).getCharacteristic(CHARACTERISTIC_WIFI_CREDENTIAL_UUID);
+        wifi_rx.setValue(wifi_ssid+"|"+wifi_password);
         gatt.writeCharacteristic(wifi_rx);
     }
 }
