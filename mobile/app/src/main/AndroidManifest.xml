@@ -58,7 +58,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Activities.AddDeviceActivity"
+            android:name=".Activities.CheckPhoneNumberActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
@@ -67,7 +67,12 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Activities.CheckPhoneNumberActivity"
+            android:name=".Activities.AddDeviceActivity"
+            android:parentActivityName=".Activities.DeviceListActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".Activities.PhoneNumberUnlockActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
@@ -76,12 +81,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-<!--        <service-->
-<!--            android:name=".Services.BluetoothLeService"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true">-->
-<!--        </service>-->
 
         <meta-data
             android:name="com.google.android.gms.vision.DEFENDENCIES"

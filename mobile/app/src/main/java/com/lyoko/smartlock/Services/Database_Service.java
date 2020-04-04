@@ -202,14 +202,10 @@ public class Database_Service {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Boolean check = false;
                 for (DataSnapshot authDeviceSnapshot: dataSnapshot.getChildren()){
-                    String mac = authDeviceSnapshot.child(MAC_ADDRESS_AUTHENTIC).getValue(String.class);
-                    Log.d("macIncoming", address+"");
-
-                    if (mac.equals(address) && check == false){
-                        Log.d("mac", mac+"");
+                    if (authDeviceSnapshot.getKey().equals(address) && check == false){
                         check = true;
-                        if (authDeviceSnapshot.child(DEVICE_OWNER).exists()){
-                            String owner = authDeviceSnapshot.child(DEVICE_OWNER).getValue(String.class);
+                        String owner = authDeviceSnapshot.getValue(String.class);
+                        if (!owner.equals("null")){
                             if (phone_login == null || phone_login == ""){
                                 phone_login = "0";
                             }
