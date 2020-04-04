@@ -29,9 +29,8 @@ import java.io.IOException;
 
 
 public class BarcodeScannerActivity extends AppCompatActivity {
-
+    public static final String PHONE_NUM = "PHONE_NUM";
     SurfaceView surfaceView;
-    TextView tvBarcode;
     CameraSource cameraSource;
     BarcodeDetector barcodeDetector;
 
@@ -40,12 +39,9 @@ public class BarcodeScannerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_barcode_scanner);
-
         surfaceView = findViewById(R.id.surfaceView);
-        tvBarcode = findViewById(R.id.tvBarcode);
-
         barcodeDetector = new BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE).build();
-        cameraSource = new CameraSource.Builder(this, barcodeDetector).setRequestedPreviewSize(640, 480).build();
+        cameraSource = new CameraSource.Builder(this, barcodeDetector).setRequestedPreviewSize(1080, 720).build();
 
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -75,12 +71,10 @@ public class BarcodeScannerActivity extends AppCompatActivity {
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> qrCode = detections.getDetectedItems();
-
                 if (qrCode.size() != 0) {
-
-                    String address =(qrCode.valueAt(0).displayValue);
+                    String phoneNum =(qrCode.valueAt(0).displayValue);
                     Intent returnIntent = new Intent();
-                    returnIntent.putExtra("address",address);
+                    returnIntent.putExtra(PHONE_NUM,phoneNum);
                     setResult(Activity.RESULT_OK,returnIntent);
                     finish();
 

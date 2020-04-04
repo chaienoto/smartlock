@@ -6,21 +6,65 @@
     android:layout_height="match_parent"
     tools:context=".Activities.BarcodeScannerActivity">
 
-    <SurfaceView
-        android:id="@+id/surfaceView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_centerVertical="true" />
+        <SurfaceView
+            android:id="@+id/surfaceView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Di chuyển camare đến vùng chứa mã QR để quét"
-        android:layout_below="@+id/surfaceView"
-        android:id="@+id/tvBarcode"
-        android:textSize="15dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_weight="0"
+                android:background="@color/colorCameraBackground" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/colorCameraBackground" />
+
+                <LinearLayout
+                    android:id="@+id/scannerLayout"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="8dp"
+                    android:layout_weight="0"
+                    android:background="@drawable/ic_viewfinder"
+                    android:orientation="horizontal"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/colorCameraBackground" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:fontFamily="serif"
+                android:textSize="20dp"
+                android:textColor="@color/colorWhite"
+                android:text="Đưa mã quét vào vùng quét"
+                android:background="@color/colorCameraBackground">
+            </TextView>
+
+        </LinearLayout>
+
 
 </RelativeLayout>

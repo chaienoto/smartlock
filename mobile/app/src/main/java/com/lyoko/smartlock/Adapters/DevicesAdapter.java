@@ -56,11 +56,11 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
             holder.item_device.setBackgroundColor(COLOR_ODD_POSITION);
         }
         final Device_info info = list.get(position);
-        holder.tv_device_name.setText(info.getName());
+        holder.tv_device_name.setText(info.getDevice_name());
         holder.item_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callback.onItemClick(info.getAddress(), info.getName());
+                callback.onItemClick(info.getAddress(), info.getDevice_name());
             }
         });
     }

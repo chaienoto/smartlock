@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Handler;
 
+import com.lyoko.smartlock.Interface.IFindLock;
+
 
 public class Find_Device {
     private String device_address ;

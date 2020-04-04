@@ -1,13 +1,11 @@
 package com.lyoko.smartlock.Services;
 
 import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
@@ -16,8 +14,9 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.lyoko.smartlock.Interface.IFindLock;
+
 import static com.lyoko.smartlock.Utils.FormatData.hexToString;
-import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_CLIENT_CONFIG_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_WIFI_CREDENTIAL_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_WIFI_TX_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.SERVICE_BATTERY_UUID;

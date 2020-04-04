@@ -11,7 +11,7 @@ import com.lyoko.smartlock.Adapters.HistoriesAdapter;
 import com.lyoko.smartlock.Models.History;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.Database_Service;
-import com.lyoko.smartlock.Services.IHistory;
+import com.lyoko.smartlock.Interface.IHistory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

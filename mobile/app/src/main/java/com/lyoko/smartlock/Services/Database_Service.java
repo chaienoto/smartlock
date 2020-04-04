@@ -7,8 +7,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.lyoko.smartlock.Interface.ICheckPhoneNumber;
+import com.lyoko.smartlock.Interface.IDeviceList;
+import com.lyoko.smartlock.Interface.IFindLock;
+import com.lyoko.smartlock.Interface.IHistory;
+import com.lyoko.smartlock.Interface.ILock;
+import com.lyoko.smartlock.Interface.ILogin;
+import com.lyoko.smartlock.Interface.IQRCheck;
+import com.lyoko.smartlock.Interface.IRegister;
 import com.lyoko.smartlock.Models.Device_info;
 import com.lyoko.smartlock.Models.History;
+import com.lyoko.smartlock.Models.User_Info;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,22 +28,25 @@ import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_TIME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_TYPE;
 import static com.lyoko.smartlock.Utils.LyokoString.LOCK_STATE;
-import static com.lyoko.smartlock.Utils.LyokoString.PATH_C_AUTH_MAC;
-import static com.lyoko.smartlock.Utils.LyokoString.PATH_DEVICES;
-import static com.lyoko.smartlock.Utils.LyokoString.PATH_HISTORIES;
-import static com.lyoko.smartlock.Utils.LyokoString.PATH_PASSWORD;
+import static com.lyoko.smartlock.Utils.LyokoString.LYOKO_DEVICES;
+import static com.lyoko.smartlock.Utils.LyokoString.MAC_ADDRESS_AUTHENTIC;
+import static com.lyoko.smartlock.Utils.LyokoString.DEVICES;
+import static com.lyoko.smartlock.Utils.LyokoString.HISTORIES;
+import static com.lyoko.smartlock.Utils.LyokoString.OWNER_NAME;
+import static com.lyoko.smartlock.Utils.LyokoString.PASSWORD;
 import static com.lyoko.smartlock.Utils.LyokoString.PHONE_NUMBER_REGISTERED;
-import static com.lyoko.smartlock.Utils.LyokoString.PHONE_LOGIN;
+import static com.lyoko.smartlock.Utils.LyokoString.REMOTES;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 
 public class Database_Service {
     FirebaseDatabase db = FirebaseDatabase.getInstance();
 
     public void getHistories(String current_device_address, final IHistory iHistory) {
          db.getReference(PHONE_NUMBER_REGISTERED)
-                .child(PHONE_LOGIN)
-                .child(PATH_DEVICES)
+                .child(phone_login)
+                .child(DEVICES)
                 .child(current_device_address)
-                .child(PATH_HISTORIES).addValueEventListener(new ValueEventListener() {
+                .child(HISTORIES).addValueEventListener(new ValueEventListener() {
              @Override
              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                  final ArrayList<History> list = new ArrayList<>();
@@ -60,28 +72,23 @@ public class Database_Service {
     }
 
     public void checkPhoneNumber(final String phoneNum, final ICheckPhoneNumber iCheckPhoneNumber) {
-
         db.getReference(PHONE_NUMBER_REGISTERED).child(phoneNum).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(DEVICE_OWNER).exists()) {
+                if (dataSnapshot.child(OWNER_NAME).exists()) {
                      iCheckPhoneNumber.phoneNumExist();
-                } else {
-                    iCheckPhoneNumber.phoneNumNotExist();
-                }
+                } else
+                     iCheckPhoneNumber.phoneNumNotExist();
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
-
-
     }
 
     public void checkPassword(final String password, final ILogin iLogin){
-         db.getReference(PHONE_NUMBER_REGISTERED).child(PHONE_LOGIN).child(PATH_PASSWORD).addListenerForSingleValueEvent(new ValueEventListener() {
+         db.getReference(PHONE_NUMBER_REGISTERED).child(phone_login).child(PASSWORD).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String pass = dataSnapshot.getValue(String.class);
@@ -100,8 +107,8 @@ public class Database_Service {
 
     public void getRegisteredDevices(final IDeviceList iDeviceList) {
         db.getReference(PHONE_NUMBER_REGISTERED)
-                .child(PHONE_LOGIN)
-                .child(PATH_DEVICES)
+                .child(phone_login)
+                .child(DEVICES)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -127,10 +134,11 @@ public class Database_Service {
 
     public void getLockState(String current_device_address, final ILock iLock) {
         db.getReference(PHONE_NUMBER_REGISTERED)
-                .child(PHONE_LOGIN)
-                .child(PATH_DEVICES)
+                .child(phone_login)
+                .child(DEVICES)
                 .child(current_device_address)
-                .child(LOCK_STATE).addValueEventListener(new ValueEventListener() {
+                .child(LOCK_STATE)
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int state = dataSnapshot.getValue(Integer.class);
@@ -148,21 +156,21 @@ public class Database_Service {
         });
     }
 
-    public void changeLockState(String current_device_address, int i) {
+    public void changeLockState(String current_device_address, int state) {
         db.getReference(PHONE_NUMBER_REGISTERED)
-                .child(PHONE_LOGIN)
-                .child(PATH_DEVICES)
+                .child(phone_login)
+                .child(DEVICES)
                 .child(current_device_address)
                 .child(LOCK_STATE)
-                .setValue(i);
+                .setValue(state);
     }
 
     public void saveHistory(String current_device_address, String owner_name){
         DatabaseReference history = db.getReference(PHONE_NUMBER_REGISTERED)
-                .child(PHONE_LOGIN)
-                .child(PATH_DEVICES)
+                .child(phone_login)
+                .child(DEVICES)
                 .child(current_device_address)
-                .child(PATH_HISTORIES);
+                .child(HISTORIES);
         String hisID = history.push().getKey();
         Long unlock_time = new Date().getTime();
         String unlock_type = "smartphone";
@@ -171,7 +179,10 @@ public class Database_Service {
     }
 
     public void getOwnerName(final ILock iLock){
-        db.getReference(PHONE_NUMBER_REGISTERED).child(PHONE_LOGIN).child(DEVICE_OWNER).addListenerForSingleValueEvent(new ValueEventListener() {
+        db.getReference(PHONE_NUMBER_REGISTERED)
+                .child(phone_login)
+                .child(OWNER_NAME)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.getValue(String.class);
@@ -185,30 +196,49 @@ public class Database_Service {
         });
     }
 
-//    public void checkAuthenticDevice(final String address,final IFindLock iFindLock){
-//        CollectionReference collection = db.collection(PATH_C_AUTH_MAC);
-//        collection.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-//                if (e == null){
-//                    for (QueryDocumentSnapshot document:queryDocumentSnapshots){
-//                        if (address.equalsIgnoreCase(document.getId())) {
-//                            final String s = document.getString(DEVICE_OWNER);
-//                            if (s == null){
-//                                iFindLock.onReadyToAddDevice(address);
-//                            } else {
-//                                if (PHONE_LOGIN == null || PHONE_LOGIN == ""){
-//                                    PHONE_LOGIN = "0";
-//                                }
-//                                if (PHONE_LOGIN.equalsIgnoreCase(s)) {
-//                                    iFindLock.onAsOwner(address);
-//                                } else iFindLock.onNotOwner(address);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//    }
+    public void checkAuthenticDevice(final String address,final IQRCheck iqrCheck){
+        db.getReference(LYOKO_DEVICES).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Boolean check = false;
+                for (DataSnapshot authDeviceSnapshot: dataSnapshot.getChildren()){
+                    String mac = authDeviceSnapshot.child(MAC_ADDRESS_AUTHENTIC).getValue(String.class);
+                    Log.d("macIncoming", address+"");
 
+                    if (mac.equals(address) && check == false){
+                        Log.d("mac", mac+"");
+                        check = true;
+                        if (authDeviceSnapshot.child(DEVICE_OWNER).exists()){
+                            String owner = authDeviceSnapshot.child(DEVICE_OWNER).getValue(String.class);
+                            if (phone_login == null || phone_login == ""){
+                                phone_login = "0";
+                            }
+                            if (owner.equals(phone_login)){
+                                iqrCheck.onAsOwner(address);
+                            } else {
+                                iqrCheck.onNotOwner(address);
+                            }
+                        } else  iqrCheck.onReadyToAddDevice(address);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void registerNewUser(IRegister iRegister,User_Info userInfo) {
+        db.getReference(PHONE_NUMBER_REGISTERED).child(phone_login).setValue(userInfo);
+        iRegister.onRegisterSuccess();
+    }
+
+    public void addRemoteDevices(String current_device_address, String remote_phone_number){
+         db.getReference(PHONE_NUMBER_REGISTERED)
+                 .child(remote_phone_number)
+                 .child(REMOTES)
+                 .child(current_device_address)
+                 .setValue(phone_login);
+    }
 }

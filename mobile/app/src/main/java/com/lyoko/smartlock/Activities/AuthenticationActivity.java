@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,14 +19,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Service;
-import com.lyoko.smartlock.Utils.LyokoString;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import static com.lyoko.smartlock.Utils.LyokoString.PHONE_LOGIN;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 
 public class AuthenticationActivity extends AppCompatActivity {
     TextView tv_phoneNumForVerify, tv_change_phoneNum, tv_resend_otp;
@@ -53,9 +47,8 @@ public class AuthenticationActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         isExist = bundle.getBoolean("isExist");
 
-        tv_phoneNumForVerify.setText("0"+PHONE_LOGIN);
-        sendVerificationCode(PHONE_LOGIN);
-
+        tv_phoneNumForVerify.setText("0"+phone_login);
+        sendVerificationCode();
 
         tv_change_phoneNum.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +62,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         tv_resend_otp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendVerificationCode(PHONE_LOGIN);
+                sendVerificationCode();
             }
         });
 
@@ -114,9 +107,9 @@ public class AuthenticationActivity extends AppCompatActivity {
     }
 
 
-    private void sendVerificationCode(String phoneNumber) {
+    private void sendVerificationCode() {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                "+84" + phoneNumber,        // Phone number to verify
+                "+84" + phone_login,        // Phone number to verify
                 60,                 // Timeout duration
                 TimeUnit.SECONDS,   // Unit of timeout
                 this,               // Activity (for callback binding)

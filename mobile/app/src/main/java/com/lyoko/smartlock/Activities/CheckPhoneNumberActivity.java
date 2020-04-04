@@ -4,44 +4,43 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.Database_Service;
-import com.lyoko.smartlock.Services.ICheckPhoneNumber;
+import com.lyoko.smartlock.Interface.ICheckPhoneNumber;
 import java.math.BigInteger;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_GRAY;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_UNLOCK;
-import static com.lyoko.smartlock.Utils.LyokoString.PHONE_LOGIN;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
+import static com.lyoko.smartlock.Utils.LyokoString.PHONE_NUMBER_UNSUITABLE;
 
 public class CheckPhoneNumberActivity extends AppCompatActivity implements ICheckPhoneNumber {
     Database_Service service = new Database_Service();
     public EditText et_phoneNumForCheck;
     public Button btn_checkPhoneNum;
     String phoneNumber;
-    AlertDialog.Builder builder;
-    LayoutInflater inflater;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_sign);
         et_phoneNumForCheck = findViewById(R.id.et_phoneNumForCheck);
         btn_checkPhoneNum = findViewById(R.id.btn_checkPhoneNum);
-        builder = new AlertDialog.Builder(this);
-        inflater = getLayoutInflater();
 
         btn_checkPhoneNum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String s = et_phoneNumForCheck.getText().toString().trim();
                 if (s == null || s == "" || s.length()<10){
+                    Toast.makeText(CheckPhoneNumberActivity.this, PHONE_NUMBER_UNSUITABLE, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 phoneNumber = String.valueOf(BigInteger.valueOf(Long.parseLong(s)));
@@ -54,13 +53,12 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
 
     @Override
     public void phoneNumExist() {
-        Log.d("phoneNumExist: ",phoneNumber);
-        PHONE_LOGIN = phoneNumber;
+        phone_login = phoneNumber;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.sign_in_dialog,null);
         TextView dialogPhone = view.findViewById(R.id.tv_sign_in_dialog);
-        dialogPhone.setText("0"+ phoneNumber);
-        builder = new AlertDialog.Builder(this);
-        inflater = getLayoutInflater();
+        dialogPhone.setText(et_phoneNumForCheck.getText().toString().trim());
         builder.setView(view)
                 .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                     @Override
@@ -81,16 +79,16 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
 
     @Override
     public void phoneNumNotExist() {
-        PHONE_LOGIN = phoneNumber;
-        Log.d("phoneNumNotExist: ",PHONE_LOGIN);
+        phone_login = phoneNumber;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
         final View view = inflater.inflate(R.layout.register_dialog,null);
         TextView dialogPhone = view.findViewById(R.id.tv_register_dialog);
         final TextView tv_dialogBack = view.findViewById(R.id.tv_back_dialog);
         final TextView tv_dialogContinue = view.findViewById(R.id.tv_continue_dialog);
         final CheckBox checkBox = view.findViewById(R.id.cb_checkbox);
-        builder.setView(view);
-        final AlertDialog dialog = builder.create();
-        dialogPhone.setText("0"+ PHONE_LOGIN);
+        final AlertDialog dialog = builder.setView(view).create();
+        dialogPhone.setText(et_phoneNumForCheck.getText().toString().trim());
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,7 +110,7 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
         tv_dialogContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CheckPhoneNumberActivity.this, RegisterActivity.class);
+                Intent intent = new Intent(CheckPhoneNumberActivity.this, AuthenticationActivity.class);
                 intent.putExtra("isExist", false);
                 startActivity(intent);
                 finish();

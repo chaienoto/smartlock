@@ -1,19 +1,19 @@
 package com.lyoko.smartlock.Models;
 
 public class Device_info {
-    String name,address;
+    String device_name,address;
 
     public Device_info(String name, String address) {
-        this.name = name;
+        this.device_name = name;
         this.address = address;
     }
 
-    public String getName() {
-        return name;
+    public String getDevice_name() {
+        return device_name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDevice_name(String name) {
+        this.device_name = name;
     }
 
     public String getAddress() {

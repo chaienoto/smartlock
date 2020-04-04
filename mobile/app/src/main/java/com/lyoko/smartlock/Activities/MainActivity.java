@@ -1,12 +1,15 @@
 package com.lyoko.smartlock.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.annotation.SuppressLint;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,13 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.Database_Service;
-import com.lyoko.smartlock.Services.ILock;
+import com.lyoko.smartlock.Interface.ILock;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_LOCK;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_UNLOCK;
 import static com.lyoko.smartlock.Utils.LyokoString.UNLOCK_DELAY;
 
 public class MainActivity extends AppCompatActivity implements ILock {
-
+    public static final int REQUEST_REMOTE_PHONE_NUMBER = 143;
     ImageView img_lock;
     Button btn_door_lock, btn_lock_otp, btn_lock_history;
     RelativeLayout main_bg;
@@ -101,10 +104,27 @@ public class MainActivity extends AppCompatActivity implements ILock {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.menu_add_remote_device:
+                Intent intent = new Intent(MainActivity.this, BarcodeScannerActivity.class);
+                startActivityForResult(intent, REQUEST_REMOTE_PHONE_NUMBER);
+                return true;
             case R.id.menu_lock_setting:
+                Toast.makeText(this, "Đang làm", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_REMOTE_PHONE_NUMBER) {
+            if(resultCode == Activity.RESULT_OK) {
+                final String remote_phone_number = data.getStringExtra(BarcodeScannerActivity.PHONE_NUM);
+                db_service.addRemoteDevices(current_device_address,remote_phone_number);
+                Toast.makeText(this, "Thêm Thành Công", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

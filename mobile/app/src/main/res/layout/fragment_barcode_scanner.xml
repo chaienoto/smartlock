@@ -5,8 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".Fragment.BarcodeScannerFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
         <SurfaceView
             android:id="@+id/surfaceView"
             android:layout_width="match_parent"
@@ -22,7 +20,6 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@color/colorCameraBackground" />
-
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -41,19 +38,10 @@
                         android:layout_width="250dp"
                         android:layout_height="250dp"
                         android:layout_centerInParent="true"
+                        android:layout_margin="8dp"
                         android:layout_weight="0"
                         android:background="@drawable/ic_viewfinder"
-                        android:orientation="horizontal">
-
-                        <View
-                            android:id="@+id/scannerBar"
-                            android:layout_width="match_parent"
-                            android:layout_height="3dp"
-                            android:background="@color/colorPrimary" />
-
-
-                    </LinearLayout>
-
+                        android:orientation="horizontal"/>
 
                     <View
                         android:layout_width="match_parent"
@@ -63,21 +51,19 @@
 
                 </LinearLayout>
 
-                <View
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@color/colorCameraBackground" />
+                    android:gravity="center_horizontal"
+                    android:paddingVertical="40dp"
+                    android:fontFamily="serif"
+                    android:textSize="20dp"
+                    android:textColor="@color/colorWhite"
+                    android:text="Đưa mã quét vào vùng quét"
+                    android:background="@color/colorCameraBackground">
+                </TextView>
 
             </LinearLayout>
-
-
-
-
-
-
-
-
-
 
 </FrameLayout>

@@ -1,4 +1,4 @@
-package com.lyoko.smartlock.Services;
+package com.lyoko.smartlock.Interface;
 
 public interface ICheckPhoneNumber {
     void phoneNumExist();

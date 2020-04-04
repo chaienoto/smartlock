@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "369897912985-rgfp8al2j6nc67d59p4fss9uortnmefc.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.lyoko.smartlock",
-            "certificate_hash": "a05fa28dbb94e873e76f65d55feaa4234dcb8663"
-          }
-        },
-        {
           "client_id": "369897912985-8ulnj24d6r5637tunksfdbsjt8c8qsud.apps.googleusercontent.com",
           "client_type": 3
         }

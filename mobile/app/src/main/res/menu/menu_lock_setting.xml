@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-        <item android:title="Settings"
-            android:id="@+id/menu_lock_setting"
-            app:showAsAction="always"
-            android:icon="@drawable/ic_settings"/>
+        <item android:title="Cài đặt thiết bị"
+            android:id="@+id/menu_lock_setting"/>
+        <item android:title="Thêm Thiết bị điều khiển"
+            android:id="@+id/menu_add_remote_device" />
 
 </menu>
