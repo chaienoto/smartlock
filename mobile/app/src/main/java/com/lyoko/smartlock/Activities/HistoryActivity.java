@@ -26,7 +26,7 @@ public class HistoryActivity extends AppCompatActivity implements IHistory {
     HistoriesAdapter historyAdapter;
     RelativeLayout history_list_layout;
     Toolbar toolbar;
-    private String current_device_address;
+    private String current_device_address, owner_phone_number;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,8 @@ public class HistoryActivity extends AppCompatActivity implements IHistory {
 
         Bundle bundle = getIntent().getExtras();
         current_device_address = bundle.getString("address");
-        db_service.getHistories(current_device_address,this);
+        owner_phone_number = bundle.getString("owner");
+        db_service.getHistories(owner_phone_number , current_device_address,this);
     }
 
     @Override

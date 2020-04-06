@@ -18,18 +18,30 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.lyoko.smartlock.Interface.IAuth;
 import com.lyoko.smartlock.R;
+import com.lyoko.smartlock.Services.Database_Service;
+
 import java.util.concurrent.TimeUnit;
 
-import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
+import static com.lyoko.smartlock.Utils.LyokoString.FORGOT;
+import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_NAME;
+import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_PHONE;
+import static com.lyoko.smartlock.Utils.LyokoString.LOGIN;
+import static com.lyoko.smartlock.Utils.LyokoString.LOGIN_SAVED;
+import static com.lyoko.smartlock.Utils.LyokoString.REGISTER;
+import static com.lyoko.smartlock.Utils.LyokoString.VERIFIED_MODE;
 
-public class AuthenticationActivity extends AppCompatActivity {
+import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
+
+public class AuthenticationActivity extends AppCompatActivity implements IAuth {
     TextView tv_phoneNumForVerify, tv_change_phoneNum, tv_resend_otp;
     EditText ed_otp_code;
     Button btn_Continue_auth;
     String verificationId;
     FirebaseAuth mAuth;
-    Boolean isExist;
+    String mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +57,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         mAuth.setLanguageCode("vi");
 
         Bundle bundle = getIntent().getExtras();
-        isExist = bundle.getBoolean("isExist");
+        mode = bundle.getString(VERIFIED_MODE);
 
         tv_phoneNumForVerify.setText("0"+phone_login);
         sendVerificationCode();
@@ -90,14 +102,24 @@ public class AuthenticationActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            if (isExist){
-                                Intent intent = new Intent(AuthenticationActivity.this, LoginActivity.class);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
-                                startActivity(intent);
-                                finish();
+                            switch (mode){
+                                case REGISTER:
+                                    Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                    return;
+                                case LOGIN:
+                                    new Database_Service().getName(phone_login, AuthenticationActivity.this );
+                                    return;
+                                case FORGOT:
+                                    Intent forgetIntent = new Intent(AuthenticationActivity.this, ForgotPasswordActivity.class);
+                                    forgetIntent.putExtra(LOGGED_PHONE,phone_login);
+                                    forgetIntent.putExtra(LOGGED_NAME,phone_name);
+                                    startActivity(forgetIntent);
+                                    finish();
+                                    return;
+                                default:
+                                    throw new IllegalStateException("Unexpected value: " + mode);
                             }
                         } else {
                             Toast.makeText(AuthenticationActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -138,4 +160,14 @@ public class AuthenticationActivity extends AppCompatActivity {
 
     };
 
+    @Override
+    public void onGetName(String name) {
+        phone_name = name;
+        Intent intent = new Intent(AuthenticationActivity.this, LoginActivity.class);
+        intent.putExtra(LOGGED_PHONE,phone_login);
+        intent.putExtra(LOGGED_NAME,phone_name);
+        intent.putExtra(LOGIN_SAVED,false);
+        startActivity(intent);
+        finish();
+    }
 }

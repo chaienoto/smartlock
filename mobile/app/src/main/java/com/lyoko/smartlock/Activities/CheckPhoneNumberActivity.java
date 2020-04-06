@@ -19,6 +19,9 @@ import com.lyoko.smartlock.Interface.ICheckPhoneNumber;
 import java.math.BigInteger;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_GRAY;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_UNLOCK;
+import static com.lyoko.smartlock.Utils.LyokoString.LOGIN;
+import static com.lyoko.smartlock.Utils.LyokoString.REGISTER;
+import static com.lyoko.smartlock.Utils.LyokoString.VERIFIED_MODE;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 import static com.lyoko.smartlock.Utils.LyokoString.PHONE_NUMBER_UNSUITABLE;
 
@@ -69,7 +72,7 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(CheckPhoneNumberActivity.this, AuthenticationActivity.class);
-                        intent.putExtra("isExist", true);
+                        intent.putExtra(VERIFIED_MODE, LOGIN);
                         startActivity(intent);
                         finish();
                     }
@@ -111,7 +114,7 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CheckPhoneNumberActivity.this, AuthenticationActivity.class);
-                intent.putExtra("isExist", false);
+                intent.putExtra(VERIFIED_MODE, REGISTER);
                 startActivity(intent);
                 finish();
             }

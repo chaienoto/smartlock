@@ -7,9 +7,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.lyoko.smartlock.Interface.IAuth;
 import com.lyoko.smartlock.Interface.ICheckPhoneNumber;
 import com.lyoko.smartlock.Interface.IDeviceList;
-import com.lyoko.smartlock.Interface.IFindLock;
 import com.lyoko.smartlock.Interface.IHistory;
 import com.lyoko.smartlock.Interface.ILock;
 import com.lyoko.smartlock.Interface.ILogin;
@@ -17,19 +17,19 @@ import com.lyoko.smartlock.Interface.IQRCheck;
 import com.lyoko.smartlock.Interface.IRegister;
 import com.lyoko.smartlock.Models.Device_info;
 import com.lyoko.smartlock.Models.History;
+import com.lyoko.smartlock.Models.Remote_device;
 import com.lyoko.smartlock.Models.User_Info;
+import com.lyoko.smartlock.Utils.LyokoString;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_NAME;
-import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_OWNER;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_TIME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_TYPE;
 import static com.lyoko.smartlock.Utils.LyokoString.LOCK_STATE;
 import static com.lyoko.smartlock.Utils.LyokoString.LYOKO_DEVICES;
-import static com.lyoko.smartlock.Utils.LyokoString.MAC_ADDRESS_AUTHENTIC;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICES;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORIES;
 import static com.lyoko.smartlock.Utils.LyokoString.OWNER_NAME;
@@ -41,9 +41,9 @@ import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 public class Database_Service {
     FirebaseDatabase db = FirebaseDatabase.getInstance();
 
-    public void getHistories(String current_device_address, final IHistory iHistory) {
+    public void getHistories(String owner_phone_number, String current_device_address, final IHistory iHistory) {
          db.getReference(PHONE_NUMBER_REGISTERED)
-                .child(phone_login)
+                .child(owner_phone_number)
                 .child(DEVICES)
                 .child(current_device_address)
                 .child(HISTORIES).addValueEventListener(new ValueEventListener() {
@@ -105,7 +105,7 @@ public class Database_Service {
         });
     }
 
-    public void getRegisteredDevices(final IDeviceList iDeviceList) {
+    public void getOwnDevices(String phone_login, final IDeviceList iDeviceList) {
         db.getReference(PHONE_NUMBER_REGISTERED)
                 .child(phone_login)
                 .child(DEVICES)
@@ -119,10 +119,10 @@ public class Database_Service {
                             list.add(new Device_info(name,macAddress));
                         }
                         if (list.size()==0){
-                            iDeviceList.notThingToShow();
+                            iDeviceList.notThingToShow("own");
                             return;
                         }
-                        iDeviceList.showDevices(list);
+                        iDeviceList.showOwnDevices(list);
 
                     }
                     @Override
@@ -132,9 +132,9 @@ public class Database_Service {
                 });
     }
 
-    public void getLockState(String current_device_address, final ILock iLock) {
+    public void getLockState(String owner_phone_number, String current_device_address, final ILock iLock) {
         db.getReference(PHONE_NUMBER_REGISTERED)
-                .child(phone_login)
+                .child(owner_phone_number)
                 .child(DEVICES)
                 .child(current_device_address)
                 .child(LOCK_STATE)
@@ -142,10 +142,13 @@ public class Database_Service {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int state = dataSnapshot.getValue(Integer.class);
-                if (state==1){
-                    iLock.onUnlock();
-                } else {
-                    iLock.onLock();
+                switch (state){
+                    case 0: iLock.onLock();
+                        return;
+                    case 1: iLock.onUnlock();
+                        return;
+                    case 2: iLock.onHold();
+                        return;
                 }
             }
 
@@ -156,18 +159,18 @@ public class Database_Service {
         });
     }
 
-    public void changeLockState(String current_device_address, int state) {
+    public void changeLockState(String owner_phone_number,String current_device_address, int state) {
         db.getReference(PHONE_NUMBER_REGISTERED)
-                .child(phone_login)
+                .child(owner_phone_number)
                 .child(DEVICES)
                 .child(current_device_address)
                 .child(LOCK_STATE)
                 .setValue(state);
     }
 
-    public void saveHistory(String current_device_address, String owner_name){
+    public void saveHistory(String owner_phone_number, String current_device_address, String owner_name){
         DatabaseReference history = db.getReference(PHONE_NUMBER_REGISTERED)
-                .child(phone_login)
+                .child(owner_phone_number)
                 .child(DEVICES)
                 .child(current_device_address)
                 .child(HISTORIES);
@@ -178,7 +181,7 @@ public class Database_Service {
         history.child(hisID).setValue(his);
     }
 
-    public void getOwnerName(final ILock iLock){
+    public void getOwnerName(String phone_login, final ILock iLock){
         db.getReference(PHONE_NUMBER_REGISTERED)
                 .child(phone_login)
                 .child(OWNER_NAME)
@@ -186,7 +189,6 @@ public class Database_Service {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.getValue(String.class);
-                Log.d("name nè",name );
                 iLock.onGetOwnerName(name);
             }
             @Override
@@ -236,5 +238,76 @@ public class Database_Service {
                  .child(REMOTES)
                  .child(current_device_address)
                  .setValue(phone_login);
+    }
+
+    public void getRemoteList(final IDeviceList iDeviceList){
+        db.getReference(PHONE_NUMBER_REGISTERED)
+                .child(phone_login)
+                .child(REMOTES)
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                final ArrayList<Remote_device> list = new ArrayList<>();
+                for (DataSnapshot remoteDevice: dataSnapshot.getChildren()){
+                    final String address = remoteDevice.getKey();
+                    final String owner = remoteDevice.getValue(String.class);
+                    list.add(new Remote_device(owner, address, "null" ));
+                }
+                if (list.size()==0){
+                   return;
+                }
+                iDeviceList.onGetRemoteList(list);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void getRemoteDevice(final IDeviceList iDeviceList, final ArrayList<Remote_device> list){
+        for (final Remote_device device : list){
+            final String address = device.getAddress();
+            final String owner = device.getOwnerPhoneNumber();
+            db.getReference(PHONE_NUMBER_REGISTERED)
+                    .child(owner)
+                    .child(DEVICES)
+                    .child(address).child(DEVICE_NAME)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String name = dataSnapshot.getValue(String.class);
+                            device.setDevice_name(name);
+                            iDeviceList.showRemoteDevices(list);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+
+        }
+
+    }
+
+    public void getName(String phone_login, final IAuth iAuth){
+        db.getReference(PHONE_NUMBER_REGISTERED)
+                .child(phone_login)
+                .child(OWNER_NAME)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String name = dataSnapshot.getValue(String.class);
+                        iAuth.onGetName(name);
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    public void changePassword(String pw) {
+        db.getReference(PHONE_NUMBER_REGISTERED).child(phone_login).child(PASSWORD).setValue(pw);
     }
 }

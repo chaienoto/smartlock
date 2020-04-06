@@ -5,6 +5,18 @@ import android.graphics.Color;
 import java.util.UUID;
 
 public class LyokoString {
+    // VERIFIED MODE
+    public final static String VERIFIED_MODE = "verified_mode";
+    public final static String LOGIN = "1";
+    public final static String REGISTER = "0";
+    public final static String FORGOT = "-1";
+
+    // SHARES PREFERENCE
+    public final static String LOGGED_PREFERENCE = "loggedPref";
+    public final static String LOGGED_PHONE = "loggedPhone";
+    public final static String LOGGED_NAME = "loggedName";
+    public final static String LOGIN_SAVED = "loginSaved";
+
     // Toast message
     public final static String PHONE_NUMBER_UNSUITABLE = "Số điện thoại không phù hợp";
     public final static String NOT_EMPTY = "Không được để trống";
@@ -12,14 +24,13 @@ public class LyokoString {
 
     // LYOKO's USER
     public static String phone_login = null;
+    public static String phone_name = null;
     public final static String PHONE_NUMBER_REGISTERED = "phone_number_registered";
     public final static String OWNER_NAME = "owner_name";
     public final static String PASSWORD = "password";
 
     // REMOTE DEVICE ATTRIBUTE
     public final static String REMOTES = "remotes";
-    public final static String DEVICE_OWNER = "device_owner";
-    public final static String DEVICE_MAC = "device_mac";
 
     // DEVICE OWNER ATTRIBUTE
     public final static String DEVICES = "devices";

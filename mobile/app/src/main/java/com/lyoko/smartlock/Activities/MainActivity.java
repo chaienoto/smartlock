@@ -4,11 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,24 +21,35 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.lyoko.smartlock.Fragment.LockedFragment;
+import com.lyoko.smartlock.Fragment.UnlockFragment;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.Database_Service;
 import com.lyoko.smartlock.Interface.ILock;
+
+import static android.widget.Toast.LENGTH_SHORT;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_LOCK;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_UNLOCK;
 import static com.lyoko.smartlock.Utils.LyokoString.UNLOCK_DELAY;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 
 public class MainActivity extends AppCompatActivity implements ILock {
     public static final int REQUEST_REMOTE_PHONE_NUMBER = 143;
     ImageView img_lock;
-    Button btn_door_lock, btn_lock_otp, btn_lock_history;
+    public static Button btn_door_lock;
+    Button btn_lock_otp, btn_lock_history;
     RelativeLayout main_bg;
-    TextView tv_state_lock_info;
+    FragmentManager manager = getSupportFragmentManager();
     Toolbar toolbar;
-    String current_device_address;
-    String current_device_name;
-    String owner_name;
-    Database_Service db_service = new Database_Service();
+    public static String current_device_address;
+    public static String current_device_name;
+    public static String owner_phone_number;
+    public static String owner_name;
+    public static Boolean hold = false;
+    public static Boolean clicked = false;
+
+    public static Database_Service db_service = new Database_Service();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,31 +61,35 @@ public class MainActivity extends AppCompatActivity implements ILock {
         btn_door_lock = findViewById(R.id.btn_door_lock);
         btn_lock_otp = findViewById(R.id.btn_lock_otp);
         btn_lock_history = findViewById(R.id.btn_lock_history);
-        tv_state_lock_info = findViewById(R.id.tv_state_lock_info);
 
         Bundle bundle = getIntent().getExtras();
         current_device_address = bundle.getString("address");
         current_device_name = bundle.getString("name");
+        owner_phone_number = bundle.getString("owner");
         toolbar.setTitle(current_device_name);
-
-        db_service.getLockState(current_device_address,this);
-        db_service.getOwnerName(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        db_service.getLockState(owner_phone_number,current_device_address,this);
 
 
         btn_door_lock.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        lock();
-                    }
-                },UNLOCK_DELAY);
-                unlock();
-                db_service.saveHistory(current_device_address,owner_name);
+                if (!clicked){
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(!hold){
+                                lock();
+                            } return;
+                        }
+                    },UNLOCK_DELAY);
+                    Toast.makeText(MainActivity.this, "Cửa tự động đóng sau "+UNLOCK_DELAY/1000+ " giây", LENGTH_SHORT).show();
+                    unlock();
+                    db_service.saveHistory(owner_phone_number,current_device_address,owner_name);
+                }
                 return true;
             }
         });
@@ -80,24 +98,43 @@ public class MainActivity extends AppCompatActivity implements ILock {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-                intent.putExtra("address", current_device_address);;
+                intent.putExtra("address", current_device_address);
+                intent.putExtra("owner", owner_phone_number);
                 startActivity(intent);
+                finish();
             }
         });
 
     }
 
-    private void unlock() {
-        db_service.changeLockState(current_device_address,1);
-    }
-    private void lock() {
-        db_service.changeLockState(current_device_address,0);
+    private  void displayFragment(Class fragmentName) {
+        try {
+            if (!isFinishing()){
+                if (fragmentName != null)
+                    manager.beginTransaction().replace(R.id.main_content, (Fragment) fragmentName.newInstance()).commit();
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
+    public static void unlock() {
+        db_service.changeLockState(owner_phone_number,current_device_address,1);
+    }
+    public static void lock() {
+        db_service.changeLockState(owner_phone_number,current_device_address,0);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_lock_setting, menu);
+        if (owner_phone_number.equals(phone_login)){
+            db_service.getOwnerName(phone_login,this);
+            getMenuInflater().inflate(R.menu.menu_lock_setting, menu);
+        } else{
+            db_service.getOwnerName(phone_login,this);
+        }
         return true;
     }
 
@@ -109,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements ILock {
                 startActivityForResult(intent, REQUEST_REMOTE_PHONE_NUMBER);
                 return true;
             case R.id.menu_lock_setting:
-                Toast.makeText(this, "Đang làm", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Đang làm", LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -130,30 +167,58 @@ public class MainActivity extends AppCompatActivity implements ILock {
 
     @Override
     public void onLock() {
-        Toast.makeText(this, "Đã Đóng", Toast.LENGTH_SHORT).show();
+        hold = false;
+        clicked = false;
         toolbar.setBackgroundColor(COLOR_LOCK);
         getWindow().setStatusBarColor(COLOR_LOCK);
         btn_door_lock.setText("UNLOCK");
-        tv_state_lock_info.setText("LOCKED");
-        tv_state_lock_info.setTextColor(COLOR_LOCK);
-        main_bg.setBackgroundResource(R.drawable.lock_background);
-        img_lock.setBackgroundResource(R.drawable.ic_locked);
+        displayFragment(LockedFragment.class);
+
     }
 
     @Override
     public void onUnlock() {
-        Toast.makeText(this, "Cửa đóng sau 5s", Toast.LENGTH_SHORT).show();
+        getWindow().setStatusBarColor(COLOR_UNLOCK);
         toolbar.setBackgroundColor(COLOR_UNLOCK);
         btn_door_lock.setText("LOCK");
-        tv_state_lock_info.setText("UNLOCKED");
-        tv_state_lock_info.setTextColor(COLOR_UNLOCK);
-        getWindow().setStatusBarColor(COLOR_UNLOCK);
-        main_bg.setBackgroundResource(R.drawable.unlock_background);
-        img_lock.setBackgroundResource(R.drawable.ic_unlocked);
+        clicked = true;
+        displayFragment(UnlockFragment.class);
     }
 
     @Override
     public void onGetOwnerName(String ownerName) {
         owner_name = ownerName;
+    }
+
+    @Override
+    public void onHold() {
+        hold = true;
+        clicked = true;
+        if (UnlockFragment.hold_bg == null || UnlockFragment.tv_state_lock_info == null ){
+            displayFragment(UnlockFragment.class);
+            btn_door_lock.setText("LOCK");
+        }else {
+            UnlockFragment.hold_bg.setBackgroundResource(R.drawable.background_lock_hold);
+            UnlockFragment.tv_state_lock_info.setText("HOLDING");
+
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        lock();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        lock();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        lock();
+        super.onPause();
     }
 }

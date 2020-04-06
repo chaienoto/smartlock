@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
     xmlns:tools="http://schemas.android.com/tools"
-
     package="com.lyoko.smartlock">
 
     <dist:module dist:instant="true" />
@@ -26,24 +25,28 @@
 
     <application
         android:allowBackup="true"
-
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.DeviceListActivity">
+        <activity android:name=".Activities.ForgotPasswordActivity"></activity>
+        <activity
+            android:name=".Activities.CheckPhoneNumberActivity"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
-        </activity>
-
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".Activities.DeviceListActivity"
+            android:parentActivityName=".Activities.LoginActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".Activities.BarcodeScannerActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".Activities.HistoryActivity"
-            android:screenOrientation="portrait"
             android:parentActivityName=".Activities.MainActivity"
+            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".Activities.AuthenticationActivity"
@@ -58,10 +61,6 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Activities.CheckPhoneNumberActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
             android:name=".Activities.MainActivity"
             android:parentActivityName=".Activities.DeviceListActivity"
             android:screenOrientation="portrait"
@@ -72,7 +71,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Activities.PhoneNumberUnlockActivity"
+            android:name=".Activities.SplashActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
@@ -86,6 +85,5 @@
             android:name="com.google.android.gms.vision.DEFENDENCIES"
             android:value="barcode" />
     </application>
-
 
 </manifest>
