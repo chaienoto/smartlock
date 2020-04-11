@@ -14,50 +14,80 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:text="Nhập mật khẩu"
+        android:layout_marginTop="10dp"
+        android:text="Xin Chào!"
         android:textColor="@color/colorWhite"
         android:textSize="18dp"
         android:textStyle="bold" />
+    <TextView
+        android:id="@+id/tv_login_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:text="CHAIENOTO"
+        android:textColor="@color/colorWhite"
+        android:textSize="17dp"
+        android:layout_below="@id/tv3" />
+    <TextView
+        android:id="@+id/tv_login_phoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/tv_login_name"
+        android:text="0336471477"
+        android:textColor="@color/colorWhite"
+        android:textSize="16dp" />
 
 
     <EditText
-        android:id="@+id/etSDT"
+        android:id="@+id/et_login_password"
         android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:layout_below="@+id/tv3"
+        android:layout_height="50dp"
+        android:layout_below="@+id/tv_login_phoneNumber"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:background="@drawable/bogocne"
         android:gravity="center"
         android:hint="Mật khẩu"
-        android:inputType="number"
-        android:maxLength="10"
+        android:inputType="numberPassword"
+        android:maxLength="6"
         android:textColorHighlight="@color/colorBlack"
         android:textSize="20dp" />
 
     <Button
-        android:id="@+id/btnTiepTuc"
+        android:id="@+id/btn_login"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/etSDT"
+        android:layout_height="40dp"
+        android:layout_below="@+id/et_login_password"
         android:layout_marginTop="10dp"
         android:background="@drawable/bogocne"
         android:backgroundTint="@color/colorPrimaryDark"
         android:gravity="center"
-        android:text="Tiếp tục"
+        android:text="ĐĂNG NHẬP"
         android:textAllCaps="true"
         android:textColor="@color/colorWhite" />
 
     <TextView
+        android:id="@+id/tv_change_login_phoneNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnTiepTuc"
+        android:layout_below="@+id/btn_login"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="20dp"
-        android:text="Đổi SĐT"
+        android:layout_marginTop="15dp"
+        android:text="ĐỔI TÀI KHOẢN"
         android:textColor="@color/colorWhite"
-        android:textSize="18dp" />
+        android:textSize="15dp" />
 
+    <TextView
+        android:id="@+id/tv_forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_login"
+        android:layout_marginTop="15dp"
+        android:text="QUÊN MẬT KHẨU"
+        android:textColor="@color/colorWhite"
+        android:textSize="15dp" />
 
 </RelativeLayout>

@@ -24,14 +24,12 @@ public class SignUpDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.sign_dialog, null);
-        tvSDT = view.findViewById(R.id.tvSDT);
+        View view = inflater.inflate(R.layout.sign_in_dialog, null);
+        tvSDT = view.findViewById(R.id.tv_register_dialog);
         Bundle bundle = getArguments();
-        final String uid = bundle.getString("UID","");
+        final String uid = bundle.getString("phoneNum");
         tvSDT.setText(uid);
         builder.setView(view)
-//                .setTitle("Thông báo")
-//                .setMessage("")
                 .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

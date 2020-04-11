@@ -2,60 +2,49 @@ package com.lyoko.smartlock.Services;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.lyoko.smartlock.Activities.FindLockActivity;
+import com.lyoko.smartlock.Interface.IFindLock;
 
 
-
-public class Find_Lock {
-    private static String MAC_LOCK = "24:62:AB:D7:D9:A6";
-    public static final int REQUEST_ENABLE_BT = 1;
-    private FindLockActivity findLockActivity;
+public class Find_Device {
+    private String device_address ;
     private BluetoothAdapter bluetoothAdapter;
     private IFindLock iFindLock;
+    private Context context;
+    private Boolean isFound;
     private static final long SCAN_PERIOD = 1000;
     private static final int SIGNAL_STRENGTH = -60;
-    public boolean mScanning;
+    private boolean mScanning;
     private Handler handler;
 
-
-    public Find_Lock(FindLockActivity findLockActivity, IFindLock iFindLock) {
-        this.findLockActivity = findLockActivity;
+    public Find_Device(Context context, String device_address, BluetoothAdapter adapter, IFindLock iFindLock) {
+        this.context = context;
         this.iFindLock = iFindLock;
-        mScanning = false;
+        this.device_address = device_address;
+        this.mScanning = false;
+        isFound = false;
         handler = new Handler();
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) findLockActivity.getSystemService(Context.BLUETOOTH_SERVICE);
-        this.bluetoothAdapter = bluetoothManager.getAdapter();
+        this.bluetoothAdapter = adapter;
 
     }
-
 
     private final BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
-            if (rssi >= SIGNAL_STRENGTH) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (device.getAddress().equalsIgnoreCase(MAC_LOCK)){
-                            Log.d("bleName",device.getName());
-                            iFindLock.onfound(device, rssi);
-                            stopScan();
-
+                        if (device.getAddress().equalsIgnoreCase(device_address) && !isFound){
+                            isFound = true;
+                            iFindLock.onDeviceFound(device, rssi);
                         }
                     }
                 });
             }
-        }
+//        }
     };
-
 
     private void scanLeDevice(final boolean enable) {
         if (enable) {
@@ -83,10 +72,6 @@ public class Find_Lock {
         scanLeDevice(false);
     }
 
-    public void bluetoothEnable() {
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            findLockActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
-    }
+
+
 }

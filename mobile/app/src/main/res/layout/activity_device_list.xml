@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorEven"
+    android:id="@+id/device_list_layout"
+    tools:context=".Activities.AddDeviceActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:id="@+id/devices_toolbar"
+        app:titleTextColor="@color/colorWhite"
+        android:background="@color/colorBlue"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/device_list_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/devices_toolbar"
+        android:visibility="invisible">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <ImageView
+        android:id="@+id/img_find_device"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/ic_add_lock"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="246dp"
+        android:id="@+id/tv6"
+        android:layout_height="126dp"
+        android:layout_below="@+id/img_find_device"
+        android:layout_alignStart="@+id/img_find_device"
+        android:layout_alignEnd="@+id/img_find_device"
+        android:layout_marginStart="-60dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="-66dp"
+        android:gravity="center"
+        android:text="Bạn chưa đăng kí bất kì ổ khóa nào trong hệ thống. Bấm vào biểu tượng giữa màn hình để thêm thiết bị"
+        android:textSize="18dp"
+        android:visibility="invisible" />
+
+
+</RelativeLayout>
