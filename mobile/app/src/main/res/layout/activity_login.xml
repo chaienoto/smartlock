@@ -26,6 +26,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
         android:text="CHAIENOTO"
+        android:textAllCaps="true"
         android:textColor="@color/colorWhite"
         android:textSize="17dp"
         android:layout_below="@id/tv3" />

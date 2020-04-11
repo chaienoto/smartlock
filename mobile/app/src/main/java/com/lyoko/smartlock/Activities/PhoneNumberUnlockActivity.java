@@ -40,7 +40,7 @@ public class PhoneNumberUnlockActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Random random = new Random();
                 random.nextInt(999999 - 100000);
-                String.valueOf(random.nextInt(999999 - 100000));
+
                 String ngaunhien = String.valueOf(random.nextInt(999999 - 100000));
 
                 DatabaseReference myRef = database.getReference(PATH_C_AUTH_OTP);

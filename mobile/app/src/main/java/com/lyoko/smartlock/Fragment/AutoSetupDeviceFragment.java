@@ -11,11 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lyoko.smartlock.Activities.AddDeviceActivity;
+import com.lyoko.smartlock.Activities.DeviceListActivity;
 import com.lyoko.smartlock.Activities.MainActivity;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.BluetoothLeService;
 import com.lyoko.smartlock.Services.Find_Device;
 import com.lyoko.smartlock.Interface.IFindLock;
+
+import static com.lyoko.smartlock.Utils.LyokoString.add_device_address;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 
 public class AutoSetupDeviceFragment extends Fragment implements IFindLock {
 
@@ -51,18 +55,16 @@ public class AutoSetupDeviceFragment extends Fragment implements IFindLock {
 
     @Override
     public void onConnected() {
-        bluetoothLeService.sendWifiData(AddDeviceActivity.wifi_ssid,AddDeviceActivity.wifi_password);
+        add_device_address = AddDeviceActivity.device_mac_address;
+        bluetoothLeService.sendInitialInfo(AddDeviceActivity.wifi_ssid,AddDeviceActivity.wifi_password );
     }
 
     @Override
     public void onComplete() {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
+        bluetoothLeService.disableNotify();
+        Intent intent = new Intent(getActivity(), DeviceListActivity.class);
         startActivity(intent);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-//        bluetoothLeService.close();
-    }
+
 }

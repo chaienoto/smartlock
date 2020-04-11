@@ -7,12 +7,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.lyoko.smartlock.Activities.MainActivity;
 import com.lyoko.smartlock.Interface.IAuth;
 import com.lyoko.smartlock.Interface.ICheckPhoneNumber;
 import com.lyoko.smartlock.Interface.IDeviceList;
 import com.lyoko.smartlock.Interface.IHistory;
 import com.lyoko.smartlock.Interface.ILock;
 import com.lyoko.smartlock.Interface.ILogin;
+import com.lyoko.smartlock.Interface.IOTP;
 import com.lyoko.smartlock.Interface.IQRCheck;
 import com.lyoko.smartlock.Interface.IRegister;
 import com.lyoko.smartlock.Models.Device_info;
@@ -20,6 +22,7 @@ import com.lyoko.smartlock.Models.History;
 import com.lyoko.smartlock.Models.Remote_device;
 import com.lyoko.smartlock.Models.User_Info;
 import com.lyoko.smartlock.Utils.LyokoString;
+import com.lyoko.smartlock.Utils.OTP;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,10 +31,13 @@ import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_TIME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_TYPE;
+import static com.lyoko.smartlock.Utils.LyokoString.LOCK_OTP;
+import static com.lyoko.smartlock.Utils.LyokoString.OTP;
 import static com.lyoko.smartlock.Utils.LyokoString.LOCK_STATE;
 import static com.lyoko.smartlock.Utils.LyokoString.LYOKO_DEVICES;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICES;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORIES;
+import static com.lyoko.smartlock.Utils.LyokoString.OTP_COUNT;
 import static com.lyoko.smartlock.Utils.LyokoString.OWNER_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.PASSWORD;
 import static com.lyoko.smartlock.Utils.LyokoString.PHONE_NUMBER_REGISTERED;
@@ -92,7 +98,6 @@ public class Database_Service {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String pass = dataSnapshot.getValue(String.class);
-                Log.d("pass nè", pass+"");
                 if (pass.equalsIgnoreCase(password)){
                     iLogin.onPasswordMatched();
                 } else iLogin.onPasswordNotMatch();
@@ -309,5 +314,43 @@ public class Database_Service {
 
     public void changePassword(String pw) {
         db.getReference(PHONE_NUMBER_REGISTERED).child(phone_login).child(PASSWORD).setValue(pw);
+    }
+
+    public void getOTP(String address) {
+        Log.d("getOTPof", address);
+        db.getReference(PHONE_NUMBER_REGISTERED)
+                .child(phone_login)
+                .child(DEVICES)
+                .child(address)
+                .child(LOCK_OTP)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String _otp = dataSnapshot.getValue(String.class);
+                MainActivity.otp = _otp;
+                MainActivity.otp_saved = true;
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void setOTP(String address, String otp) {
+        db.getReference(PHONE_NUMBER_REGISTERED)
+                .child(phone_login)
+                .child(DEVICES)
+                .child(address)
+                .child(LOCK_OTP)
+                .setValue(otp);
+    }
+
+    public void removeOTP(String address) {
+        db.getReference(PHONE_NUMBER_REGISTERED)
+                .child(phone_login)
+                .child(DEVICES)
+                .child(address)
+                .child(LOCK_OTP).removeValue();
     }
 }
