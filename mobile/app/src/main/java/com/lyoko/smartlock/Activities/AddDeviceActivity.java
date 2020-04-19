@@ -1,6 +1,5 @@
 package com.lyoko.smartlock.Activities;
 
-import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -22,7 +21,7 @@ import com.lyoko.smartlock.Fragment.GetDeviceNameFragment;
 import com.lyoko.smartlock.Fragment.GetWifiFragment;
 import com.lyoko.smartlock.Interface.IQRCheck;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.Database_Helper;
 import com.lyoko.smartlock.Utils.Permission;
 
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_BLUE;
@@ -41,7 +40,7 @@ public class AddDeviceActivity extends AppCompatActivity implements IQRCheck,Bar
     public static String device_mac_address;
     public static String wifi_ssid;
     public static String wifi_password;
-    Database_Service db_service = new Database_Service();
+    Database_Helper db_service = new Database_Helper();
 
 
 

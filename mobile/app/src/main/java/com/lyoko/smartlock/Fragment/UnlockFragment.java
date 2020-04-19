@@ -21,10 +21,10 @@ public class UnlockFragment extends Fragment {
     ImageView img_unlocked;
     public static TextView tv_state_lock_info;
     public static ConstraintLayout hold_bg;
+
     public UnlockFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,10 +38,11 @@ public class UnlockFragment extends Fragment {
             hold_bg.setBackgroundResource(R.drawable.background_lock_hold);
             tv_state_lock_info.setText("HOLDING");
         }
+
         img_unlocked.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                MainActivity.db_service.changeLockState(MainActivity.owner_phone_number,MainActivity.current_device_address,2);
+                MainActivity.db.changeLockState(MainActivity.owner_phone_number,MainActivity.current_device_address,2);
                 return true;
             }
         });
@@ -54,13 +55,10 @@ public class UnlockFragment extends Fragment {
                         tv_state_lock_info.setText("UNLOCKED");
                         hold_bg.setBackgroundResource(R.drawable.background_lock);
                     }
-
-
                 }
                 return true;
             }
         });
-
         return view;
     }
 }

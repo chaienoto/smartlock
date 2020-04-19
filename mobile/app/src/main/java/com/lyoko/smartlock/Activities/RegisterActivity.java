@@ -10,18 +10,19 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.lyoko.smartlock.Interface.IRegister;
-import com.lyoko.smartlock.Models.User_Info;
+import com.lyoko.smartlock.Models.NewUser;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.Database_Helper;
 
+import static com.lyoko.smartlock.Utils.LyokoString.AUTH_ID;
 import static com.lyoko.smartlock.Utils.LyokoString.NOT_EMPTY;
 import static com.lyoko.smartlock.Utils.LyokoString.REGISTER_SUCCESSFULLY;
 
 public class RegisterActivity extends AppCompatActivity implements IRegister {
     EditText et_password, et_password_confirm, et_ownerName;
     Button btn_register;
-    String  password, password_confirm, owner_name;
-    Database_Service db_service = new Database_Service();
+    String  password, password_confirm, owner_name, auth_id;
+    Database_Helper db = new Database_Helper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,9 @@ public class RegisterActivity extends AppCompatActivity implements IRegister {
         et_password_confirm = findViewById(R.id.et_password_confirm);
         et_ownerName = findViewById(R.id.et_ownerName);
         btn_register = findViewById(R.id.btn_register);
+
+        Bundle bundle = getIntent().getExtras();
+        auth_id = bundle.getString(AUTH_ID);
 
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,8 +48,7 @@ public class RegisterActivity extends AppCompatActivity implements IRegister {
                 checkEmpty(password_confirm,3);
 
                 if (password.equals(password_confirm)) {
-                    User_Info userInfo = new User_Info(owner_name,password);
-                    db_service.registerNewUser(RegisterActivity.this,userInfo);
+                    db.registerNewUser(RegisterActivity.this, new NewUser(owner_name, password, auth_id));
                 }
             }
 

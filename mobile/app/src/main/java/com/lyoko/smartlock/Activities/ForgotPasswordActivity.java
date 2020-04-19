@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.Database_Helper;
 import com.lyoko.smartlock.Utils.CheckView;
 
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_NAME;
@@ -59,7 +59,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 pwc = et_forgot_login_password_confirm.getText().toString().trim();
                 pw = et_forgot_login_password.getText().toString().trim();
                 if (pw.equals(pwc)){
-                    new Database_Service().changePassword(pw);
+                    new Database_Helper().changePassword(pw);
                     showNoti();
                 } else {
                     et_forgot_login_password_confirm.setError("Nhập lại mật khẩu không đúng");

@@ -80,7 +80,7 @@ public class RemoteDevicesAdapter extends RecyclerView.Adapter<RemoteDevicesAdap
     }
 
     public interface OnRemoteDeviceClickedListener {
-        void onRemoteDeviceItemClick(String owner, String address, String name);
+        void onRemoteDeviceItemClick(String owner_device_phoneNumber, String device_address, String device_name);
     }
 
 }

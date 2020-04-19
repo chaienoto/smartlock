@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lyoko.smartlock.Adapters.HistoriesAdapter;
 import com.lyoko.smartlock.Models.History;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.Database_Helper;
 import com.lyoko.smartlock.Interface.IHistory;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,9 +19,11 @@ import java.util.Comparator;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_BLUE;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_EVEN_POSITION;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_ODD_POSITION;
+import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_ADDRESS;
+import static com.lyoko.smartlock.Utils.LyokoString.OWNER_PHONE_NUMBER;
 
 public class HistoryActivity extends AppCompatActivity implements IHistory {
-    Database_Service db_service = new Database_Service();
+    Database_Helper db_service = new Database_Helper();
     RecyclerView histories_recyclerView;
     HistoriesAdapter historyAdapter;
     RelativeLayout history_list_layout;
@@ -42,8 +44,9 @@ public class HistoryActivity extends AppCompatActivity implements IHistory {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle bundle = getIntent().getExtras();
-        current_device_address = bundle.getString("address");
-        owner_phone_number = bundle.getString("owner");
+        current_device_address = bundle.getString(DEVICE_ADDRESS);
+        owner_phone_number = bundle.getString(OWNER_PHONE_NUMBER);
+
         db_service.getHistories(owner_phone_number , current_device_address,this);
     }
 

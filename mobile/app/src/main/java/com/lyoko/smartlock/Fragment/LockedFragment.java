@@ -18,6 +18,7 @@ import static com.lyoko.smartlock.Activities.MainActivity.hold;
 import static com.lyoko.smartlock.Activities.MainActivity.lock;
 import static com.lyoko.smartlock.Activities.MainActivity.unlock;
 import static com.lyoko.smartlock.Utils.LyokoString.UNLOCK_DELAY;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,7 +49,7 @@ public class LockedFragment extends Fragment {
                         }
                     },UNLOCK_DELAY);
                     unlock();
-                    MainActivity.db_service.saveHistory(MainActivity.owner_phone_number, MainActivity.current_device_address,MainActivity.owner_name);
+                    MainActivity.db.saveHistory(MainActivity.owner_phone_number, MainActivity.current_device_address,phone_name);
                 }
                 return true;
             }

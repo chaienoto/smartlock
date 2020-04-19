@@ -11,9 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lyoko.smartlock.Interface.ILock;
+import com.google.firebase.auth.FirebaseAuth;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.Database_Helper;
 import com.lyoko.smartlock.Interface.ILogin;
 
 import static com.lyoko.smartlock.Utils.LyokoString.FORGOT;
@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity implements ILogin  {
     TextView tv_change_login_phoneNumber,tv_login_phoneNumber,tv_login_name,tv_forgot_password;
     SharedPreferences.Editor editor;
     Button btn_login;
-    Database_Service service = new Database_Service();
+    Database_Helper service = new Database_Helper();
     String loginPassword, loginName, loginPhoneNumber;
     Boolean saved = false;
 
@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity implements ILogin  {
             tv_change_login_phoneNumber.setText("ĐỔI TÀI KHOẢN");
         }
 
+
         tv_login_phoneNumber.setText("0"+phone_login);
         tv_login_name.setText(loginName);
 
@@ -69,6 +70,7 @@ public class LoginActivity extends AppCompatActivity implements ILogin  {
                 if (saved){
                     editor.remove(LOGGED_PHONE).apply();
                 }
+                FirebaseAuth.getInstance().signOut();
                 Intent i = new Intent(LoginActivity.this, CheckPhoneNumberActivity.class);
                 startActivity(i);
                 finish();

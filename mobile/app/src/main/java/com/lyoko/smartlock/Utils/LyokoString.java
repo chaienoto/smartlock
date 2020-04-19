@@ -10,6 +10,7 @@ public class LyokoString {
     public final static String LOGIN = "1";
     public final static String REGISTER = "0";
     public final static String FORGOT = "-1";
+    public final static String AUTH_ID = "auth_id";
 
     // SHARES PREFERENCE
     public final static String LOGGED_PREFERENCE = "loggedPref";
@@ -23,38 +24,39 @@ public class LyokoString {
     public final static String REGISTER_SUCCESSFULLY = "Đăng kí thành công";
     // otp message
     public final static String OTP_SHARE_MESSAGE = "Mã OTP dùng để mở khóa của bạn là: ";
-    public final static String OTP_SHARE_SUB_MESSAGE = ", số lần khả dụng là: ";
-    public final static String OTP_SHARE_SUB_MESSAGE_2 = ". Vui lòng không chia sẻ cho bất kì ai!";
+    public final static String OTP_SHARE_SUB_MESSAGE = ". Vui lòng không chia sẻ cho bất kì ai!";
     public final static String OTP_SHARE_NOT_SAVE = "Vui lòng lưu OTP trước khi chia sẻ!";
     public final static String OTP_SHARE_SAVED = "Đã lưu OTP, bạn có thể copy hoặc share nó";
     public final static String OTP_SHARE_REMOVED = "Đã Xóa OTP";
     public final static String OTP_SHARE_COPIED = "Đã copy OTP";
 
-
+    public final static String PHONE_NUMBER_REGISTERED = "phone_number_registered";
     // LYOKO's USER
     public static String phone_login = null;
     public static String phone_name = null;
     public static String add_device_address = null;
-    public final static String PHONE_NUMBER_REGISTERED = "phone_number_registered";
+
     public final static String OWNER_NAME = "owner_name";
     public final static String PASSWORD = "password";
 
     // REMOTE DEVICE ATTRIBUTE
-    public final static String REMOTES = "remotes";
+
 
     // DEVICE OWNER ATTRIBUTE
-    public final static String DEVICES = "devices";
+    public final static String OWNER_PHONE_NUMBER = "owner_phone_number";
+    public final static String OWN_DEVICES = "own_devices";
+    public final static String REMOTE_DEVICES = "remote_devices";
     public final static String HISTORIES = "histories";
     public final static String DEVICE_NAME = "device_name";
-    public final static String LOCK_STATE = "lock_state";
-    public final static String LOCK_OTP = "lock_otp";
-    public final static String OTP = "otp";
-    public final static String OTP_COUNT = "otp_count";
+    public final static String DEVICE_ADDRESS = "device_address";
+    public final static String LOCK_STATE = "state";
+    public final static String LOCK = "lock";
+    public final static String LOCK_OTP = "otp";
+    public final static String REMOTE_BY = "remote_by";
 
-
-    // MAC DEVICES AUTHENTIC
+    // LYOKO DB PATH
     public final static String LYOKO_DEVICES = "lyoko_devices";
-    public final static String MAC_ADDRESS_AUTHENTIC = "mac_address_authentic";
+    public final static String LYOKO_USERS = "lyoko_users";
 
     // UNLOCK DELAY
     public static final long UNLOCK_DELAY = 5000;

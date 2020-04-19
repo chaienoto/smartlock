@@ -1,12 +1,12 @@
 package com.lyoko.smartlock.Utils;
 import android.util.Log;
-import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.Database_Helper;
 
 import java.util.Random;
 
 public class OTP  {
     String otp;
-    Database_Service db_service = new Database_Service();
+    Database_Helper db_service = new Database_Helper();
 
     public OTP(String otp) {
         this.otp = otp;

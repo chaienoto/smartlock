@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,10 +21,11 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.lyoko.smartlock.Interface.IAuth;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.Database_Helper;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.lyoko.smartlock.Utils.LyokoString.AUTH_ID;
 import static com.lyoko.smartlock.Utils.LyokoString.FORGOT;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_PHONE;
@@ -86,7 +88,7 @@ public class AuthenticationActivity extends AppCompatActivity implements IAuth {
                     ed_otp_code.setError("Enter otp");
                     ed_otp_code.requestFocus();
                     return;
-                } else  verifyCode(otp);
+                } else verifyCode(otp);
             }
         });
     }
@@ -105,11 +107,12 @@ public class AuthenticationActivity extends AppCompatActivity implements IAuth {
                             switch (mode){
                                 case REGISTER:
                                     Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
+                                    intent.putExtra(AUTH_ID,task.getResult().getUser().getUid());
                                     startActivity(intent);
                                     finish();
                                     return;
                                 case LOGIN:
-                                    new Database_Service().getName(phone_login, AuthenticationActivity.this );
+                                    new Database_Helper().getName(phone_login, AuthenticationActivity.this );
                                     return;
                                 case FORGOT:
                                     Intent forgetIntent = new Intent(AuthenticationActivity.this, ForgotPasswordActivity.class);
@@ -140,10 +143,9 @@ public class AuthenticationActivity extends AppCompatActivity implements IAuth {
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks
             mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-
         @Override
         public void onVerificationCompleted(final PhoneAuthCredential credential) {
+            Log.d("onVerify:" , credential+"");
             signInWithPhoneAuthCredential(credential);
         }
 

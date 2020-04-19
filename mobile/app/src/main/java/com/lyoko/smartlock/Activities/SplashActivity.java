@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.lyoko.smartlock.R;
+import com.lyoko.smartlock.Services.Database_Helper;
 
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_BLUE;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_NAME;

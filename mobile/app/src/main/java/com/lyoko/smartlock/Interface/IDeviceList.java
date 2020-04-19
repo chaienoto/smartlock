@@ -9,5 +9,5 @@ public interface IDeviceList {
     void showOwnDevices(ArrayList<Device_info> list);
     void showRemoteDevices(ArrayList<Remote_device> list);
     void onGetRemoteList(ArrayList<Remote_device> list);
-    void notThingToShow(String list);
+    void notThingToShow();
 }

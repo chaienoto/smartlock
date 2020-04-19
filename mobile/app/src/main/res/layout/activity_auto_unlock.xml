@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.AutoUnlockActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/auto_unlock_toolbar"
+        android:layout_width="match_parent"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ToolbarColoredBackArrow"
+        android:layout_height="?attr/actionBarSize"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/auto_unlock_device_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/auto_unlock_toolbar">
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/btn_used_my_phone"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="10dp"
+        android:textSize="18dp"
+        android:textColor="@color/colorWhite"
+        android:text="Sử dụng điện thoại của tôi"
+        android:textAllCaps="true"
+        android:background="@color/colorGray"
+        android:layout_below="@+id/auto_unlock_device_recycle_view">
+    </Button>
+    <Button
+        android:id="@+id/btn_used_another_device"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:textSize="18dp"
+        android:text="Sử dụng thiết bị khác"
+        android:layout_marginTop="10dp"
+        android:textAllCaps="true"
+        android:layout_marginHorizontal="20dp"
+        android:background="@color/colorGray"
+        android:textColor="@color/colorWhite"
+        android:layout_below="@+id/btn_used_my_phone">
+    </Button>
+
+
+
+</RelativeLayout>

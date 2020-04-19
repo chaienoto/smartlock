@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Service;
+import com.lyoko.smartlock.Services.Database_Helper;
 import com.lyoko.smartlock.Interface.ICheckPhoneNumber;
 import java.math.BigInteger;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_GRAY;
@@ -26,7 +26,7 @@ import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 import static com.lyoko.smartlock.Utils.LyokoString.PHONE_NUMBER_UNSUITABLE;
 
 public class CheckPhoneNumberActivity extends AppCompatActivity implements ICheckPhoneNumber {
-    Database_Service service = new Database_Service();
+    Database_Helper service = new Database_Helper();
     public EditText et_phoneNumForCheck;
     public Button btn_checkPhoneNum;
     String phoneNumber;
@@ -116,6 +116,7 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
                 Intent intent = new Intent(CheckPhoneNumberActivity.this, AuthenticationActivity.class);
                 intent.putExtra(VERIFIED_MODE, REGISTER);
                 startActivity(intent);
+                dialog.dismiss();
                 finish();
             }
         });
