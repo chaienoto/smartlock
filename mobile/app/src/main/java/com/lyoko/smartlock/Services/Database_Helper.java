@@ -22,6 +22,7 @@ import com.lyoko.smartlock.Models.NewSMLock;
 import com.lyoko.smartlock.Models.Remote_device;
 import com.lyoko.smartlock.Models.NewUser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -42,6 +43,8 @@ import static com.lyoko.smartlock.Utils.LyokoString.PASSWORD;
 import static com.lyoko.smartlock.Utils.LyokoString.PHONE_NUMBER_REGISTERED;
 import static com.lyoko.smartlock.Utils.LyokoString.REMOTE_BY;
 import static com.lyoko.smartlock.Utils.LyokoString.REMOTE_DEVICES;
+import static com.lyoko.smartlock.Utils.LyokoString.TRUSTED_DEVICES_ADDRESS;
+import static com.lyoko.smartlock.Utils.LyokoString.TRUSTED_DEVICES_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 
 public class Database_Helper {
@@ -58,7 +61,7 @@ public class Database_Helper {
                          for (DataSnapshot historySnapshot: dataSnapshot.getChildren()){
                              String unlock_name = historySnapshot.child(HISTORY_UNLOCK_NAME).getValue(String.class);
                              String unlock_type = historySnapshot.child(HISTORY_UNLOCK_TYPE).getValue(String.class);
-                             Long unlock_time = historySnapshot.child(HISTORY_UNLOCK_TIME).getValue(Long.class) ;
+                             String unlock_time = historySnapshot.child(HISTORY_UNLOCK_TIME).getValue(String.class) ;
                              list.add(new History(unlock_name, unlock_time, unlock_type));
                          }
                          if (list.size()==0){
@@ -200,7 +203,10 @@ public class Database_Helper {
     public void saveHistory(String owner_phone_number, String current_device_address, String owner_name){
         DatabaseReference history = user.child(owner_phone_number).child(OWN_DEVICES).child(current_device_address).child(HISTORIES);
         String hisID = history.push().getKey();
-        Long unlock_time = new Date().getTime();
+        String pattern= "EE, MMMM dd yyyy HH:mm:ss";
+        Date date =new Date(new Date().getTime());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String unlock_time = simpleDateFormat.format(date);
         String unlock_type = "smartphone";
         History his = new History(owner_name,unlock_time,unlock_type);
         history.child(hisID).setValue(his);
@@ -304,5 +310,16 @@ public class Database_Helper {
 
     public void addNewDevice(String add_device_address, String device_name) {
         user.child(phone_login).child(OWN_DEVICES).child(add_device_address).setValue(new NewSMLock(device_name, new NewSMLock.lock(0, "null")));
+    }
+
+    public void addTrustedDevice(String current_device_address, String owner_phone_number, String device_count, String ble_name, String ble_address) {
+        user.child(owner_phone_number)
+                .child(OWN_DEVICES)
+                .child(current_device_address)
+                .child(LOCK).child(TRUSTED_DEVICES_ADDRESS).child(device_count).setValue(ble_address);
+        user.child(owner_phone_number)
+                .child(OWN_DEVICES)
+                .child(current_device_address)
+                .child(LOCK).child(TRUSTED_DEVICES_NAME).child(device_count).setValue(ble_name);
     }
 }

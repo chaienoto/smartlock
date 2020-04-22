@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +14,7 @@ import com.lyoko.smartlock.R;
 
 import static com.lyoko.smartlock.Activities.MainActivity.btn_door_lock;
 import static com.lyoko.smartlock.Activities.MainActivity.clicked;
-import static com.lyoko.smartlock.Activities.MainActivity.hold;
-import static com.lyoko.smartlock.Activities.MainActivity.lock;
 import static com.lyoko.smartlock.Activities.MainActivity.unlock;
-import static com.lyoko.smartlock.Utils.LyokoString.UNLOCK_DELAY;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
 /**
@@ -39,15 +36,6 @@ public class LockedFragment extends Fragment {
             @Override
             public boolean onLongClick(View v) {
                 if (!clicked){
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(!hold){
-                                lock();
-                            } return;
-                        }
-                    },UNLOCK_DELAY);
                     unlock();
                     MainActivity.db.saveHistory(MainActivity.owner_phone_number, MainActivity.current_device_address,phone_name);
                 }

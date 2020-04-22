@@ -1,4 +1,5 @@
 #include "EEPROM.h"
+#include "time.h"
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
@@ -22,55 +23,70 @@
 
 Adafruit_MPR121 cap = Adafruit_MPR121();
 
+// for rtc
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 7 * 3600;
+const int   daylightOffset_sec = 0;
+
+// new device characteristic
 BLECharacteristic* wifiCredential = NULL;
 BLECharacteristic* ownerPhoneNumber = NULL;
 BLECharacteristic* deviceChipID = NULL;
 BLECharacteristic* response = NULL;
+uint8_t process = 0;
 
+// keypad state save
 uint16_t lasttouched = 0;
 uint16_t currtouched = 0;
+String keypad[] = {"*", "7", "4", "1", "0", "8", "5", "2", "#", "9", "6", "3"};
+
+// device eeprom info address
 const int onwerPhoneNumberAddress = 1;
 const int chipIdAddress = 11;
 const int wifiAddress = 30;
 const int modeAddress = 0;
 
+// device eeprom info
 String wifi_ssid;
 String wifi_password;
 String ownerPNumber;
 String chipID;
+
+// db path
 String parentPath;
-String childPath[3] = {"otp", "state", "trusted_devices"};
-size_t childPathSize = 3;
 String lock_state_path;
 String lock_otp_path;
+String histories_path;
 
+// device info
 int modeIndex;
-int knowDeviceIndex;
-int lock_state;
-int lock_otp;
-uint8_t process = 0;
-
-String keypad[] = {"*", "7", "4", "1", "0", "8", "5", "2", "#", "9", "6", "3"};
+int lockDelay;
+int state, _state;
+String otp, _otp;
 String trusted_devices[4];
+boolean otpGetting;
+boolean leaving;
+String unlock_type;
+int error_count = 0;
+unsigned long saveUnlockTime;
+
+// speaker setting
 int freq = 16000;
 int channel = 0;
 int resolution = 8;
-boolean otpGetting;
-int state;
-int lockDelay = 5000;
-unsigned long saveUnlockTime;
-String OTP, _otp;
 
 FirebaseData firebaseData;
+FirebaseData _firebaseData;
 FirebaseJson json;
 
 void connectToDB() {
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
   Firebase.reconnectWiFi(true);
-  parentPath = "/lyoko_users/" + ownerPNumber + "/own_devices/" + chipID + "/lock";
-
-  if (!Firebase.beginStream(firebaseData, parentPath))
-  {
+  parentPath = "/lyoko_users/" + ownerPNumber + "/own_devices/" + chipID + "/";
+  lock_otp_path = parentPath + "lock/otp";
+  lock_state_path = parentPath + "lock/state";
+  histories_path = parentPath + "histories";
+  if (!Firebase.beginStream(firebaseData, parentPath + "lock")) {
     Serial.println("------------------------------------");
     Serial.println("Can't begin stream connection...");
     Serial.println("REASON: " + firebaseData.errorReason());
@@ -80,14 +96,50 @@ void connectToDB() {
   Firebase.setStreamCallback(firebaseData, streamCallback, streamTimeoutCallback);
 }
 
+void streamCallback(StreamData data) {
+  Serial.println(data.dataPath());
+  if (data.dataPath() == "/") {
+    FirebaseJson *json = data.jsonObjectPtr();
+    size_t len = json->iteratorBegin();
+    String key, value = "";
+    int type = 0;
+    for (size_t i = 0; i < len; i++) {
+      json->iteratorGet(i, type, key, value);
+      if (type == JSON_OBJECT) {
+        if (key == "otp") otp = value;
+        else if (key == "state") _state = value.toInt();
+        else if (key == "delay") lockDelay = value.toInt();
+      } else trusted_devices[i - 3] = value;
+    }
+    logInfo();
+  } else if (data.dataPath() == "/state") {
+    _state = data.intData();
+    stateCheck();
+  } else if (data.dataPath() == "/otp") {
+    otp = data.stringData();
+  } else if (data.dataPath() == "/delay") {
+    lockDelay = data.intData();
+  } else {
+    int posi = data.dataPath().substring(data.dataPath().length() - 1 ).toInt();
+    trusted_devices[posi] = data.stringData();
+  }
+}
+
+void streamTimeoutCallback(bool timeout) {
+  if (timeout) {
+    Serial.println();
+    Serial.println("Stream timeout, resume streaming...");
+    Serial.println();
+  }
+}
+
 class wifiCredentailCallBack: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *wifiCredential) {
       std::string rxValue = wifiCredential->getValue();
       String data;
       if (rxValue.length() > 0) {
-        for (int i = 0; i <= rxValue.length() - 1; i++) {
+        for (int i = 0; i <= rxValue.length() - 1; i++)
           data = data + rxValue[i];
-        }
         Serial.print("wifi: ");
         Serial.println(data);
         EEPROM.writeString(wifiAddress, data);
@@ -96,7 +148,6 @@ class wifiCredentailCallBack: public BLECharacteristicCallbacks {
         response->setValue(&process, 1);
         Serial.print("process: ");
         Serial.println(process);
-
       }
     }
 };
@@ -106,9 +157,8 @@ class ownerPhoneNumberCallback: public BLECharacteristicCallbacks {
       std::string value = ownerPhoneNumber->getValue();
       String ownerData;
       if (value.length() > 0) {
-        for (int i = 0; i <= value.length() - 1; i++) {
+        for (int i = 0; i <= value.length() - 1; i++)
           ownerData = ownerData + value[i];
-        }
         Serial.print("owner: ");
         Serial.println(ownerData);
         EEPROM.writeString(onwerPhoneNumberAddress, ownerData);
@@ -126,9 +176,8 @@ class deviceChipIDCallback: public BLECharacteristicCallbacks {
       std::string value = deviceChipID->getValue();
       String chipIDData;
       if (value.length() > 0) {
-        for (int i = 0; i <= value.length() - 1; i++) {
+        for (int i = 0; i <= value.length() - 1; i++)
           chipIDData = chipIDData + value[i];
-        }
         Serial.print("chipID: ");
         Serial.println(chipIDData);
         EEPROM.writeString(chipIdAddress, chipIDData);
@@ -145,22 +194,18 @@ class deviceChipIDCallback: public BLECharacteristicCallbacks {
 
 void getDataCredentail() {
   ownerPNumber = EEPROM.readString(onwerPhoneNumberAddress);
-  Serial.print("ownerData: ");
-  Serial.println(ownerPNumber);
-
   chipID = EEPROM.readString(chipIdAddress);
-  Serial.print("chipID: ");
-  Serial.println(chipID);
-
   String wifiData = EEPROM.readString(wifiAddress);
-  Serial.print("wifiData: ");
-  Serial.println(wifiData);
-
   if (wifiData.length() > 0) {
     wifi_ssid = wifiData.substring(0, wifiData.indexOf("|"));
     wifi_password = wifiData.substring(wifi_ssid.length() + 1 );
   }
-
+  Serial.print("ownerData: ");
+  Serial.println(ownerPNumber);
+  Serial.print("chipID: ");
+  Serial.println(chipID);
+  Serial.print("wifiData: ");
+  Serial.println(wifiData);
 }
 
 void wifiTask() {
@@ -170,10 +215,7 @@ void wifiTask() {
     Serial.print(".");
     delay(300);
   }
-  Serial.println();
-  Serial.print("Connected with IP: ");
-  Serial.println(WiFi.localIP());
-  Serial.println();
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 }
 
 void bleTask() {
@@ -219,74 +261,27 @@ void bleTask() {
   pAdvertising->setScanResponse(false);
   pAdvertising->setMinPreferred(0x12);  // set value to 0x00 to not advertise this parameter
   BLEDevice::startAdvertising();
-  Serial.println("Characteristic defined! Now you can read it in your phone!");
-
+  digitalWrite(ledPin, true);
 }
 
-void getInitialData(StreamData &data) {
-  FirebaseJson *json = data.jsonObjectPtr();
-  Serial.println("Iterate JSON data:");
-  size_t len = json->iteratorBegin();
-  String key, value = "";
-  int type = 0;
-  for (size_t i = 0; i < len; i++) {
-    json->iteratorGet(i, type, key, value);
+void logInfo() {
+  Serial.print("OTP: ");
+  Serial.println(otp);
+  Serial.print("State: ");
+  Serial.println(state);
+  Serial.print("Delay: ");
+  Serial.println(lockDelay);
+  for (int i = 0; i <= 3; i++) {
+    Serial.print("trusted_devices no.");
     Serial.print(i);
-    Serial.print(", ");
-    Serial.print("Type: ");
-    Serial.print(type == JSON_OBJECT ? "object" : "array");
-    if (type == JSON_OBJECT) {
-      if (key == "otp") {
-        OTP = value;
-        Serial.print(", OTP: ");
-        Serial.println(OTP);
-      } else if (key == "state") {
-        state = value.toInt();
-        Serial.print(", State: ");
-        Serial.println(state);
-      }
-    } else {
-      trusted_devices[i - 3] = value;
-      Serial.print(", trusted_devices no.");
-      Serial.print(i - 2);
-      Serial.print(": ");
-      Serial.println(trusted_devices[i - 3]);
-    }
+    Serial.print(": ");
+    Serial.println(trusted_devices[i]);
   }
-  json->iteratorEnd();
 }
 
-void getTrustedDevices(StreamData data) {
-  String posi = data.dataPath().substring(data.dataPath().length() - 1 );
-  trusted_devices[posi.toInt()] = data.stringData();
-  Serial.print("UPDATE TRUSTED DEVICE NO. ");
-  Serial.print(posi.toInt()+1);
-  Serial.print(": ");
-  Serial.println(trusted_devices[posi.toInt()]);
-}
-
-void streamCallback(StreamData data) {
-  int _state = 0;
-  String event_path = data.dataPath();
-  switch (event_path.length()) {
-    case 6:
-      _state = data.intData();
-      break;
-    case 4:
-      OTP = data.stringData();
-      Serial.println("OTP UPDATE");
-      break;
-    case 1:
-      getInitialData(data);
-      break;
-    default:
-      getTrustedDevices(data);
-      break;
-  }
-  if (state == _state) {
-    return;
-  } else state = _state;
-
+void stateCheck() {
+  if (state == _state) return;
+  state = _state;
   switch (state) {
     case 1:
       openTheGate();
@@ -298,8 +293,9 @@ void streamCallback(StreamData data) {
       lockTheGate();
       break;
   }
-  json.clear();
 }
+
+
 
 void lockTheGate() {
   Serial.println("Đóng chặt lắm rồi này");
@@ -322,6 +318,7 @@ void openTheGate() {
 }
 
 void holdOn() {
+  state = 2;
   Serial.println("Đang giữ cho cửa không đóng nè");
   digitalWrite(relayPin, true);
   digitalWrite(holdLed, true);
@@ -329,42 +326,47 @@ void holdOn() {
   touchSound();
 }
 
-void streamTimeoutCallback(bool timeout) {
-  if (timeout) {
-    Serial.println();
-    Serial.println("Stream timeout, resume streaming...");
-    Serial.println();
+void historySave() {
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    Serial.println("Failed to obtain time");
+    return;
   }
+  char timeStringBuff[50];
+  strftime(timeStringBuff, sizeof(timeStringBuff), "%A, %B %d %Y %H:%M:%S", &timeinfo);
+  json.clear().set("unlock_name", "Người có mã OTP");
+  json.set("unlock_type", unlock_type);
+  json.set("unlock_time", String(timeStringBuff));
+  Firebase.pushJSON(_firebaseData, histories_path, json);
+  Firebase.setInt(_firebaseData, lock_state_path, 1);
 }
 
 void setup() {
   Serial.begin(115200);
+  // setup pinMode and sound
   ledcSetup(channel, freq, resolution);
   ledcAttachPin(speaker, channel);
   pinMode(ledPin, OUTPUT);
   pinMode(relayPin, OUTPUT);
   pinMode(holdLed, OUTPUT);
+  //check devices mode
   if (!EEPROM.begin(EEPROM_SIZE)) {
     delay(1000);
   }
   modeIndex = EEPROM.read(modeAddress);
-  Serial.print("mode: ");
   if (modeIndex == 0) {
-    digitalWrite(ledPin, true);
-    process = 0;
     bleTask();
   } else {
-    Serial.println("Registered Device");
-    digitalWrite(ledPin, false);
     getDataCredentail();
     wifiTask();
     connectToDB();
+    lockTheGate();
   }
+  // keypad begin
   otpGetting = false;
   _otp = "";
   if (!cap.begin(0x5A)) {
     Serial.println("MPR121 not found, check wiring?");
-    while (1);
   }
   Serial.println("MPR121 found!");
 }
@@ -385,73 +387,71 @@ void successSound() {
 }
 
 void ConfirmOTP() {
-  Serial.print("Confirming OTP: ");
-  Serial.println(_otp);
   otpGetting = false;
-  if (OTP.equals(_otp)) {
-    _otp = "";
+  Serial.println("CHECKING OTP");
+  if (otp.equals(_otp)) {
     Serial.println("SUCCESS");
-    Firebase.setString(firebaseData, parentPath + "/otp", "");
-    Firebase.setInt(firebaseData, parentPath + "/state", 1);
+    state = 1;
+    openTheGate();
+    unlock_type = "otp";
+    historySave();
+    Firebase.setString(_firebaseData, lock_otp_path, "");
   } else {
-    Serial.println("OTP DENIED");
+    Serial.println("DENIED");
   }
+  _otp = "";
 
 }
 
 void loop() {
-  while (state == 1) {
-    if ( millis() - saveUnlockTime >= lockDelay ) {
-      Firebase.setInt(firebaseData, parentPath + "/state", 0);
-      state = -1 ;
-    }
-  }
-  if (modeIndex == 0) {
-    if (process == 3) {
-      response->notify();
-      Serial.print("Reset sau 3s");
-      delay(1000);
-      ESP.restart();
-    }
+  // mode check
+  while (modeIndex == 0) {
     response->notify();
-    delay(10);
-    return;
+    if (process == 3) ESP.restart();
+    delay(200);
+  }
+  // lock state check
+  while (state) {
+    if ( millis() - saveUnlockTime >= lockDelay ) {
+      state = 0;
+      lockTheGate();
+      Firebase.setInt(_firebaseData, lock_state_path, 0);
+      Serial.println(millis());
+    }
   }
   currtouched = cap.touched();
+  // if * touch -> keypad on
   if (!(currtouched & _BV(0)) && (lasttouched & _BV(0)) ) {
     otpGetting = true;
     _otp = "";
     touchSound();
   }
+  // run below task when keypad on
+
+  // if OTP complete -> check
   if (_otp.length() == 6) {
     ConfirmOTP();
     return;
   }
-  if (otpGetting) {
-    for (uint8_t i = 1; i < 12; i++) {
-      if (i == 8) {
-        if (!(currtouched & _BV(8)) && (lasttouched & _BV(8)) ) {
-          if (_otp != "") {
-            _otp =  _otp.substring(0, _otp.length() - 1 );
-            touchSound();
-          } else {
-            otpGetting = false;
-          }
-        }
-      } else {
-        // it if *is* touched and *wasnt* touched before, alert!
-        if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
-          if (_otp.length() < 6) {
-            _otp = _otp + keypad[i];
-            Serial.print("OTP: ");
-            Serial.println(_otp);
-            touchSound();
-          }
-        }
-      }
-    }
+  // if # touch -> delete last number or turn of keypad
+  if (!(currtouched & _BV(8)) && (lasttouched & _BV(8)) ) {
+    if (_otp != "") {
+      _otp =  _otp.substring(0, _otp.length() - 1 );
+      touchSound();
+    } else otpGetting = false;
   }
+  // get OTP
+  if (otpGetting)
+    for (uint8_t i = 1; i < 12; i++) {
+      // it if *is* touched and *wasnt* touched before, alert!
+      if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) )
+        if (_otp.length() < 6) {
+          _otp = _otp + keypad[i];
+          Serial.print("otp: ");
+          Serial.println(_otp);
+          touchSound();
+        }
+    }
   lasttouched = currtouched;
   return;
-
 }

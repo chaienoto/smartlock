@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/trusted_device_layout"
+    android:background="@color/colorEven"
     tools:context=".Activities.AutoUnlockActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -14,37 +16,44 @@
         android:layout_height="?attr/actionBarSize"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/auto_unlock_device_recycle_view"
+        android:id="@+id/trusted_device_recycle_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/auto_unlock_toolbar">
     </androidx.recyclerview.widget.RecyclerView>
 
-    <Button
-        android:id="@+id/btn_used_my_phone"
-        android:layout_width="match_parent"
-        android:layout_marginHorizontal="20dp"
-        android:layout_height="58dp"
-        android:layout_marginTop="10dp"
-        android:textSize="18dp"
-        android:textColor="@color/colorWhite"
-        android:text="Sử dụng điện thoại của tôi"
-        android:textAllCaps="true"
-        android:background="@color/colorGray"
-        android:layout_below="@+id/auto_unlock_device_recycle_view">
-    </Button>
-    <Button
-        android:id="@+id/btn_used_another_device"
+    <TextView
+        android:id="@+id/tv8"
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:textSize="18dp"
-        android:text="Sử dụng thiết bị khác"
+        android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:text="Thiết bị tìm thấy"
+        android:visibility="invisible"
+        android:textAllCaps="true"
+        android:background="@color/colorBlue"
+        android:layout_below="@+id/trusted_device_recycle_view">
+    </TextView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/unknown_device_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv8">
+    </androidx.recyclerview.widget.RecyclerView>
+    <Button
+        android:id="@+id/btn_add_trusted_device"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:textSize="18dp"
+        android:text="Thêm thiết bị tin cậy"
         android:layout_marginTop="10dp"
         android:textAllCaps="true"
         android:layout_marginHorizontal="20dp"
-        android:background="@color/colorGray"
-        android:textColor="@color/colorWhite"
-        android:layout_below="@+id/btn_used_my_phone">
+        android:background="@color/colorEven"
+        android:textColor="@color/colorBlue"
+        android:layout_below="@+id/unknown_device_recycle_view">
     </Button>
 
 

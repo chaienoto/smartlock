@@ -3,42 +3,27 @@ package com.lyoko.smartlock.Models;
 import android.bluetooth.BluetoothDevice;
 
 public class BLE_Device {
-    private BluetoothDevice bluetoothDevice;
-    private int rssi;
-    private Boolean found;
-    String name,address;
 
-    public BLE_Device(BluetoothDevice bluetoothDevice) {
-        this.bluetoothDevice = bluetoothDevice;
-    }
-    public BLE_Device(String name,String address ){
-        this.address = address;
-        this.name = name;
+    String ble_name, ble_address;
+
+    public BLE_Device(String ble_name, String ble_address) {
+        this.ble_name = ble_name;
+        this.ble_address = ble_address;
     }
 
-    public String getAddress() {
-        return bluetoothDevice.getAddress();
+    public String getBle_name() {
+        return ble_name;
     }
 
-    public String getName() {
-        return bluetoothDevice.getName();
+    public void setBle_name(String ble_name) {
+        this.ble_name = ble_name;
     }
 
-    public void setRSSI(int rssi) {
-        this.rssi = rssi;
+    public String getBle_address() {
+        return ble_address;
     }
 
-    public int getRSSI() {
-        return rssi;
+    public void setBle_address(String ble_address) {
+        this.ble_address = ble_address;
     }
-
-    public Boolean getFound() {
-        return found;
-    }
-
-    public void setFound(Boolean found) {
-        this.found = found;
-    }
-
-
 }

@@ -15,21 +15,20 @@ import com.lyoko.smartlock.Models.History;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Utils.LyokoString;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_EVEN_POSITION;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_ODD_POSITION;
 
 
-public class HistoriesAdapter extends RecyclerView.Adapter<HistoriesAdapter.ViewHolder> {
+public class TrustedDevicesAdapter extends RecyclerView.Adapter<TrustedDevicesAdapter.ViewHolder> {
 
     private Context context;
     private ArrayList<History> list;
+    private OnUnknownBLEClickedListener ble1ClickCallback;
+    private OnUnknownBLELongClickedListener bleLongClickCallback;
 
-    public HistoriesAdapter(Context context, ArrayList<History> list) {
+    public TrustedDevicesAdapter(Context context, ArrayList<History> list) {
         this.context = context;
         this.list = list;
 
@@ -52,7 +51,7 @@ public class HistoriesAdapter extends RecyclerView.Adapter<HistoriesAdapter.View
         History history = list.get(position);
         holder.tvCover_Name.setText(history.getUnlock_name());
         holder.tvDate.setText(history.getUnlock_time());
-        holder.iv_unlockType.setBackgroundResource(getBackgroundRes(history.getUnlock_type()));
+
         if (position % 2 == 0){
             holder.item_history.setBackgroundColor(COLOR_EVEN_POSITION);
         } else {
@@ -80,17 +79,11 @@ public class HistoriesAdapter extends RecyclerView.Adapter<HistoriesAdapter.View
         }
     }
 
-    public int getBackgroundRes(String unlock_type){
-        switch (unlock_type){
-            case LyokoString.UNLOCK_TYPE_SMARTPHONE:
-                return R.drawable.ic_phone_unlock ;
-            case LyokoString.UNLOCK_TYPE_FINGERPRINT:
-                return R.drawable.ic_fingerprint;
-            case LyokoString.UNLOCK_TYPE_OTP:
-                return R.drawable.ic_otp;
-            default:
-                throw new IllegalStateException("Unexpected value: " + unlock_type);
-        }
+    public interface OnUnknownBLEClickedListener {
+        void onItemClick(String ssid);
+    }
+    public interface OnUnknownBLELongClickedListener {
+        void onItemClick(String ssid);
     }
 
 

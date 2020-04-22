@@ -52,6 +52,8 @@ public class LyokoString {
     public final static String LOCK_STATE = "state";
     public final static String LOCK = "lock";
     public final static String LOCK_OTP = "otp";
+    public final static String TRUSTED_DEVICES_ADDRESS = "trusted_devices_address";
+    public final static String TRUSTED_DEVICES_NAME = "trusted_devices_name";
     public final static String REMOTE_BY = "remote_by";
 
     // LYOKO DB PATH

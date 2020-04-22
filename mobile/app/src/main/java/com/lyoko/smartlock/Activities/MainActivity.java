@@ -2,7 +2,6 @@ package com.lyoko.smartlock.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,22 +10,17 @@ import androidx.fragment.app.FragmentManager;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +29,6 @@ import com.lyoko.smartlock.Fragment.UnlockFragment;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.Database_Helper;
 import com.lyoko.smartlock.Interface.ILock;
-import com.lyoko.smartlock.Services.PhoneAdvertise_Service;
 import com.lyoko.smartlock.Utils.OTP;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -50,9 +43,7 @@ import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_REMOVED;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_SAVED;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_SUB_MESSAGE;
 import static com.lyoko.smartlock.Utils.LyokoString.OWNER_PHONE_NUMBER;
-import static com.lyoko.smartlock.Utils.LyokoString.UNLOCK_DELAY;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
-import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
 public class MainActivity extends AppCompatActivity implements ILock {
     public static final int REQUEST_REMOTE_PHONE_NUMBER = 123;
@@ -96,27 +87,6 @@ public class MainActivity extends AppCompatActivity implements ILock {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         db.getLockState(owner_phone_number,current_device_address,this);
-
-        btn_door_lock.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (!clicked){
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(!hold){
-                                lock();
-                            } return;
-                        }
-                    },UNLOCK_DELAY);
-                    Toast.makeText(MainActivity.this, "Cửa tự động đóng sau "+UNLOCK_DELAY/1000+ " giây", LENGTH_SHORT).show();
-                    unlock();
-                    db.saveHistory(owner_phone_number,current_device_address, phone_name);
-                }
-                return true;
-            }
-        });
 
         btn_lock_history.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -258,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements ILock {
                 return true;
             case R.id.advertise:
                 Intent intent_advertise = new Intent(MainActivity.this, AutoUnlockActivity.class );
+                intent_advertise.putExtra(DEVICE_ADDRESS, current_device_address);
+                intent_advertise.putExtra(OWNER_PHONE_NUMBER, owner_phone_number);
                 startActivity(intent_advertise);
                 return true;
             default:
@@ -315,17 +287,5 @@ public class MainActivity extends AppCompatActivity implements ILock {
     protected void onDestroy() {
         lock();
         super.onDestroy();
-    }
-
-    @Override
-    protected void onResume() {
-        lock();
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        lock();
-        super.onPause();
     }
 }
