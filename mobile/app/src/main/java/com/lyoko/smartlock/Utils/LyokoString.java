@@ -10,7 +10,7 @@ public class LyokoString {
     public final static String LOGIN = "1";
     public final static String REGISTER = "0";
     public final static String FORGOT = "-1";
-    public final static String AUTH_ID = "auth_id";
+
 
     // SHARES PREFERENCE
     public final static String LOGGED_PREFERENCE = "loggedPref";
@@ -22,23 +22,35 @@ public class LyokoString {
     public final static String PHONE_NUMBER_UNSUITABLE = "Số điện thoại không phù hợp";
     public final static String NOT_EMPTY = "Không được để trống";
     public final static String REGISTER_SUCCESSFULLY = "Đăng kí thành công";
+    public final static String ACCESS_DENIED = "Bạn ko có quyền thực hiện chức năng này";
     // otp message
     public final static String OTP_SHARE_MESSAGE = "Mã OTP dùng để mở khóa của bạn là: ";
     public final static String OTP_SHARE_SUB_MESSAGE = ". Vui lòng không chia sẻ cho bất kì ai!";
-    public final static String OTP_SHARE_NOT_SAVE = "Vui lòng lưu OTP trước khi chia sẻ!";
-    public final static String OTP_SHARE_SAVED = "Đã lưu OTP, bạn có thể copy hoặc share nó";
-    public final static String OTP_SHARE_REMOVED = "Đã Xóa OTP";
-    public final static String OTP_SHARE_COPIED = "Đã copy OTP";
+    public final static String OTP_NOT_SAVE = "Vui lòng lưu OTP trước khi chia sẻ!";
+    public final static String OTP_SAVED = "Đã lưu thay đổi";
+    public final static String OTP_REMOVED = "ĐÃ XÓA OTP";
+    public final static String OTP_UP_TO_DATE = "KHÔNG CÓ THAY ĐỔI GÌ";
+    public final static String OTP_NULL = "Bạn chưa tạo mã otp nào";
+    public final static String OTP_SHOW = "mã otp của bạn là: ";
 
     public final static String PHONE_NUMBER_REGISTERED = "phone_number_registered";
     // LYOKO's USER
     public static String phone_login = null;
     public static String phone_name = null;
     public static String add_device_address = null;
+    public static String auth_id = null;
 
     public final static String OWNER_NAME = "owner_name";
     public final static String PASSWORD = "password";
 
+    // UPDATE CONTROLLER CODE
+    public final static int CLOSE_LOCK= 0;
+    public final static int OPEN_LOCK = 1;
+    public final static int HOLD_LOCK = 2;
+    public final static int OPEN_DELAY = 3;
+    public final static int OTP_UPDATE = 4;
+    public final static int TRUSTED_DEVICES_UPDATE = 5;
+    public final static int UP_TO_DATE = -99;
     // REMOTE DEVICE ATTRIBUTE
 
 
@@ -48,13 +60,16 @@ public class LyokoString {
     public final static String REMOTE_DEVICES = "remote_devices";
     public final static String HISTORIES = "histories";
     public final static String DEVICE_NAME = "device_name";
+    public final static String DEVICE_TYPE = "device_type";
     public final static String DEVICE_ADDRESS = "device_address";
     public final static String LOCK_STATE = "state";
     public final static String LOCK = "lock";
     public final static String LOCK_OTP = "otp";
     public final static String TRUSTED_DEVICES_ADDRESS = "trusted_devices_address";
     public final static String TRUSTED_DEVICES_NAME = "trusted_devices_name";
+    public final static String UPDATE_CODE = "update_code";
     public final static String REMOTE_BY = "remote_by";
+    public final static String AUTH_ID = "auth_id";
 
     // LYOKO DB PATH
     public final static String LYOKO_DEVICES = "lyoko_devices";

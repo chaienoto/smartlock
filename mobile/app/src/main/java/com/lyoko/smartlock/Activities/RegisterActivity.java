@@ -15,13 +15,15 @@ import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.Database_Helper;
 
 import static com.lyoko.smartlock.Utils.LyokoString.AUTH_ID;
+import static com.lyoko.smartlock.Utils.LyokoString.LOGIN_SAVED;
 import static com.lyoko.smartlock.Utils.LyokoString.NOT_EMPTY;
 import static com.lyoko.smartlock.Utils.LyokoString.REGISTER_SUCCESSFULLY;
+import static com.lyoko.smartlock.Utils.LyokoString.auth_id;
 
 public class RegisterActivity extends AppCompatActivity implements IRegister {
     EditText et_password, et_password_confirm, et_ownerName;
     Button btn_register;
-    String  password, password_confirm, owner_name, auth_id;
+    String  password, password_confirm, owner_name;
     Database_Helper db = new Database_Helper();
 
     @Override
@@ -33,13 +35,10 @@ public class RegisterActivity extends AppCompatActivity implements IRegister {
         et_ownerName = findViewById(R.id.et_ownerName);
         btn_register = findViewById(R.id.btn_register);
 
-        Bundle bundle = getIntent().getExtras();
-        auth_id = bundle.getString(AUTH_ID);
 
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 owner_name = et_ownerName.getText().toString();
                 password = et_password.getText().toString();
                 password_confirm = et_password_confirm.getText().toString();
@@ -74,7 +73,8 @@ public class RegisterActivity extends AppCompatActivity implements IRegister {
     @Override
     public void onRegisterSuccess() {
         Toast.makeText(this, REGISTER_SUCCESSFULLY, Toast.LENGTH_SHORT).show();
-        Intent i = new Intent(RegisterActivity.this, DeviceListActivity.class);
+        Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
+        i.putExtra(LOGIN_SAVED,false);
         startActivity(i);
         finish();
     }

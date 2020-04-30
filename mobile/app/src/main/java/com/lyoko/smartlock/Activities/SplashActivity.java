@@ -15,6 +15,8 @@ import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_PHONE;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_PREFERENCE;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGIN_SAVED;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
 public class SplashActivity extends AppCompatActivity {
     private  static int SPLASH_TIME_OUT=1500;
@@ -30,9 +32,9 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 if (!LoggedPhoneNumber.equals("")){
                     LoggedName = loginPreferences.getString(LOGGED_NAME, "");
+                    phone_login = LoggedPhoneNumber;
+                    phone_name = LoggedName;
                     Intent intent = new Intent(SplashActivity.this,LoginActivity.class);
-                    intent.putExtra(LOGGED_PHONE, LoggedPhoneNumber);
-                    intent.putExtra(LOGGED_NAME, LoggedName);
                     intent.putExtra(LOGIN_SAVED, true);
                     startActivity(intent);
                     finish();

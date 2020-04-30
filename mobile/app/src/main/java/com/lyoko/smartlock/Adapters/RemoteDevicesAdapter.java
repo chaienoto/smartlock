@@ -45,19 +45,19 @@ public class RemoteDevicesAdapter extends RecyclerView.Adapter<RemoteDevicesAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (position % 2 == 0){
-            holder.item_device.setBackgroundColor(COLOR_EVEN_POSITION);
-        } else {
-            holder.item_device.setBackgroundColor(COLOR_ODD_POSITION);
-        }
-        final Remote_device device = list.get(position);
-        holder.tv_device_name.setText(device.getOwnerPhoneNumber()+"\t"+device.getDevice_name());
-        holder.item_device.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callback.onRemoteDeviceItemClick(device.getOwnerPhoneNumber(), device.getAddress(), device.getDevice_name());
-            }
-        });
+//        if (position % 2 == 0){
+//            holder.item_device.setBackgroundColor(COLOR_EVEN_POSITION);
+//        } else {
+//            holder.item_device.setBackgroundColor(COLOR_ODD_POSITION);
+//        }
+//        final Remote_device device = list.get(position);
+//        holder.tv_device_name.setText(device.getOwnerPhoneNumber()+"\t"+device.getDevice_name());
+//        holder.item_device.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                callback.onRemoteDeviceItemClick(device.getOwnerPhoneNumber(), device.getAddress(), device.getDevice_name());
+//            }
+//        });
     }
 
     @Override
@@ -66,13 +66,13 @@ public class RemoteDevicesAdapter extends RecyclerView.Adapter<RemoteDevicesAdap
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView tv_device_name, tv_device_rssi;
-        LinearLayout item_device;
+//        TextView tv_device_name, tv_device_rssi;
+//        LinearLayout item_device;
         public ViewHolder(View view) {
             super(view);
-            this.tv_device_rssi = view.findViewById(R.id.tv_device_rssi);
-            this.tv_device_name = view.findViewById(R.id.tv_device_name);
-            this.item_device = view.findViewById(R.id.item_device);
+//            this.tv_device_rssi = view.findViewById(R.id.tv_device_rssi);
+//            this.tv_device_name = view.findViewById(R.id.tv_device_name);
+//            this.item_device = view.findViewById(R.id.item_device);
         }
     }
     public void setOnRemoteDeviceClickedListener(OnRemoteDeviceClickedListener callback){

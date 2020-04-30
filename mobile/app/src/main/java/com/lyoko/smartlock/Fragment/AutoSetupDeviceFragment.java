@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lyoko.smartlock.Activities.AddDeviceActivity;
-import com.lyoko.smartlock.Activities.DeviceListActivity;
 import com.lyoko.smartlock.Activities.MainActivity;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.BluetoothLeService;
@@ -21,7 +20,6 @@ import com.lyoko.smartlock.Interface.IFindLock;
 
 import static com.lyoko.smartlock.Activities.AddDeviceActivity.device_name;
 import static com.lyoko.smartlock.Utils.LyokoString.add_device_address;
-import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 
 public class AutoSetupDeviceFragment extends Fragment implements IFindLock {
 
@@ -64,7 +62,7 @@ public class AutoSetupDeviceFragment extends Fragment implements IFindLock {
     @Override
     public void onComplete() {
         new Database_Helper().addNewDevice(add_device_address, device_name);
-        Intent intent = new Intent(getActivity(), DeviceListActivity.class);
+        Intent intent = new Intent(getActivity(), MainActivity.class);
         startActivity(intent);
     }
 

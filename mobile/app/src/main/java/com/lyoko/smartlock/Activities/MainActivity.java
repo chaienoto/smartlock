@@ -1,291 +1,139 @@
 package com.lyoko.smartlock.Activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lyoko.smartlock.Fragment.LockedFragment;
-import com.lyoko.smartlock.Fragment.UnlockFragment;
+import com.lyoko.smartlock.Adapters.OwnDevicesAdapter;
+import com.lyoko.smartlock.Adapters.RemoteDevicesAdapter;
+import com.lyoko.smartlock.Models.Device_info;
+import com.lyoko.smartlock.Models.Remote_device;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.Database_Helper;
-import com.lyoko.smartlock.Interface.ILock;
-import com.lyoko.smartlock.Utils.OTP;
+import com.lyoko.smartlock.Interface.IDeviceList;
+import com.lyoko.smartlock.Utils.DialogShow;
 
-import static android.widget.Toast.LENGTH_SHORT;
-import static com.lyoko.smartlock.Utils.LyokoString.COLOR_LOCK;
-import static com.lyoko.smartlock.Utils.LyokoString.COLOR_UNLOCK;
+import java.util.ArrayList;
+
+import static com.lyoko.smartlock.Utils.LyokoString.COLOR_BLUE;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_ADDRESS;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_NAME;
-import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_COPIED;
-import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_MESSAGE;
-import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_NOT_SAVE;
-import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_REMOVED;
-import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_SAVED;
-import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_SUB_MESSAGE;
 import static com.lyoko.smartlock.Utils.LyokoString.OWNER_PHONE_NUMBER;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
-public class MainActivity extends AppCompatActivity implements ILock {
-    public static final int REQUEST_REMOTE_PHONE_NUMBER = 123;
-    FragmentManager manager = getSupportFragmentManager();
-    @SuppressLint("StaticFieldLeak")
-    public static Button btn_door_lock;
-    public OTP _otp = new OTP();
-    Button btn_lock_otp, btn_lock_history;
-    RelativeLayout main_bg;
-    ImageView img_lock;
-    Toolbar toolbar;
-    public static String current_device_address;
-    public static String current_device_name;
-    public static String owner_phone_number;
-    public static String otp;
-    public static Boolean hold = false;
-    public static Boolean clicked = false;
-    public static Boolean otp_saved = false;
-    public static Database_Helper db = new Database_Helper();
+public class MainActivity extends AppCompatActivity implements IDeviceList, OwnDevicesAdapter.OnOwnDeviceClickedListener, RemoteDevicesAdapter.OnRemoteDeviceClickedListener  {
+    Database_Helper db = new Database_Helper();
+    RecyclerView device_list_recycle_view;
+    TextView tv6;
+    Toolbar devices_toolbar;
+    RelativeLayout device_list_layout;
+    ImageView img_find_device;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_device_list);
+        tv6 = findViewById(R.id.tv6);
+        device_list_layout = findViewById(R.id.device_list_layout);
+        img_find_device = findViewById(R.id.img_find_device);
+        devices_toolbar = findViewById(R.id.devices_toolbar);
+        devices_toolbar.setTitle(phone_name.substring(0,1).toUpperCase() + phone_name.substring(1).toLowerCase()+"'s"+" home");
+        setSupportActionBar(devices_toolbar);
+        getWindow().setStatusBarColor(COLOR_BLUE);
 
-        main_bg = findViewById(R.id.main_bg);
-        toolbar = findViewById(R.id.toolbar);
-        img_lock = findViewById(R.id.img_lock);
-        btn_lock_otp = findViewById(R.id.btn_lock_otp);
-        btn_lock_history = findViewById(R.id.btn_lock_history);
-        btn_door_lock = findViewById(R.id.btn_door_lock);
+        device_list_recycle_view = findViewById(R.id.device_list_recycle_view);
 
-        Bundle bundle = getIntent().getExtras();
-        assert bundle != null;
-        current_device_address = bundle.getString(DEVICE_ADDRESS);
-        current_device_name = bundle.getString(DEVICE_NAME);
-        owner_phone_number = bundle.getString(OWNER_PHONE_NUMBER);
-
-        toolbar.setTitle(current_device_name);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        db.getLockState(owner_phone_number,current_device_address,this);
-
-        btn_lock_history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-                intent.putExtra(DEVICE_ADDRESS, current_device_address);
-                intent.putExtra(OWNER_PHONE_NUMBER, owner_phone_number);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        btn_lock_otp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showOTP();
-            }
-        });
-    }
-
-    private void showOTP(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final View view = getLayoutInflater().inflate(R.layout.otp_show_dialog,null);
-        final ImageView img_copy = view.findViewById(R.id.img_copy);
-        final ImageView img_share = view.findViewById(R.id.img_share);
-        final ImageView img_remove_otp = view.findViewById(R.id.img_remove_otp);
-        final TextView tv_otp = view.findViewById(R.id.tv_otp);
-        final TextView tv_generate_new_otp = view.findViewById(R.id.tv_generate_new_otp);
-        final TextView tv_confirm_otp_changed = view.findViewById(R.id.tv_confirm_otp_changed);
-        final TextView tv_close_otp_dialog = view.findViewById(R.id.tv_close_otp_dialog);
-        final AlertDialog dialog = builder.setView(view).create();
-        tv_otp.setText(otp);
-        img_copy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("OTP Copied", tv_otp.getText().toString().trim());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(MainActivity.this, OTP_SHARE_COPIED, LENGTH_SHORT).show();
-            }
-        });
-
-        img_share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!otp_saved){
-                    Toast.makeText(MainActivity.this, OTP_SHARE_NOT_SAVE, LENGTH_SHORT).show();
-                } else {
-                    Intent sentIntent = new Intent(Intent.ACTION_SEND);
-                    sentIntent.putExtra(Intent.EXTRA_TEXT,
-                            OTP_SHARE_MESSAGE+ tv_otp.getText().toString()+OTP_SHARE_SUB_MESSAGE);
-                    sentIntent.setType("text/plain");
-                    Intent chooser = Intent.createChooser(sentIntent, "Chia sẻ OTP: ");
-                    if (sentIntent.resolveActivity(getPackageManager()) != null) {
-                        startActivity(chooser);
-                    }
-                }
-
-            }
-        });
-
-        img_remove_otp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                _otp.setOtp("");
-                tv_otp.setText(null);
-            }
-        });
-
-        tv_confirm_otp_changed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (tv_otp.getText().length() != 0){
-                    Toast.makeText(MainActivity.this, OTP_SHARE_SAVED, LENGTH_SHORT).show();
-                    otp_saved = true;
-                    _otp.confirmOTPChanged(current_device_address);
-                } else {
-                    Toast.makeText(MainActivity.this, OTP_SHARE_REMOVED, LENGTH_SHORT).show();
-                    _otp.removeOTP(current_device_address);
-                }
-
-            }
-        });
-        tv_generate_new_otp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                otp_saved = false;
-                tv_otp.setText(_otp.generateOTP());
-            }
-        });
-
-        tv_close_otp_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
-    }
-
-    private  void displayFragment(Class fragmentName) {
-        try {
-            if (!isFinishing()){
-                if (fragmentName != null)
-                    manager.beginTransaction().replace(R.id.main_content, (Fragment) fragmentName.newInstance()).commit();
-            }
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void unlock() {
-        db.changeLockState(owner_phone_number,current_device_address,1);
-    }
-
-    public static void lock() {
-        db.changeLockState(owner_phone_number,current_device_address,0);
+        db.getOwnDevices(phone_login,this);
+//        db.getRemoteList(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (owner_phone_number.equals(phone_login)) {
-            _otp.getOTPDetail(current_device_address);
-            getMenuInflater().inflate(R.menu.menu_lock_setting, menu);
-        } else btn_lock_otp.setEnabled(false);
-
+        getMenuInflater().inflate(R.menu.menu_devices, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_add_remote_device:
-                Intent intent = new Intent(MainActivity.this, BarcodeScannerActivity.class);
-                startActivityForResult(intent, REQUEST_REMOTE_PHONE_NUMBER);
-                return true;
-            case R.id.menu_lock_setting:
-                Toast.makeText(this, "Đang làm", LENGTH_SHORT).show();
-                return true;
-            case R.id.advertise:
-                Intent intent_advertise = new Intent(MainActivity.this, AutoUnlockActivity.class );
-                intent_advertise.putExtra(DEVICE_ADDRESS, current_device_address);
-                intent_advertise.putExtra(OWNER_PHONE_NUMBER, owner_phone_number);
-                startActivity(intent_advertise);
+            case R.id.menu_add_device:
+                DialogShow.showAddDeviceMethods(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void inVisible(int size){
+        img_find_device.setVisibility(View.INVISIBLE);
+        tv6.setVisibility(View.INVISIBLE);
+
+    }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_REMOTE_PHONE_NUMBER) {
-            if(resultCode == Activity.RESULT_OK) {
-                final String remote_phone_number = data.getStringExtra(BarcodeScannerActivity.PHONE_NUM);
-                db.addRemoteDevices(current_device_address,remote_phone_number);
-                Toast.makeText(this, "Thêm Thành Công", Toast.LENGTH_LONG).show();
+    public void showOwnDevices(ArrayList<Device_info> list) {
+        OwnDevicesAdapter adapter = new OwnDevicesAdapter(this, list);
+        device_list_recycle_view.setAdapter(adapter);
+        adapter.setOnOwnDeviceClickedListener(this);
+        device_list_recycle_view.setLayoutManager(new GridLayoutManager(this,2));
+        device_list_recycle_view.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showRemoteDevices(ArrayList<Remote_device> list) {
+
+
+    }
+
+    @Override
+    public void onGetRemoteList(ArrayList<Remote_device> list) {
+        db.getRemoteDevice(this, list);
+    }
+
+    @Override
+    public void notThingToShow() {
+        Toast.makeText(this, "Bạn chưa đăng kí thiết bị nào", Toast.LENGTH_SHORT).show();
+        img_find_device.setVisibility(View.VISIBLE);
+        tv6.setVisibility(View.VISIBLE);
+        img_find_device.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AddDeviceActivity.class);
+                startActivity(intent);
+                finish();
             }
-        }
+        });
     }
 
     @Override
-    public void onLock() {
-        hold = false;
-        clicked = false;
-        toolbar.setBackgroundColor(COLOR_LOCK);
-        getWindow().setStatusBarColor(COLOR_LOCK);
-        btn_door_lock.setText("UNLOCK");
-        displayFragment(LockedFragment.class);
-
+    public void onOwnDeviceItemClick(String device_address, String device_name) {
+        if (phone_login.equals(phone_login)) new Database_Helper().getOTP(device_address);
+        DialogShow.showLockMoreFunction(this, phone_login, device_address, device_name );
     }
 
     @Override
-    public void onUnlock() {
-        getWindow().setStatusBarColor(COLOR_UNLOCK);
-        toolbar.setBackgroundColor(COLOR_UNLOCK);
-        btn_door_lock.setText("LOCK");
-        clicked = true;
-        displayFragment(UnlockFragment.class);
+    public void onRemoteDeviceItemClick(String owner_device_phoneNumber, String device_address, String device_name) {
+//        moveToControl(owner_device_phoneNumber, device_address, device_name);
     }
 
-    @Override
-    public void onHold() {
-        hold = true;
-        clicked = true;
-        if (UnlockFragment.hold_bg == null || UnlockFragment.tv_state_lock_info == null ){
-            displayFragment(UnlockFragment.class);
-            btn_door_lock.setText("LOCK");
-        }else {
-            UnlockFragment.hold_bg.setBackgroundResource(R.drawable.background_lock_hold);
-            UnlockFragment.tv_state_lock_info.setText("HOLDING");
-
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        lock();
-        super.onDestroy();
+    private void moveToControl(String owner_device_phoneNumber, String device_address, String device_name){
+        Intent intent = new Intent(MainActivity.this, DeviceControllerActivity.class);
+        intent.putExtra(DEVICE_ADDRESS, device_address);
+        intent.putExtra(DEVICE_NAME, device_name);
+        intent.putExtra(OWNER_PHONE_NUMBER, owner_device_phoneNumber);
+        startActivity(intent);
     }
 }

@@ -24,9 +24,10 @@ import static com.lyoko.smartlock.Utils.LyokoString.REGISTER;
 import static com.lyoko.smartlock.Utils.LyokoString.VERIFIED_MODE;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 import static com.lyoko.smartlock.Utils.LyokoString.PHONE_NUMBER_UNSUITABLE;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
 public class CheckPhoneNumberActivity extends AppCompatActivity implements ICheckPhoneNumber {
-    Database_Helper service = new Database_Helper();
+    Database_Helper db_helper = new Database_Helper();
     public EditText et_phoneNumForCheck;
     public Button btn_checkPhoneNum;
     String phoneNumber;
@@ -46,8 +47,8 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
                     Toast.makeText(CheckPhoneNumberActivity.this, PHONE_NUMBER_UNSUITABLE, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                phoneNumber = String.valueOf(BigInteger.valueOf(Long.parseLong(s)));
-                service.checkPhoneNumber(phoneNumber, CheckPhoneNumberActivity.this);
+                phoneNumber = String.valueOf(Long.parseLong(s));
+                db_helper.checkPhoneNumber(phoneNumber, CheckPhoneNumberActivity.this);
             }
         });
 
@@ -55,8 +56,7 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
 
 
     @Override
-    public void phoneNumExist() {
-        phone_login = phoneNumber;
+    public void phoneNumExist(final String user_name) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.sign_in_dialog,null);
@@ -71,6 +71,8 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
                 .setPositiveButton("Tiếp tục", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        phone_login = phoneNumber;
+                        phone_name = user_name;
                         Intent intent = new Intent(CheckPhoneNumberActivity.this, AuthenticationActivity.class);
                         intent.putExtra(VERIFIED_MODE, LOGIN);
                         startActivity(intent);
@@ -82,7 +84,6 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
 
     @Override
     public void phoneNumNotExist() {
-        phone_login = phoneNumber;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         final View view = inflater.inflate(R.layout.register_dialog,null);
@@ -113,6 +114,7 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements IChec
         tv_dialogContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                phone_login = phoneNumber;
                 Intent intent = new Intent(CheckPhoneNumberActivity.this, AuthenticationActivity.class);
                 intent.putExtra(VERIFIED_MODE, REGISTER);
                 startActivity(intent);

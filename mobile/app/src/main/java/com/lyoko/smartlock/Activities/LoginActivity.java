@@ -31,8 +31,8 @@ public class LoginActivity extends AppCompatActivity implements ILogin  {
     TextView tv_change_login_phoneNumber,tv_login_phoneNumber,tv_login_name,tv_forgot_password;
     SharedPreferences.Editor editor;
     Button btn_login;
-    Database_Helper service = new Database_Helper();
-    String loginPassword, loginName, loginPhoneNumber;
+    Database_Helper db_helper = new Database_Helper();
+    String loginPassword;
     Boolean saved = false;
 
     @Override
@@ -48,13 +48,9 @@ public class LoginActivity extends AppCompatActivity implements ILogin  {
         editor = getSharedPreferences(LOGGED_PREFERENCE, MODE_PRIVATE).edit();
 
         Bundle bundle = getIntent().getExtras();
-        loginPhoneNumber = bundle.getString(LOGGED_PHONE);
-        loginName = bundle.getString(LOGGED_NAME);
         saved = bundle.getBoolean(LOGIN_SAVED);
-
         if (saved){
-            phone_login = loginPhoneNumber;
-            phone_name = loginName;
+            db_helper.getAuthID(phone_login);
             tv_change_login_phoneNumber.setText("THOÁT TÀI KHOẢN");
         } else {
             tv_change_login_phoneNumber.setText("ĐỔI TÀI KHOẢN");
@@ -62,15 +58,14 @@ public class LoginActivity extends AppCompatActivity implements ILogin  {
 
 
         tv_login_phoneNumber.setText("0"+phone_login);
-        tv_login_name.setText(loginName);
+        tv_login_name.setText(phone_name);
 
         tv_change_login_phoneNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (saved){
                     editor.remove(LOGGED_PHONE).apply();
-                }
-                FirebaseAuth.getInstance().signOut();
+                } else FirebaseAuth.getInstance().signOut();
                 Intent i = new Intent(LoginActivity.this, CheckPhoneNumberActivity.class);
                 startActivity(i);
                 finish();
@@ -84,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements ILogin  {
                 if (loginPassword == null || loginPassword ==""){
                     return;
                 }
-                service.checkPassword(loginPassword,LoginActivity.this);
+                db_helper.checkPassword(loginPassword,LoginActivity.this);
             }
         });
 
@@ -104,10 +99,10 @@ public class LoginActivity extends AppCompatActivity implements ILogin  {
     public void onPasswordMatched() {
         if (!saved){
             editor.putString(LOGGED_PHONE,phone_login).apply();
-            editor.putString(LOGGED_NAME,loginName).apply();
+            editor.putString(LOGGED_NAME,phone_name).apply();
         }
         Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-        Intent i = new Intent(LoginActivity.this, DeviceListActivity.class);
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(i);
         finish();
     }

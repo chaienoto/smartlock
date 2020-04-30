@@ -1,6 +1,6 @@
 package com.lyoko.smartlock.Interface;
 
 public interface ICheckPhoneNumber {
-    void phoneNumExist();
+    void phoneNumExist(String user_name);
     void phoneNumNotExist();
 }

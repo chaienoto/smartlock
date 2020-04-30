@@ -1,10 +1,10 @@
 package com.lyoko.smartlock.Activities;
 
 public class UIHelper {
-    MainActivity mainActivity;
+    DeviceControllerActivity deviceControllerActivity;
 
-    public UIHelper(MainActivity mainActivity) {
-        this.mainActivity = mainActivity;
+    public UIHelper(DeviceControllerActivity deviceControllerActivity) {
+        this.deviceControllerActivity = deviceControllerActivity;
     }
 
 }

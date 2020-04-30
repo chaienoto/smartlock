@@ -94,7 +94,7 @@ public class AutoUnlockActivity extends AppCompatActivity implements UnknownDevi
                         public void run() {
                             if (!_unknownList.contains(device.getAddress()) && rssi > -69){
                                 _unknownList.add(device.getAddress());
-                                unknownList.add(new BLE_Device(device.getName(),device.getAddress()));
+                                unknownList.add(new BLE_Device(device.getName(),device.getAddress().toLowerCase()));
                             }
                         }
                     });

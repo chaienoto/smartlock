@@ -7,8 +7,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.lyoko.smartlock.Activities.MainActivity;
-import com.lyoko.smartlock.Interface.IAuth;
+import com.lyoko.smartlock.Activities.DeviceControllerActivity;
 import com.lyoko.smartlock.Interface.ICheckPhoneNumber;
 import com.lyoko.smartlock.Interface.IDeviceList;
 import com.lyoko.smartlock.Interface.IHistory;
@@ -21,6 +20,7 @@ import com.lyoko.smartlock.Models.History;
 import com.lyoko.smartlock.Models.NewSMLock;
 import com.lyoko.smartlock.Models.Remote_device;
 import com.lyoko.smartlock.Models.NewUser;
+import com.lyoko.smartlock.Utils.GetOTP_Helper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ import java.util.Date;
 
 import static com.lyoko.smartlock.Utils.LyokoString.AUTH_ID;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_NAME;
+import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_TYPE;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_TIME;
 import static com.lyoko.smartlock.Utils.LyokoString.HISTORY_UNLOCK_TYPE;
@@ -45,6 +46,8 @@ import static com.lyoko.smartlock.Utils.LyokoString.REMOTE_BY;
 import static com.lyoko.smartlock.Utils.LyokoString.REMOTE_DEVICES;
 import static com.lyoko.smartlock.Utils.LyokoString.TRUSTED_DEVICES_ADDRESS;
 import static com.lyoko.smartlock.Utils.LyokoString.TRUSTED_DEVICES_NAME;
+import static com.lyoko.smartlock.Utils.LyokoString.UPDATE_CODE;
+import static com.lyoko.smartlock.Utils.LyokoString.auth_id;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 
 public class Database_Helper {
@@ -84,12 +87,11 @@ public class Database_Helper {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(phoneNum).exists()) {
-                    iCheckPhoneNumber.phoneNumExist();
+                    iCheckPhoneNumber.phoneNumExist(dataSnapshot.child(phoneNum).getValue(String.class));
                 } else iCheckPhoneNumber.phoneNumNotExist();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                iCheckPhoneNumber.phoneNumNotExist();
             }
         });
     }
@@ -111,17 +113,25 @@ public class Database_Helper {
         });
     }
 
+    private ArrayList<Device_info> getDeviceInfo(@NonNull DataSnapshot dataSnapshot){
+        final ArrayList<Device_info> s = new ArrayList<>();
+        for (DataSnapshot deviceSnapshot: dataSnapshot.getChildren()){
+            String macAddress = deviceSnapshot.getKey();
+            String name =  deviceSnapshot.child(DEVICE_NAME).getValue(String.class);
+            String type = deviceSnapshot.child(DEVICE_TYPE).getValue(String.class);
+            int state = deviceSnapshot.child(type).child(LOCK_STATE).getValue(Integer.class);
+            s.add(new Device_info(name,macAddress,type,state));
+        }
+        return s;
+    }
+
     public void getOwnDevices(String phone_login, final IDeviceList iDeviceList) {
         user.child(phone_login).child(OWN_DEVICES)
             .addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    final ArrayList<Device_info> list = new ArrayList<>();
-                    for (DataSnapshot deviceSnapshot: dataSnapshot.getChildren()){
-                        String macAddress = deviceSnapshot.getKey();
-                        String name = deviceSnapshot.child(DEVICE_NAME).getValue(String.class);
-                        list.add(new Device_info(name,macAddress));
-                    }
+                    ArrayList<Device_info> list = new ArrayList<>();
+                    list = getDeviceInfo(dataSnapshot);
                     if (list.size()==0){
                         return;
                     }
@@ -159,10 +169,11 @@ public class Database_Helper {
         for (final Remote_device device : list){
             final String address = device.getAddress();
             final String owner = device.getOwnerPhoneNumber();
-            user.child(owner).child(OWN_DEVICES).child(address).child(DEVICE_NAME)
+            user.child(owner).child(OWN_DEVICES).child(address)
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                             String name = dataSnapshot.getValue(String.class);
                             device.setDevice_name(name);
                             iDeviceList.showRemoteDevices(list);
@@ -196,11 +207,11 @@ public class Database_Helper {
                 });
     }
 
-    public void changeLockState(String owner_phone_number,String current_device_address, int state) {
-        user.child(owner_phone_number).child(OWN_DEVICES).child(current_device_address).child(LOCK).child(LOCK_STATE).setValue(state);
+    public void changed_update_code(String owner_phone_number,String current_device_address, int update_code) {
+        user.child(owner_phone_number).child(OWN_DEVICES).child(current_device_address).child(LOCK).child(UPDATE_CODE).setValue(update_code);
     }
 
-    public void saveHistory(String owner_phone_number, String current_device_address, String owner_name){
+    public void saveHistory(String owner_phone_number, String current_device_address, String unlock_name){
         DatabaseReference history = user.child(owner_phone_number).child(OWN_DEVICES).child(current_device_address).child(HISTORIES);
         String hisID = history.push().getKey();
         String pattern= "EE, MMMM dd yyyy HH:mm:ss";
@@ -208,7 +219,7 @@ public class Database_Helper {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String unlock_time = simpleDateFormat.format(date);
         String unlock_type = "smartphone";
-        History his = new History(owner_name,unlock_time,unlock_type);
+        History his = new History(unlock_name,unlock_time,unlock_type);
         history.child(hisID).setValue(his);
     }
 
@@ -243,7 +254,7 @@ public class Database_Helper {
 
     public void registerNewUser(IRegister iRegister, NewUser userInfo) {
         user.child(phone_login).setValue(userInfo);
-        db.getReference(PHONE_NUMBER_REGISTERED).child(phone_login).setValue(new Date().getTime());
+        db.getReference(PHONE_NUMBER_REGISTERED).child(phone_login).setValue(userInfo.getOwner_name());
         iRegister.onRegisterSuccess();
     }
 
@@ -265,12 +276,12 @@ public class Database_Helper {
 
     }
 
-    public void getName(String phone_login, final IAuth iAuth){
-        user.child(phone_login).child(OWNER_NAME).addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getAuthID(String phone_login){
+        user.child(phone_login).child(AUTH_ID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.getValue(String.class);
-                iAuth.onGetName(name);
+                auth_id = name;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -283,15 +294,14 @@ public class Database_Helper {
     }
 
     public void getOTP(String address) {
-        Log.d("getOTPof", address);
         user.child(phone_login).child(OWN_DEVICES).child(address).child(LOCK)
                 .child(LOCK_OTP)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String _otp = dataSnapshot.getValue(String.class);
-                MainActivity.otp = _otp;
-                MainActivity.otp_saved = true;
+                GetOTP_Helper.otp = _otp;
+                GetOTP_Helper.otp_save = true;
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -304,9 +314,6 @@ public class Database_Helper {
        user.child(phone_login).child(OWN_DEVICES).child(address).child(LOCK).child(LOCK_OTP).setValue(otp);
     }
 
-    public void removeOTP(String address) {
-        user.child(phone_login).child(OWN_DEVICES).child(address).child(LOCK).child(LOCK_OTP).removeValue();
-    }
 
     public void addNewDevice(String add_device_address, String device_name) {
         user.child(phone_login).child(OWN_DEVICES).child(add_device_address).setValue(new NewSMLock(device_name, new NewSMLock.lock(0, "null")));

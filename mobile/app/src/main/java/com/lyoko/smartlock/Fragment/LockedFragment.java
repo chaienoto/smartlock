@@ -9,12 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.lyoko.smartlock.Activities.MainActivity;
+import com.lyoko.smartlock.Activities.DeviceControllerActivity;
 import com.lyoko.smartlock.R;
 
-import static com.lyoko.smartlock.Activities.MainActivity.btn_door_lock;
-import static com.lyoko.smartlock.Activities.MainActivity.clicked;
-import static com.lyoko.smartlock.Activities.MainActivity.unlock;
+import static com.lyoko.smartlock.Activities.DeviceControllerActivity.btn_door_lock;
+import static com.lyoko.smartlock.Activities.DeviceControllerActivity.clicked;
+import static com.lyoko.smartlock.Activities.DeviceControllerActivity.lock;
+import static com.lyoko.smartlock.Activities.DeviceControllerActivity.unlock;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
 /**
@@ -37,8 +38,8 @@ public class LockedFragment extends Fragment {
             public boolean onLongClick(View v) {
                 if (!clicked){
                     unlock();
-                    MainActivity.db.saveHistory(MainActivity.owner_phone_number, MainActivity.current_device_address,phone_name);
-                }
+                    DeviceControllerActivity.db.saveHistory(DeviceControllerActivity.owner_phone_number, DeviceControllerActivity.current_device_address,phone_name);
+                } else lock();
                 return true;
             }
         });
