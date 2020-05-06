@@ -1,6 +1,5 @@
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_margin="5dp"
@@ -9,42 +8,42 @@
         android:background="@drawable/cardview_bg"
         android:id="@+id/item_device">
 
-        <TextView
-            android:id="@+id/tv_device_name"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:text="Name"
-            android:textColor="@color/colorBlueNight"
-            android:textAllCaps="true"
-            android:layout_alignParentTop="true"
-            android:textSize="18dp" />
 
         <ImageView
             android:id="@+id/img_device_type"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
             android:background="@drawable/ic_door_lock">
 
         </ImageView>
 
         <ImageView
             android:id="@+id/img_device_state"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/ic_power_off"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
             android:layout_marginHorizontal="10dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
-            />
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/ic_power_off" />
 
+        <TextView
+            android:id="@+id/tv_device_name"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/card_view_bg_even"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="Name"
+            android:textAllCaps="true"
+            android:textColor="@color/colorBlueNight"
+            android:textSize="16dp" />
 
     </RelativeLayout>
 

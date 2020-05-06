@@ -19,14 +19,15 @@ import com.lyoko.smartlock.Fragment.AutoSetupDeviceFragment;
 import com.lyoko.smartlock.Fragment.BarcodeScannerFragment;
 import com.lyoko.smartlock.Fragment.GetDeviceNameFragment;
 import com.lyoko.smartlock.Fragment.GetWifiFragment;
-import com.lyoko.smartlock.Interface.IQRCheck;
+import com.lyoko.smartlock.Interface.iQRCheck;
+import com.lyoko.smartlock.LyokoActivity;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Helper;
+import com.lyoko.smartlock.Utils.Database_Helper;
 import com.lyoko.smartlock.Utils.Permission;
 
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_BLUE;
 
-public class AddDeviceActivity extends AppCompatActivity implements IQRCheck,BarcodeScannerFragment.OnGetDeviceAddress {
+public class AddDeviceActivity extends LyokoActivity implements iQRCheck,BarcodeScannerFragment.OnGetDeviceAddress {
     private Permission permission;
     public static final int REQUEST_ENABLE_BT = 1;
     public static BluetoothAdapter bluetoothAdapter;

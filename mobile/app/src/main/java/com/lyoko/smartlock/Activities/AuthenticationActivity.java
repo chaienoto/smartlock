@@ -19,7 +19,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.lyoko.smartlock.Interface.IAuth;
+import com.lyoko.smartlock.Interface.iAuth;
 import com.lyoko.smartlock.R;
 import java.util.concurrent.TimeUnit;
 import static com.lyoko.smartlock.Utils.LyokoString.FORGOT;
@@ -28,13 +28,14 @@ import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_PHONE;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGIN;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGIN_SAVED;
 import static com.lyoko.smartlock.Utils.LyokoString.REGISTER;
+import static com.lyoko.smartlock.Utils.LyokoString.RESET;
 import static com.lyoko.smartlock.Utils.LyokoString.VERIFIED_MODE;
 
 import static com.lyoko.smartlock.Utils.LyokoString.auth_id;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
-public class AuthenticationActivity extends AppCompatActivity implements IAuth {
+public class AuthenticationActivity extends AppCompatActivity implements iAuth {
     TextView tv_phoneNumForVerify, tv_change_phoneNum, tv_resend_otp;
     EditText ed_otp_code;
     Button btn_Continue_auth;
@@ -57,6 +58,10 @@ public class AuthenticationActivity extends AppCompatActivity implements IAuth {
 
         Bundle bundle = getIntent().getExtras();
         mode = bundle.getString(VERIFIED_MODE);
+        if (mode==RESET){
+            tv_change_phoneNum.setVisibility(View.INVISIBLE);
+            tv_resend_otp.setVisibility(View.INVISIBLE);
+        }
 
         tv_phoneNumForVerify.setText("0"+phone_login);
         sendVerificationCode();
@@ -120,6 +125,13 @@ public class AuthenticationActivity extends AppCompatActivity implements IAuth {
                                     forgetIntent.putExtra(LOGGED_PHONE,phone_login);
                                     forgetIntent.putExtra(LOGGED_NAME,phone_name);
                                     startActivity(forgetIntent);
+                                    finish();
+                                    return;
+                                case RESET:
+                                    Intent resetIntent = new Intent(AuthenticationActivity.this, ForgotPasswordActivity.class);
+                                    resetIntent.putExtra(LOGGED_PHONE,phone_login);
+                                    resetIntent.putExtra(LOGGED_NAME,phone_name);
+                                    startActivity(resetIntent);
                                     finish();
                                     return;
                                 default:

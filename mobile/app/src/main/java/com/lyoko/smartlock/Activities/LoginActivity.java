@@ -13,8 +13,8 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Helper;
-import com.lyoko.smartlock.Interface.ILogin;
+import com.lyoko.smartlock.Utils.Database_Helper;
+import com.lyoko.smartlock.Interface.iLogin;
 
 import static com.lyoko.smartlock.Utils.LyokoString.FORGOT;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_NAME;
@@ -26,7 +26,7 @@ import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
 
-public class LoginActivity extends AppCompatActivity implements ILogin  {
+public class LoginActivity extends AppCompatActivity implements iLogin {
     EditText et_login_password;
     TextView tv_change_login_phoneNumber,tv_login_phoneNumber,tv_login_name,tv_forgot_password;
     SharedPreferences.Editor editor;

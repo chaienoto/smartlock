@@ -14,9 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Helper;
-import com.lyoko.smartlock.Interface.ICheckPhoneNumber;
-import java.math.BigInteger;
+import com.lyoko.smartlock.Utils.Database_Helper;
+import com.lyoko.smartlock.Interface.iCheckPhoneNumber;
+
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_GRAY;
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_UNLOCK;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGIN;
@@ -26,7 +26,7 @@ import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 import static com.lyoko.smartlock.Utils.LyokoString.PHONE_NUMBER_UNSUITABLE;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
-public class CheckPhoneNumberActivity extends AppCompatActivity implements ICheckPhoneNumber {
+public class CheckPhoneNumberActivity extends AppCompatActivity implements iCheckPhoneNumber {
     Database_Helper db_helper = new Database_Helper();
     public EditText et_phoneNumForCheck;
     public Button btn_checkPhoneNum;

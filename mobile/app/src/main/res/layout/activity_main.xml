@@ -1,110 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.DeviceControllerActivity">
+    android:id="@+id/device_list_layout"
+    android:background="@color/colorLynWhite"
+    tools:context=".Activities.MainActivity">
 
-    <RelativeLayout
-        android:id="@+id/main_bg"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/devices_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:paddingTop="70dp"
+        android:paddingStart="30dp"
+        android:layout_alignParentTop="true"
+        app:titleTextColor="@color/colorWhite"
+        android:background="@drawable/background_toolbar"
+        app:theme="@style/ToolbarColoredBackArrow" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/device_list_recycle_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="180dp">
+        android:layout_below="@+id/devices_toolbar"
+        android:paddingHorizontal="10dp"
+        android:paddingTop="10dp" />
 
-        <include
-            layout="@layout/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <FrameLayout
-            android:id="@+id/main_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize">
-
-        </FrameLayout>
-
-    </RelativeLayout>
-
-    <Button
-        android:id="@+id/btn_door_lock"
+    <ImageView
+        android:id="@+id/img_find_device"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:background="@drawable/lock_button_background"
-        android:elevation="1.5dp"
-        android:fontFamily="sans-serif"
-        android:gravity="center"
-        android:text="UNLOCK"
-        android:textColor="@color/colorWhite"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:layout_centerInParent="true"
+        android:background="@drawable/ic_add_lock"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8"></Button>
-
-    <Button
-        android:id="@+id/btn_lock_otp"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginBottom="64dp"
-        android:background="@drawable/ic_one_time_key"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.838"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btn_lock_history"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="MissingConstraints"></Button>
-
-    <Button
-        android:id="@+id/btn_lock_history"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:background="@drawable/ic_lock_history"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_lock_otp"
-        app:layout_constraintHorizontal_bias="0.295"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.894"></Button>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:layout_width="94dp"
-        android:layout_height="52dp"
+        android:layout_width="246dp"
+        android:id="@+id/tv6"
+        android:layout_height="126dp"
+        android:layout_below="@+id/img_find_device"
+        android:layout_alignStart="@+id/img_find_device"
+        android:layout_alignEnd="@+id/img_find_device"
+        android:layout_marginStart="-60dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="-66dp"
         android:gravity="center"
-        android:text="One Time Key"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/btn_lock_otp"
-        app:layout_constraintStart_toStartOf="@+id/btn_lock_otp"
-        app:layout_constraintTop_toBottomOf="@+id/btn_lock_otp"
-        app:layout_constraintVertical_bias="0.0">
-
-    </TextView>
-
-    <TextView
-        android:layout_width="64dp"
-        android:layout_height="52dp"
-        android:gravity="center"
-        android:text="History"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/btn_lock_history"
-        app:layout_constraintHorizontal_bias="0.207"
-        app:layout_constraintStart_toStartOf="@+id/btn_lock_history"
-        app:layout_constraintTop_toBottomOf="@+id/btn_lock_history"
-        app:layout_constraintVertical_bias="0.0">
-
-    </TextView>
+        android:text="Bạn chưa đăng kí bất kì ổ khóa nào trong hệ thống. Bấm vào biểu tượng giữa màn hình để thêm thiết bị"
+        android:textSize="18dp"
+        android:visibility="invisible" />
 
 
-
-
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

@@ -1,19 +1,20 @@
 package com.lyoko.smartlock.Activities;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.lyoko.smartlock.LyokoActivity;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Helper;
+import com.lyoko.smartlock.Utils.Database_Helper;
 import com.lyoko.smartlock.Utils.CheckView;
+import com.lyoko.smartlock.Utils.SuccessDialog;
 
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_NAME;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_PHONE;
@@ -22,7 +23,7 @@ import static com.lyoko.smartlock.Utils.LyokoString.NOT_EMPTY;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
-public class ForgotPasswordActivity extends AppCompatActivity {
+public class ForgotPasswordActivity extends LyokoActivity {
     TextView tv_forgot_login_name, tv_forgot_login_phoneNumber;
     EditText et_forgot_login_password, et_forgot_login_password_confirm;
     Button btn_forgot_login_password_confirm;
@@ -69,14 +70,9 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     private void showNoti() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        final View view = inflater.inflate(R.layout.reset_password_dialog,null);
-        TextView tv_back_to_login = view.findViewById(R.id.tv_back_to_login);
-        final AlertDialog dialog = builder.setView(view).create();
-        tv_back_to_login.setOnClickListener(new View.OnClickListener() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onClick(View v) {
+            public void run() {
                 Intent intent = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
                 intent.putExtra(LOGGED_PHONE, phone_login);
                 intent.putExtra(LOGGED_NAME, phone_name);
@@ -84,8 +80,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        });
-        dialog.show();
+        },1000);
+        new SuccessDialog(ForgotPasswordActivity.this).startLoading("Đổi mật khẩu thành công chuyển tới màn hình đăng nhập", 800);
 
     }
 }

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.cardview.widget.CardView
 xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,9 +11,21 @@ app:cardCornerRadius="25dp">
         android:layout_width="match_parent"
         android:layout_height="200dp">
 
+        <TextView
+            android:id="@+id/line12"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="14dp"
+            android:textColor="@color/colorBlueNight"
+            android:paddingHorizontal="20dp"
+            android:gravity="center"
+            android:text="Quản lý thiết bị"
+            android:textAllCaps="true" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@id/line12"
             android:layout_above="@+id/line2"
             android:orientation="horizontal">
 
@@ -28,7 +39,7 @@ app:cardCornerRadius="25dp">
                     android:layout_centerInParent="true"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:background="@drawable/ic_scan_trusted_devices" />
+                    android:background="@drawable/ic_trusted_devices" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -42,7 +53,7 @@ app:cardCornerRadius="25dp">
                     android:layout_centerInParent="true"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:background="@drawable/ic_scan_qr" />
+                    android:background="@drawable/ic_phone" />
 
             </RelativeLayout>
 
@@ -51,7 +62,7 @@ app:cardCornerRadius="25dp">
         <LinearLayout
             android:id="@+id/line2"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:layout_alignParentBottom="true"
             android:background="@color/colorLynWhite"
             android:orientation="horizontal">
@@ -61,7 +72,7 @@ app:cardCornerRadius="25dp">
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="thêm thiết bị tin cậy"
+                android:text="Thiết bị tin cậy"
                 android:textAllCaps="true" />
 
             <TextView
@@ -69,16 +80,25 @@ app:cardCornerRadius="25dp">
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="quét mã qr"
+                android:text="Điện thoại"
                 android:textAllCaps="true" />
         </LinearLayout>
 
         <View
-            android:layout_width="1dp"
             android:id="@+id/view"
+            android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
+            android:layout_below="@+id/line12"
+            android:layout_centerHorizontal="true"
             android:background="@color/colorGray" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/line12"
+            android:layout_centerHorizontal="true"
+            android:background="@color/colorLynWhite" />
+
 
 
     </RelativeLayout>

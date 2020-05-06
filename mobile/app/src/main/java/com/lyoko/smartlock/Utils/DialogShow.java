@@ -17,14 +17,18 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.lyoko.smartlock.Activities.AddDeviceActivity;
 import com.lyoko.smartlock.Activities.AutoUnlockActivity;
-import com.lyoko.smartlock.Activities.BarcodeScannerActivity;
+import com.lyoko.smartlock.Activities.CanRemoteDevicesActivity;
 import com.lyoko.smartlock.Activities.HistoryActivity;
+import com.lyoko.smartlock.Activities.LockSettingsActivity;
+import com.lyoko.smartlock.Models.Device_settings;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Helper;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static com.lyoko.smartlock.Utils.LyokoString.ACCESS_DENIED;
+import static com.lyoko.smartlock.Utils.LyokoString.DELAY;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_ADDRESS;
+import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_NAME;
+import static com.lyoko.smartlock.Utils.LyokoString.OTP_LIMIT_ENTRY;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_NOT_SAVE;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_NULL;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_REMOVED;
@@ -32,12 +36,14 @@ import static com.lyoko.smartlock.Utils.LyokoString.OTP_SAVED;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_MESSAGE;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHARE_SUB_MESSAGE;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_SHOW;
+import static com.lyoko.smartlock.Utils.LyokoString.OTP_UPDATE;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_UP_TO_DATE;
 import static com.lyoko.smartlock.Utils.LyokoString.OWNER_PHONE_NUMBER;
 import static com.lyoko.smartlock.Utils.LyokoString.auth_id;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 
 public class DialogShow {
+
     public static void showMyQR(Activity activity) {
         QRCodeWriter writer = new QRCodeWriter();
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -59,7 +65,6 @@ public class DialogShow {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         dialog.show();
     }
 
@@ -130,6 +135,7 @@ public class DialogShow {
                 GetOTP_Helper.otp = "";
                 GetOTP_Helper.otp_save = true;
                 new Database_Helper().setOTP(device_address, GetOTP_Helper.otp);
+                new Database_Helper().changed_update_code(device_owner_phoneNumber,device_address,OTP_UPDATE);
                 tv_otp.setText(OTP_NULL);
                 Toast.makeText(activity, OTP_REMOVED, LENGTH_SHORT).show();
             }
@@ -141,6 +147,7 @@ public class DialogShow {
                 if (!GetOTP_Helper.otp_save){
                     GetOTP_Helper.otp_save = true;
                     new Database_Helper().setOTP(device_address, GetOTP_Helper.otp);
+                    new Database_Helper().changed_update_code(device_owner_phoneNumber,device_address,OTP_UPDATE);
                     Toast.makeText(activity, OTP_SAVED, LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(activity, OTP_UP_TO_DATE, LENGTH_SHORT).show();
@@ -159,7 +166,7 @@ public class DialogShow {
         dialog.show();
     }
 
-    public static void showLockMoreFunction(final Activity activity, final String device_owner_phoneNumber, final String device_address, final String device_name) {
+    public static void showLockFunction(final Activity activity, final String device_owner_phoneNumber, final String device_address, final String device_name, final boolean master) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = activity.getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_lock,null);
@@ -177,6 +184,12 @@ public class DialogShow {
         tv_dialog_lock_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!master) new DeniedDialog(activity).startLoading("Từ chối truy cập",1000);
+                else {
+                    new Database_Helper().getDeviceSettings(activity,device_address);
+                    dialog.dismiss();
+                }
+
             }
         });
 
@@ -194,24 +207,29 @@ public class DialogShow {
         img_dialog_lock_otp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (device_owner_phoneNumber.equals(phone_login)){
+                if (!master) new DeniedDialog(activity).startLoading("Từ chối truy cập",1000);
+                else {
                     dialog.dismiss();
                     showOTP(activity, device_owner_phoneNumber, device_address, device_name);
-                } else Toast.makeText(activity, ACCESS_DENIED, LENGTH_SHORT).show();
+                }
             }
         });
 
         img_dialog_controller_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
-                showAddControllerDevices(activity, device_owner_phoneNumber, device_address, device_name);
+                if (!master) new DeniedDialog(activity).startLoading("Từ chối truy cập",1000);
+                else {
+                    showDevicesManagement(activity, device_owner_phoneNumber, device_address, device_name);
+                    dialog.dismiss();
+                }
+
             }
         });
         dialog.show();
     }
 
-    public static void showAddControllerDevices(final Activity activity, final String device_owner_phoneNumber, final String device_address, final String device_name) {
+    public static void showDevicesManagement(final Activity activity, final String device_owner_phoneNumber, final String device_address, final String device_name) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = activity.getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_add_controller_device_method,null);
@@ -223,7 +241,7 @@ public class DialogShow {
         img_scan_qr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(activity, BarcodeScannerActivity.class);
+                Intent intent = new Intent(activity, CanRemoteDevicesActivity.class);
                 intent.putExtra(DEVICE_ADDRESS, device_address);
                 intent.putExtra(OWNER_PHONE_NUMBER, device_owner_phoneNumber);
                 activity.startActivity(intent);
@@ -242,6 +260,15 @@ public class DialogShow {
             }
         });
         dialog.show();
+    }
+
+    public static void onGetDeviceSettings(Activity activity, Device_settings device_settings){
+        Intent intent = new Intent(activity, LockSettingsActivity.class);
+        intent.putExtra(DEVICE_ADDRESS, device_settings.getDevice_address());
+        intent.putExtra(DEVICE_NAME, device_settings.getDevice_name());
+        intent.putExtra(DELAY, device_settings.getDelay_unlock());
+        intent.putExtra(OTP_LIMIT_ENTRY, device_settings.getOtp_limit_entry());
+        activity.startActivity(intent);
     }
 
 }

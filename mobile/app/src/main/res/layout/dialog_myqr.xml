@@ -24,6 +24,7 @@ app:cardCornerRadius="25dp">
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="20dp"
             android:gravity="top|center"
             android:text="Đưa mã này cho người sở hữu thiết bị, để họ cấp quyền điều khiển cho bạn"
             android:textColor="@color/colorBlue"

@@ -14,9 +14,6 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.lyoko.smartlock.Interface.IFindLock;
-
-import static com.lyoko.smartlock.Utils.FormatData.hexToString;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_CHIP_ID_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_CLIENT_CONFIG_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_OWNER_PHONE_NUMBER_UUID;
@@ -29,7 +26,7 @@ import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
     private BluetoothGatt gatt;
-    private IFindLock iFindLock;
+    private com.lyoko.smartlock.Interface.iFindLock iFindLock;
     private int mConnectionState = STATE_DISCONNECTED;
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -48,7 +45,7 @@ public class BluetoothLeService extends Service {
     public final static String EXTRA_DATA = "com.lyoko.smartlock.Services.BluetoothLeService.EXTRA_DATA";
 
 
-    public BluetoothLeService(Context context, boolean autoConnect, BluetoothDevice bluetoothDevice, IFindLock iFindLock) {
+    public BluetoothLeService(Context context, boolean autoConnect, BluetoothDevice bluetoothDevice, com.lyoko.smartlock.Interface.iFindLock iFindLock) {
         this.context = context;
         this.autoConnect = autoConnect;
         this.iFindLock = iFindLock;

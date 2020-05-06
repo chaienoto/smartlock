@@ -8,10 +8,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.lyoko.smartlock.Adapters.HistoriesAdapter;
+import com.lyoko.smartlock.LyokoActivity;
 import com.lyoko.smartlock.Models.History;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Helper;
-import com.lyoko.smartlock.Interface.IHistory;
+import com.lyoko.smartlock.Utils.Database_Helper;
+import com.lyoko.smartlock.Interface.iHistory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,7 +23,7 @@ import static com.lyoko.smartlock.Utils.LyokoString.COLOR_ODD_POSITION;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_ADDRESS;
 import static com.lyoko.smartlock.Utils.LyokoString.OWNER_PHONE_NUMBER;
 
-public class HistoryActivity extends AppCompatActivity implements IHistory {
+public class HistoryActivity extends LyokoActivity implements iHistory {
     Database_Helper db_service = new Database_Helper();
     RecyclerView histories_recyclerView;
     HistoriesAdapter historyAdapter;

@@ -10,62 +10,71 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lyoko.smartlock.Adapters.TrustedDevicesAdapter;
 import com.lyoko.smartlock.Adapters.UnknownDevicesAdapter;
+import com.lyoko.smartlock.Interface.iTrustedDevice;
+import com.lyoko.smartlock.LyokoActivity;
 import com.lyoko.smartlock.Models.BLE_Device;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Helper;
+import com.lyoko.smartlock.Utils.Database_Helper;
+import com.lyoko.smartlock.Utils.LoadingDialog;
+import com.lyoko.smartlock.Utils.SetupStatusBar;
 
 import java.util.ArrayList;
 
-import static com.lyoko.smartlock.Utils.LyokoString.COLOR_EVEN_POSITION;
-import static com.lyoko.smartlock.Utils.LyokoString.COLOR_ODD_POSITION;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_ADDRESS;
 import static com.lyoko.smartlock.Utils.LyokoString.OWNER_PHONE_NUMBER;
+import static com.lyoko.smartlock.Utils.LyokoString.TRUSTED_DEVICES_ADDRESS;
+import static com.lyoko.smartlock.Utils.LyokoString.TRUSTED_DEVICES_NAME;
 
-public class AutoUnlockActivity extends AppCompatActivity implements UnknownDevicesAdapter.OnUnknownBLEDeviceClickedListener {
+public class AutoUnlockActivity extends LyokoActivity implements UnknownDevicesAdapter.OnUnknownBLEDeviceClickedListener, TrustedDevicesAdapter.OnTrustedDeviceClickedListener, iTrustedDevice {
     private static final int REQUEST_ENABLE_BT = 1;
-    Toolbar auto_unlock_toolbar;
-    RecyclerView trusted_device_recycle_view, unknown_device_recycle_view;
+    Toolbar trusted_devices_toolbar;
+    static RecyclerView trusted_device_recycle_view;
     Button btn_add_trusted_device;
     String device_count = "0";
+    String add_trusted_device_name, add_trusted_device_address;
     ArrayList<BLE_Device> unknownList = new ArrayList<>();
     ArrayList<String> _unknownList = new ArrayList<>();
+    ArrayList<String> trustedList = new ArrayList<>();
     BluetoothAdapter bluetoothAdapter;
     BluetoothManager bluetoothManager;
-    RelativeLayout trusted_device_layout;
-    TextView tv8;
-    UnknownDevicesAdapter unknownDevicesAdapter;
+    LoadingDialog loadingDialog ;
     private boolean mScanning;
     private Handler handler;
     private static final long SCAN_PERIOD = 3000;
     private String current_device_address, owner_phone_number;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_unlock);
-        auto_unlock_toolbar = findViewById(R.id.auto_unlock_toolbar);
+        SetupStatusBar.setup(AutoUnlockActivity.this);
+        trusted_devices_toolbar = findViewById(R.id.trusted_devices_toolbar);
         trusted_device_recycle_view = findViewById(R.id.trusted_device_recycle_view);
-        unknown_device_recycle_view = findViewById(R.id.unknown_device_recycle_view);
         btn_add_trusted_device = findViewById(R.id.btn_add_trusted_device);
-        trusted_device_layout = findViewById(R.id.trusted_device_layout);
-        tv8 = findViewById(R.id.tv8);
-        auto_unlock_toolbar.setTitle("Quản lý thiết bị Auto Unlock");
-        setSupportActionBar(auto_unlock_toolbar);
+        loadingDialog = new LoadingDialog(AutoUnlockActivity.this);
+        trusted_devices_toolbar.setTitle("Quản lý thiết bị Auto Unlock");
+//        setSupportActionBar(trusted_devices_toolbar);
+
         Bundle bundle = getIntent().getExtras();
         current_device_address = bundle.getString(DEVICE_ADDRESS);
         owner_phone_number = bundle.getString(OWNER_PHONE_NUMBER);
+
+        new Database_Helper().getTrustedDevice(current_device_address, this);
+        loadingDialog.startLoading("Đang lấy giữ liệu");
+
         bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
@@ -77,6 +86,8 @@ public class AutoUnlockActivity extends AppCompatActivity implements UnknownDevi
         btn_add_trusted_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!mScanning) scanLeDevice(false);
+                loadingDialog.startLoading("Đang tìm kiếm");
                 _unknownList.clear();
                 unknownList.clear();
                 scanLeDevice(true);
@@ -92,6 +103,8 @@ public class AutoUnlockActivity extends AppCompatActivity implements UnknownDevi
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (device.getName() != null )
+                            if (!trustedList.contains(device.getName()))
                             if (!_unknownList.contains(device.getAddress()) && rssi > -69){
                                 _unknownList.add(device.getAddress());
                                 unknownList.add(new BLE_Device(device.getName(),device.getAddress().toLowerCase()));
@@ -103,16 +116,15 @@ public class AutoUnlockActivity extends AppCompatActivity implements UnknownDevi
 
     private void scanLeDevice(final boolean enable) {
         if (enable) {
-            // Stops scanning after a pre-defined scan period.
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mScanning = false;
                     bluetoothAdapter.stopLeScan(leScanCallback);
+                    loadingDialog.stopLoading();
                     showUnknownDevice();
                 }
             }, SCAN_PERIOD);
-
             mScanning = true;
             bluetoothAdapter.startLeScan(leScanCallback);
         } else {
@@ -122,36 +134,109 @@ public class AutoUnlockActivity extends AppCompatActivity implements UnknownDevi
     }
 
     private void showUnknownDevice() {
-        tv8.setVisibility(View.VISIBLE);
-        if (unknownList.size() % 2 != 0){
-            trusted_device_layout.setBackgroundColor(COLOR_ODD_POSITION);
-        } else trusted_device_layout.setBackgroundColor(COLOR_EVEN_POSITION);
-        unknownDevicesAdapter = new UnknownDevicesAdapter(this, unknownList);
+        AlertDialog.Builder builder = new AlertDialog.Builder(AutoUnlockActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_scanned_unknown_devices,null);
+        RecyclerView unknown_device_recycle_view = view.findViewById(R.id.unknown_device_recycle_view);
+        TextView tv_rescan = view.findViewById(R.id.tv_rescan);
+        TextView tv_add_trusted_device_confirm = view.findViewById(R.id.tv_add_trusted_device_confirm);
+        TextView tv_nothing_to_show = view.findViewById(R.id.tv_nothing_to_show);
+        if (unknownList.size()== 0) {
+            tv_add_trusted_device_confirm.setEnabled(false);
+            tv_nothing_to_show.setVisibility(View.VISIBLE);
+        }
+        UnknownDevicesAdapter unknownDevicesAdapter = new UnknownDevicesAdapter(this, unknownList);
         unknownDevicesAdapter.setOnUnknownBLEDeviceClickedListener(this);
         unknown_device_recycle_view.setAdapter(unknownDevicesAdapter);
         unknown_device_recycle_view.setLayoutManager(new LinearLayoutManager(this));
+        builder.setView(view);
+        final AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        tv_add_trusted_device_confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(AutoUnlockActivity.this, "Thêm Thành Công", Toast.LENGTH_SHORT).show();
+                new Database_Helper().addTrustedDevice(current_device_address, device_count, add_trusted_device_name, add_trusted_device_address);
+                dialog.dismiss();
+            }
+        });
+
+        tv_rescan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                loadingDialog.startLoading("Đang tìm lại");
+                _unknownList.clear();
+                unknownList.clear();
+                scanLeDevice(true);
+            }
+        });
+        dialog.show();
+
     }
 
     @Override
     public void onUnknownBLEDeviceClickedListener(final String ble_name, final String ble_address) {
-        AlertDialog alertDialog = new AlertDialog.Builder(AutoUnlockActivity.this).create();
-        alertDialog.setTitle("THÔNG BÁO");
-        alertDialog.setMessage("Bạn có muốn thêm "+ ble_name+" làm thiết bị mở khóa chứ ");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        new Database_Helper().addTrustedDevice(current_device_address, owner_phone_number, device_count, ble_name, ble_address);
-                        tv8.setVisibility(View.INVISIBLE);
+        add_trusted_device_name = ble_name;
+        add_trusted_device_address = ble_address;
 
-                    }
-                });
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "KHÔNG",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
+    }
+
+    @Override
+    public void onTrustedDeviceClickedListener(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AutoUnlockActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        final View view = inflater.inflate(R.layout.dialog_remove_trusted_device,null);
+        TextView tv_trusted_device_name = view.findViewById(R.id.tv_trusted_device_name);
+        TextView tv_dialog_remove_trusted_device_cancel = view.findViewById(R.id.tv_dialog_remove_trusted_device_cancel);
+        TextView tv_dialog_remove_trusted_device_confirm = view.findViewById(R.id.tv_dialog_remove_trusted_device_confirm);
+
+        tv_trusted_device_name.setText("Bạn có muốn xóa thiết bị "+ trustedList.get(position)+ " ra khỏi danh sách thiết bị tin cậy không?");
+
+        builder.setView(view);
+        final AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        tv_dialog_remove_trusted_device_confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                trustedList.remove(position);
+                UnknownDevicesAdapter unknownDevicesAdapter = new UnknownDevicesAdapter(AutoUnlockActivity.this, unknownList);
+                unknownDevicesAdapter.setOnUnknownBLEDeviceClickedListener(AutoUnlockActivity.this);
+                trusted_device_recycle_view.setAdapter(unknownDevicesAdapter);
+                trusted_device_recycle_view.setLayoutManager(new LinearLayoutManager(AutoUnlockActivity.this));
+                Toast.makeText(AutoUnlockActivity.this, "Xóa Thành Công", Toast.LENGTH_SHORT).show();
+                new Database_Helper().updateTrustedDevices(position,current_device_address,TRUSTED_DEVICES_ADDRESS);
+                new Database_Helper().updateTrustedDevices(position,current_device_address,TRUSTED_DEVICES_NAME);
+                dialog.dismiss();
+            }
+        });
+
+        tv_dialog_remove_trusted_device_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+
+    }
+
+    @Override
+    public void showTrustedDevice(ArrayList<String> list) {
+        trustedList = list;
+        loadingDialog.stopLoading();
+        device_count = String.valueOf(list.size());
+        TrustedDevicesAdapter adapter = new TrustedDevicesAdapter(AutoUnlockActivity.this, trustedList);
+        adapter.setOnTrustedDeviceClickedListener(this);
+        trusted_device_recycle_view.setAdapter(adapter);
+        trusted_device_recycle_view.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    public void noDeviceToShow() {
+        Toast.makeText(AutoUnlockActivity.this, "Không có gì", Toast.LENGTH_SHORT).show();
+
     }
 }

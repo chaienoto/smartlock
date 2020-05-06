@@ -1,6 +1,4 @@
 package com.lyoko.smartlock.Utils;
-import android.util.Log;
-import com.lyoko.smartlock.Services.Database_Helper;
 
 import java.util.Random;
 

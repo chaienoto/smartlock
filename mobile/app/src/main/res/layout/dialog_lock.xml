@@ -92,7 +92,7 @@
                     android:gravity="center_horizontal"
                     android:text="Lịch sử"
                     android:textAllCaps="true"
-                    android:textSize="10dp" />
+                    android:textSize="11dp" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -101,16 +101,16 @@
                     android:gravity="center_horizontal"
                     android:text="otp"
                     android:textAllCaps="true"
-                    android:textSize="10dp" />
+                    android:textSize="11dp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:text="thêm thiết bị tin cậy"
+                    android:text="Quản lý thiết bị"
                     android:textAllCaps="true"
-                    android:textSize="10dp" />
+                    android:textSize="11dp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -129,7 +129,7 @@
             android:gravity="center"
             android:text="Cài đặt thiết bị"
             android:textAllCaps="true"
-            android:textColor="@color/colorBlueSoda" />
+            android:textColor="@color/colorBlueNight" />
 
 
     </RelativeLayout>

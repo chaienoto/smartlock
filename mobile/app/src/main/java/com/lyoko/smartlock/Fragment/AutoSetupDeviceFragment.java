@@ -14,14 +14,14 @@ import com.lyoko.smartlock.Activities.AddDeviceActivity;
 import com.lyoko.smartlock.Activities.MainActivity;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Services.BluetoothLeService;
-import com.lyoko.smartlock.Services.Database_Helper;
+import com.lyoko.smartlock.Utils.Database_Helper;
 import com.lyoko.smartlock.Services.Find_Device;
-import com.lyoko.smartlock.Interface.IFindLock;
+import com.lyoko.smartlock.Interface.iFindLock;
 
 import static com.lyoko.smartlock.Activities.AddDeviceActivity.device_name;
 import static com.lyoko.smartlock.Utils.LyokoString.add_device_address;
 
-public class AutoSetupDeviceFragment extends Fragment implements IFindLock {
+public class AutoSetupDeviceFragment extends Fragment implements iFindLock {
 
 
     private BluetoothLeService bluetoothLeService;

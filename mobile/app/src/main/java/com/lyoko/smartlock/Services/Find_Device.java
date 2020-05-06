@@ -5,13 +5,11 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Handler;
 
-import com.lyoko.smartlock.Interface.IFindLock;
-
 
 public class Find_Device {
     private String device_address ;
     private BluetoothAdapter bluetoothAdapter;
-    private IFindLock iFindLock;
+    private com.lyoko.smartlock.Interface.iFindLock iFindLock;
     private Context context;
     private Boolean isFound;
     private static final long SCAN_PERIOD = 1000;
@@ -19,7 +17,7 @@ public class Find_Device {
     private boolean mScanning;
     private Handler handler;
 
-    public Find_Device(Context context, String device_address, BluetoothAdapter adapter, IFindLock iFindLock) {
+    public Find_Device(Context context, String device_address, BluetoothAdapter adapter, com.lyoko.smartlock.Interface.iFindLock iFindLock) {
         this.context = context;
         this.iFindLock = iFindLock;
         this.device_address = device_address;

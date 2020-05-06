@@ -1,13 +1,18 @@
 package com.lyoko.smartlock.Models;
 
 public class Remote_device {
-    String ownerPhoneNumber,address,device_name;
+    String ownerPhoneNumber, address, device_name;
 
 
     public Remote_device(String ownerPhoneNumber, String address, String device_name) {
         this.ownerPhoneNumber = ownerPhoneNumber;
         this.address = address;
         this.device_name = device_name;
+    }
+
+    public Remote_device(String ownerPhoneNumber, String address) {
+        this.ownerPhoneNumber = ownerPhoneNumber;
+        this.address = address;
     }
 
     public String getOwnerPhoneNumber() {

@@ -9,18 +9,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.lyoko.smartlock.Interface.IRegister;
+import com.lyoko.smartlock.Interface.iRegister;
 import com.lyoko.smartlock.Models.NewUser;
 import com.lyoko.smartlock.R;
-import com.lyoko.smartlock.Services.Database_Helper;
+import com.lyoko.smartlock.Utils.Database_Helper;
 
-import static com.lyoko.smartlock.Utils.LyokoString.AUTH_ID;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGIN_SAVED;
 import static com.lyoko.smartlock.Utils.LyokoString.NOT_EMPTY;
 import static com.lyoko.smartlock.Utils.LyokoString.REGISTER_SUCCESSFULLY;
 import static com.lyoko.smartlock.Utils.LyokoString.auth_id;
 
-public class RegisterActivity extends AppCompatActivity implements IRegister {
+public class RegisterActivity extends AppCompatActivity implements iRegister {
     EditText et_password, et_password_confirm, et_ownerName;
     Button btn_register;
     String  password, password_confirm, owner_name;

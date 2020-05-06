@@ -12,11 +12,11 @@
 #include "Adafruit_MPR121.h"
 #define EEPROM_SIZE 256
 #define FIREBASE_HOST "lyoko-smartlock.firebaseio.com"
-#define FIREBASE_AUTH "OiYuKBdHNenNFVtrb4Ws4ieaNgD3Z6rE2KGQhSiS"
-#define ledPin 2
-#define relayPin 4
-#define holdLed 15
-#define speaker 5
+#define FIREBASE_AUTH "85viJDSNb1ClLOu5yULeAorEXhaEXfebxJroE2dy"
+#define FIREBASE_FCM_SERVER_KEY "AAAAVh-iOpk:APA91bFCpQgGhwc-YQsoUAqR57zRMa29wB11XJ2M5XnfG2LVqI9Fx4dLNBgV0lBaJWWFUibESwl9wbN2-Q3Uxzw7HJaSwdUl6HCCIXFTAThcnhYAEit731WJGxJD1mSbyWtZQGAskkJr"
+#define ledPin 15
+#define relayPin 2
+#define speaker 4
 #define SERVICE_LYOKO_UUID                      "7060da7f-1ce6-43d1-b58c-2c595f8f9a56"
 #define CHARACTERISTIC_WIFI_CREDENTIAL_UUID     "b82150b1-48e9-4a1b-a18c-3f2c140a8104"
 #define CHARACTERISTIC_RESPONSE_UUID            "459d013b-061c-430b-a4fe-734cc22012cb"
@@ -67,13 +67,17 @@ String trusted_devices_address_path;
 String trusted_devices_name_path;
 String update_code_path;
 String alert_code_path;
+String fcm_path;
+String otp_limit_entry_path;
+
 
 // TIME DELAYTION
 int stateUnlockDelay;
+
 int otpTypingDelay = 5000;
 int availableToUnlockTime = 10000;
 int devicesScanDelay = 10000;
-int updateDataDelay = 500;
+int updateDataDelay = 1000;
 unsigned long devicesScanPrevMillis;
 unsigned long otpTypingPrevMillis;
 unsigned long updateDataPrevMillis;
@@ -82,14 +86,15 @@ unsigned long stateUnlockPrevMillis;
 
 // device info
 int modeIndex;
+int otp_limit_entry;
 int state, _state;
-String otp;
-String _otp = "";
+String otp, _otp ;
+String owner_fcm;
 String trusted_devices_name[4];
 String trusted_devices_address[4];
 boolean otpTyping = false;
 boolean readyToUnlock = false;
-boolean dataSendinng = false;
+boolean otpWasConfirm = false;
 int error_count = 0;
 int update_code = -99;
 int deviceFound = -1;
@@ -142,13 +147,12 @@ void holdOn() {
 }
 
 void historySave(String unlock_name, String unlock_type) {
+  Serial.println("Saving History.....");
   char timeStringBuff[50];
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) return;
   strftime(timeStringBuff, sizeof(timeStringBuff), "%A, %B %d %Y %H:%M:%S", &timeinfo);
   json.add("unlock_name", unlock_name); json.add("unlock_type", unlock_type); json.add("unlock_time", String(timeStringBuff));
-
-  Serial.println("Saving History.....");
   Firebase.pushJSON(firebaseData, histories_path, json);
   json.clear();
 }
@@ -164,11 +168,10 @@ void sound(int soundCode) {
 
 void ConfirmOTP() {
   if (otp.equals(_otp)) {
-    openTheGate(); otp = ""; error_count = 0;
+    openTheGate(); otp = ""; error_count = 0; otpWasConfirm = true; otpTyping = false;
     historySave("Người có mã otp", "otp");
     Firebase.setString(firebaseData, lock_otp_path, "");
-  } else
-    error_count++;
+  } else  error_count++;
   _otp = "";
 }
 
@@ -268,14 +271,16 @@ void getDataCredentail() {
   }
   // SETTING DATABASE PATH
   parentPath = "/lyoko_users/" + ownerPNumber + "/own_devices/" + chipID + "/";
-  lock_otp_path = parentPath + "lock/otp";
-  lock_state_path = parentPath + "lock/state";
-  lock_delay_path = parentPath + "lock/delay";
+  lock_otp_path = parentPath + "otp";
+  lock_state_path = parentPath + "state";
+  lock_delay_path = parentPath + "delay";
   histories_path = parentPath + "histories";
-  trusted_devices_address_path = parentPath + "lock/trusted_devices_address";
-  trusted_devices_name_path = parentPath + "lock/trusted_devices_name";
-  update_code_path = parentPath + "lock/update_code";
-  alert_code_path = parentPath + "lock/alert_code";
+  trusted_devices_address_path = parentPath + "trusted_devices_address";
+  trusted_devices_name_path = parentPath + "trusted_devices_name";
+  update_code_path = parentPath + "update_code";
+  alert_code_path = parentPath + "alert_code";
+  otp_limit_entry_path = parentPath + "otp_limit_entry";
+  fcm_path = "/lyoko_users/" + ownerPNumber + "/fcm";
 
 }
 
@@ -309,7 +314,7 @@ void setup() {
   ledcAttachPin(speaker, channel);
   pinMode(ledPin, OUTPUT);
   pinMode(relayPin, OUTPUT);
-  pinMode(holdLed, OUTPUT);
+
   if (!EEPROM.begin(EEPROM_SIZE)) {
     delay(1000);
   }
@@ -332,6 +337,21 @@ void updateUnlockDelay() {
   stateUnlockDelay = firebaseData.intData();
   Serial.print("UPDATE DELAY: ");
   Serial.println(stateUnlockDelay);
+  feedbackUpdate();
+}
+
+void updateOTPLimitEntry() {
+  Firebase.getInt(firebaseData, otp_limit_entry_path);
+  otp_limit_entry = firebaseData.intData();
+  Serial.print("OTP LIMIT ENTRY: ");
+  Serial.println(otp_limit_entry);
+  feedbackUpdate();
+}
+void updateOwnerFcm() {
+  Firebase.getString(firebaseData, fcm_path);
+  owner_fcm = firebaseData.stringData();
+  Serial.print("UPDATE FCM: ");
+  Serial.println(owner_fcm);
   feedbackUpdate();
 }
 
@@ -371,13 +391,15 @@ void feedbackUpdate() {
 }
 void getAllData() {
   Serial.println("DATA GET THE FIRST TIME");
-  otpTyping = false;
+  otpTyping = false; _otp = "";
   updateUnlockDelay();
   updateOTP();
   updateTrustedDevices();
+  updateOwnerFcm();
+  updateOTPLimitEntry();
 }
 void listenForUpdateData() {
-  int checkNullUpdate = 0;
+  int nothing_to_update = 0;
   if (Firebase.getInt(firebaseData, update_code_path)) {
     switch (firebaseData.intData()) {
       case 0: _state = 0; stateCheck(); break;
@@ -386,47 +408,72 @@ void listenForUpdateData() {
       case 3: updateUnlockDelay(); break;
       case 4: updateOTP(); break;
       case 5: updateTrustedDevices(); break;
-      default: checkNullUpdate = 1;
+      case 6: updateOTPLimitEntry(); break;
+      case 7: updateOwnerFcm(); break;
+      default: nothing_to_update = 1;
     }
-    if (checkNullUpdate) {
+    if (nothing_to_update) {
       Serial.print("DATA UP TO DATE TIME: ");
       Serial.println(millis() / 1000);
     }
     updateDataPrevMillis = millis();
   } else ESP.restart();
 }
-void offGettingOTP() {
+void otpState() {
   Serial.print("ERROR COUNT: ");
   Serial.println(error_count);
   Serial.print("otpTyping: ");
   Serial.println(otpTyping);
 }
 void notifyToPhone() {
-  offGettingOTP();
+  otpState();
   Serial.println("không cho nhập OTP...");
 }
 void getTypingOtp() {
-  otpTypingPrevMillis = millis(); sound(successSound);
+  unsigned long ledMillis;
+  int _led = 1;
+  Serial.println("Bắt đầu lấy OTP.....");
+  digitalWrite(ledPin, _led);
+  ledMillis = millis();
+  otpTypingPrevMillis = millis();
+  sound(successSound);
   while (millis() - otpTypingPrevMillis < otpTypingDelay) {
-    Serial.println(_otp);
+    if (_otp.length() == 6) ConfirmOTP();
     currtouched = cap.touched();
-    while (_otp.length() == 6) ConfirmOTP();
+    if (millis() - ledMillis > 300 ) {
+      digitalWrite(ledPin, _led);
+      ledMillis = millis(); _led = 1;
+    } else _led = 0;
     if (!(currtouched & _BV(8)) && (lasttouched & _BV(8)) ) {
       sound(touchSound); if (_otp != "") _otp =  _otp.substring(0, _otp.length() - 1 );
     }
-    for (uint8_t i = 1; i < 12; i++)
-      if (i != 8)
-        if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) )
+    for (uint8_t i = 1; i < 12; i++) {
+      if (i != 8) {
+        if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
           if (_otp.length() < 6) {
             _otp = _otp + keypad[i];
             Serial.print("otp: ");
-
+            Serial.println(_otp);
             sound(touchSound);
           }
+        }
+      }
+    }
     lasttouched = currtouched;
   }
-  if (_otp.length() < 6) error_count++;
-  offGettingOTP(); _otp = "";
+  if (!otpWasConfirm) error_count++;
+  otpState(); _otp = ""; otpWasConfirm = false;
+  Serial.println("Kết thúc lấy OTP");
+}
+void ledBlink(int j) {
+  for (int i = 0; i <= j; i++) {
+    digitalWrite(ledPin, 1);
+      ledcWrite(channel, 255);
+    delay(400);
+    digitalWrite(ledPin, 0);
+      ledcWrite(channel, 0);
+    delay(100);
+  }
 }
 
 void scanTrustedDevices() {
@@ -442,7 +489,7 @@ void loop() {
     delay(200);
   }
   if (millis() / 1000 > 1000) ESP.restart();
-
+  currtouched = cap.touched();
   while (state == 1) {
     Serial.println("Đang Mở.....");
     if (millis() - stateUnlockPrevMillis >= stateUnlockDelay) lockTheGate();
@@ -455,13 +502,15 @@ void loop() {
     } else  Serial.println(firebaseData.intData());
     delay (200);
   }
-  currtouched = cap.touched();
-  if (!(currtouched & _BV(0)) && (lasttouched & _BV(0)) )
-      if (otp != "" && error_count < 3 )  getTypingOtp(); else  sound(otp_null);
+  if (!(currtouched & _BV(0)) && (lasttouched & _BV(0)) ) {
+
+    if ( otp != "" && error_count < otp_limit_entry )  getTypingOtp(); else ledBlink(3);
+  }
+
   if (!(currtouched & _BV(8)) && (lasttouched & _BV(8)) )
     if (deviceFound != -1) {
       sound(touchSound); openTheGate(); historySave(trusted_devices_name[deviceFound], "trusted_devices");
-    }
+    } else ledBlink(2);
   lasttouched = currtouched;
 
   if (millis() - updateDataPrevMillis > updateDataDelay) listenForUpdateData();

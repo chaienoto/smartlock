@@ -39,23 +39,18 @@ public class UnknownDevicesAdapter extends RecyclerView.Adapter<UnknownDevicesAd
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View historyActivityView = inflater.inflate(R.layout.item_ble_device, parent, false);
-        ViewHolder viewHolder = new ViewHolder(historyActivityView);
+        View view = inflater.inflate(R.layout.item_ble_device, parent, false);
+        ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
-
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         holder.tv_ble_device_name.setText(list.get(position).getBle_name());
-        if (position % 2 == 0){
-            holder.item_ble_device.setBackgroundColor(COLOR_EVEN_POSITION);
-        } else {
-            holder.item_ble_device.setBackgroundColor(COLOR_ODD_POSITION);
-        }
         holder.item_ble_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                v.setBackgroundColor(COLOR_EVEN_POSITION);
                 callback.onUnknownBLEDeviceClickedListener(list.get(position).getBle_name(),list.get(position).getBle_address());
             }
         });

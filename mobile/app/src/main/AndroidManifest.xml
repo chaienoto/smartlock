@@ -10,7 +10,9 @@
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
     <uses-feature android:name="android.hardware.camera." />
-    <uses-permission android:name="android.permission.LOCAL_MAC_ADDRESS"
+
+    <uses-permission
+        android:name="android.permission.LOCAL_MAC_ADDRESS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -25,12 +27,16 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
+        android:name=".Lyoko"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.AutoUnlockActivity"></activity>
+        <activity android:name=".Activities.MyAccountActivity"></activity>
+        <activity android:name=".Activities.CanRemoteDevicesActivity" />
+        <activity android:name=".Activities.LockSettingsActivity" />
+        <activity android:name=".Activities.AutoUnlockActivity" />
         <activity android:name=".Activities.ForgotPasswordActivity" />
         <activity
             android:name=".Activities.CheckPhoneNumberActivity"
@@ -47,7 +53,6 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".Activities.HistoryActivity"
-            android:parentActivityName=".Activities.DeviceControllerActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
@@ -60,11 +65,6 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".Activities.RegisterActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
-            android:name=".Activities.DeviceControllerActivity"
-            android:parentActivityName=".Activities.MainActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
@@ -86,6 +86,16 @@
         <meta-data
             android:name="com.google.android.gms.vision.DEFENDENCIES"
             android:value="barcode" />
+
+        <service
+            android:name=".LyokoMessage"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+
     </application>
 
 </manifest>

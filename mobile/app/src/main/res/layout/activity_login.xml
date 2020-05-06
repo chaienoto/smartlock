@@ -9,12 +9,14 @@
     android:padding="40dp"
     tools:context=".Activities.LoginActivity">
 
+
+
     <TextView
         android:id="@+id/tv3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="50dp"
         android:text="Xin Chào!"
         android:textColor="@color/colorWhite"
         android:textSize="18dp"
@@ -45,22 +47,22 @@
     <EditText
         android:id="@+id/et_login_password"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="55dp"
         android:layout_below="@+id/tv_login_phoneNumber"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
         android:background="@drawable/bogocne"
         android:gravity="center"
         android:hint="Mật khẩu"
+        android:paddingHorizontal="20sp"
         android:inputType="numberPassword"
         android:maxLength="6"
-        android:textColorHighlight="@color/colorBlack"
         android:textSize="20dp" />
 
     <Button
         android:id="@+id/btn_login"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_below="@+id/et_login_password"
         android:layout_marginTop="10dp"
         android:background="@drawable/bogocne"
@@ -90,5 +92,16 @@
         android:text="QUÊN MẬT KHẨU"
         android:textColor="@color/colorWhite"
         android:textSize="15dp" />
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignStart="@+id/et_login_password"
+        android:layout_alignTop="@+id/et_login_password"
+        android:layout_alignBottom="@+id/et_login_password"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/ic_password_24dp" />
 
 </RelativeLayout>

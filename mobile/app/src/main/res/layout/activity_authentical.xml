@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="50dp"
         android:text="Xác thực OTP"
         android:textColor="@color/colorWhite"
         android:textSize="18dp"

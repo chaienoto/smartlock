@@ -1,21 +1,15 @@
 package com.lyoko.smartlock.Activities;
 
-
-import androidx.appcompat.app.AppCompatActivity;
-
-
-
 import android.app.Activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.TextView;
+
 
 
 import com.google.android.gms.vision.CameraSource;
@@ -23,12 +17,13 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import com.lyoko.smartlock.LyokoActivity;
 import com.lyoko.smartlock.R;
 
 import java.io.IOException;
 
 
-public class BarcodeScannerActivity extends AppCompatActivity {
+public class BarcodeScannerActivity extends LyokoActivity {
     public static final String PHONE_NUM = "PHONE_NUM";
     SurfaceView surfaceView;
     CameraSource cameraSource;
