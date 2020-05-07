@@ -9,20 +9,28 @@
 #include <FirebaseESP32.h>
 #include <WiFi.h>
 #include <Wire.h>
+#include <Adafruit_NeoPixel.h>
 #include "Adafruit_MPR121.h"
 #define EEPROM_SIZE 256
 #define FIREBASE_HOST "lyoko-smartlock.firebaseio.com"
 #define FIREBASE_AUTH "85viJDSNb1ClLOu5yULeAorEXhaEXfebxJroE2dy"
 #define FIREBASE_FCM_SERVER_KEY "AAAAVh-iOpk:APA91bFCpQgGhwc-YQsoUAqR57zRMa29wB11XJ2M5XnfG2LVqI9Fx4dLNBgV0lBaJWWFUibESwl9wbN2-Q3Uxzw7HJaSwdUl6HCCIXFTAThcnhYAEit731WJGxJD1mSbyWtZQGAskkJr"
-#define ledPin 15
-#define relayPin 2
-#define speaker 4
+
+#define LED_GREEN_PIN 2
+#define LED_RED_PIN 4
+#define SPEAKER_PIN 5
+#define LED_BLUE_PIN 15
+#define RELAY_PIN 23
+
 #define SERVICE_LYOKO_UUID                      "7060da7f-1ce6-43d1-b58c-2c595f8f9a56"
 #define CHARACTERISTIC_WIFI_CREDENTIAL_UUID     "b82150b1-48e9-4a1b-a18c-3f2c140a8104"
 #define CHARACTERISTIC_RESPONSE_UUID            "459d013b-061c-430b-a4fe-734cc22012cb"
 #define CHARACTERISTIC_OWNER_PHONE_NUMBER_UUID  "e7608c36-76e7-4e9c-9263-1786f7a2f854"
 #define CHARACTERISTIC_CHIP_ID_UUID             "95374a93-101c-4f2c-a590-2e8fcb3dfd37"
 
+#ifndef _BV
+#define _BV(bit) (1 << (bit))
+#endif
 Adafruit_MPR121 cap = Adafruit_MPR121();
 
 
@@ -74,7 +82,7 @@ String otp_limit_entry_path;
 // TIME DELAYTION
 int stateUnlockDelay;
 
-int otpTypingDelay = 5000;
+int otpTypingDelay = 10000;
 int availableToUnlockTime = 10000;
 int devicesScanDelay = 10000;
 int updateDataDelay = 1000;
@@ -82,13 +90,13 @@ unsigned long devicesScanPrevMillis;
 unsigned long otpTypingPrevMillis;
 unsigned long updateDataPrevMillis;
 unsigned long stateUnlockPrevMillis;
-
+unsigned long ledMillis;
 
 // device info
 int modeIndex;
 int otp_limit_entry;
 int state, _state;
-String otp, _otp ;
+String otp;
 String owner_fcm;
 String trusted_devices_name[4];
 String trusted_devices_address[4];
@@ -100,7 +108,7 @@ int update_code = -99;
 int deviceFound = -1;
 int available_devices_count = 0;
 
-// speaker setting
+// SPEAKER_PIN setting
 int freq = 16000;
 int channel = 0;
 int resolution = 8;
@@ -122,8 +130,8 @@ void stateCheck() {
 }
 void stateChange(int _s) {
   if (_s != 2) {
-    digitalWrite(ledPin, _s);
-    digitalWrite(relayPin, _s);
+    //    digitalWrite(LED_PIN, _s);
+    digitalWrite(RELAY_PIN, _s);
   }
   Firebase.setInt(firebaseData, lock_state_path, _s);
 }
@@ -143,7 +151,8 @@ void openTheGate() {
 }
 
 void holdOn() {
-  stateChange(2);
+  state = 2;
+  stateChange(state);
 }
 
 void historySave(String unlock_name, String unlock_type) {
@@ -166,13 +175,14 @@ void sound(int soundCode) {
   }
 }
 
-void ConfirmOTP() {
-  if (otp.equals(_otp)) {
-    openTheGate(); otp = ""; error_count = 0; otpWasConfirm = true; otpTyping = false;
+void ConfirmOTP(String _otp) {
+  if (otp.equals(_otp))
+  {
+    openTheGate(); otp = ""; error_count = 0; otpWasConfirm = true; 
     historySave("Người có mã otp", "otp");
-    Firebase.setString(firebaseData, lock_otp_path, "");
+    Firebase.setString(firebaseData, lock_otp_path, otp);
   } else  error_count++;
-  _otp = "";
+  otpTyping = false;
 }
 
 //-------------------------------------------------------------------------------------
@@ -258,7 +268,7 @@ void newDeviceTask() {
   pAdvertising->setScanResponse(false);
   pAdvertising->setMinPreferred(0x12);  // set value to 0x00 to not advertise this parameter
   BLEDevice::startAdvertising();
-  digitalWrite(ledPin, true);
+  digitalWrite(LED_GREEN_PIN, true);
 }
 //-------------------------------------------------------------------------------------
 void getDataCredentail() {
@@ -281,57 +291,34 @@ void getDataCredentail() {
   alert_code_path = parentPath + "alert_code";
   otp_limit_entry_path = parentPath + "otp_limit_entry";
   fcm_path = "/lyoko_users/" + ownerPNumber + "/fcm";
-
 }
 
-void registeredDeviceTask() {
+void wifiBegin() {
   WiFi.begin(wifi_ssid.c_str(), wifi_password.c_str());
   while (WiFi.status() != WL_CONNECTED ) {}
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
   Firebase.reconnectWiFi(true);
+  firebaseData.fcm.begin(FIREBASE_FCM_SERVER_KEY);
+  firebaseData.fcm.setPriority("normal");
+  firebaseData.fcm.setTimeToLive(1000);
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   getAllData();
+
 }
 
 class ScanDevicesCallbacks: public BLEAdvertisedDeviceCallbacks {
     void onResult(BLEAdvertisedDevice advertisedDevice) {
       pScanAddress = new BLEAddress(advertisedDevice.getAddress());
       for (int i = 0; i < available_devices_count ; i++)
-        if (strcmp(pScanAddress->toString().c_str(), trusted_devices_address[i].c_str()) == 0)
-          if (advertisedDevice.getRSSI() > -60) {
-            deviceFound = i;
-            pBLEScan->stop();
-          }
+        if (strcmp(pScanAddress->toString().c_str(), trusted_devices_address[i].c_str()) == 0 && advertisedDevice.getRSSI() >= -60) {
+          openTheGate();
+          historySave(trusted_devices_name[i], "trusted_devices");
+          pBLEScan->stop();
+          notifyInfo(3);
+        }
     }
 };
 
-void setup() {
-  Serial.begin(115200);
-  if (!cap.begin(0x5A))
-    Serial.println("MPR121 not found");
-  else Serial.println("MPR121 found!");
-  ledcSetup(channel, freq, resolution);
-  ledcAttachPin(speaker, channel);
-  pinMode(ledPin, OUTPUT);
-  pinMode(relayPin, OUTPUT);
-
-  if (!EEPROM.begin(EEPROM_SIZE)) {
-    delay(1000);
-  }
-  modeIndex = EEPROM.read(modeAddress);
-  if (modeIndex == 0) newDeviceTask();
-  else {
-    getDataCredentail();
-    registeredDeviceTask();
-    lockTheGate();
-    BLEDevice::init("");
-    pBLEScan = BLEDevice::getScan(); //create new scan
-    pBLEScan->setAdvertisedDeviceCallbacks(new ScanDevicesCallbacks());
-    pBLEScan->setActiveScan(true); //active scan uses more power, but get results faster
-    pBLEScan->setInterval(151);
-    pBLEScan->setWindow(150);
-  }
-}
 void updateUnlockDelay() {
   Firebase.getInt(firebaseData, lock_delay_path);
   stateUnlockDelay = firebaseData.intData();
@@ -353,6 +340,8 @@ void updateOwnerFcm() {
   Serial.print("UPDATE FCM: ");
   Serial.println(owner_fcm);
   feedbackUpdate();
+  firebaseData.fcm.clearDeviceToken();
+  firebaseData.fcm.addDeviceToken(owner_fcm);
 }
 
 void updateOTP() {
@@ -391,7 +380,7 @@ void feedbackUpdate() {
 }
 void getAllData() {
   Serial.println("DATA GET THE FIRST TIME");
-  otpTyping = false; _otp = "";
+  otpTyping = false;
   updateUnlockDelay();
   updateOTP();
   updateTrustedDevices();
@@ -399,7 +388,6 @@ void getAllData() {
   updateOTPLimitEntry();
 }
 void listenForUpdateData() {
-  int nothing_to_update = 0;
   if (Firebase.getInt(firebaseData, update_code_path)) {
     switch (firebaseData.intData()) {
       case 0: _state = 0; stateCheck(); break;
@@ -410,11 +398,8 @@ void listenForUpdateData() {
       case 5: updateTrustedDevices(); break;
       case 6: updateOTPLimitEntry(); break;
       case 7: updateOwnerFcm(); break;
-      default: nothing_to_update = 1;
-    }
-    if (nothing_to_update) {
-      Serial.print("DATA UP TO DATE TIME: ");
-      Serial.println(millis() / 1000);
+      default: Serial.print("DATA UP TO DATE TIME: ");
+        Serial.println(millis() / 1000);
     }
     updateDataPrevMillis = millis();
   } else ESP.restart();
@@ -425,53 +410,87 @@ void otpState() {
   Serial.print("otpTyping: ");
   Serial.println(otpTyping);
 }
-void notifyToPhone() {
-  otpState();
-  Serial.println("không cho nhập OTP...");
-}
+
 void getTypingOtp() {
-  unsigned long ledMillis;
-  int _led = 1;
   Serial.println("Bắt đầu lấy OTP.....");
-  digitalWrite(ledPin, _led);
-  ledMillis = millis();
+  boolean led = false;
+  String _otp;
   otpTypingPrevMillis = millis();
   sound(successSound);
-  while (millis() - otpTypingPrevMillis < otpTypingDelay) {
-    if (_otp.length() == 6) ConfirmOTP();
-    currtouched = cap.touched();
-    if (millis() - ledMillis > 300 ) {
-      digitalWrite(ledPin, _led);
-      ledMillis = millis(); _led = 1;
-    } else _led = 0;
-    if (!(currtouched & _BV(8)) && (lasttouched & _BV(8)) ) {
-      sound(touchSound); if (_otp != "") _otp =  _otp.substring(0, _otp.length() - 1 );
+  while (otpTyping) 
+  {
+    if (millis() - ledMillis > 400 )    //blink otp getting led code
+    {
+      led = !led;
+      digitalWrite(LED_BLUE_PIN, led);
+      ledMillis = millis();
     }
-    for (uint8_t i = 1; i < 12; i++) {
-      if (i != 8) {
-        if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
-          if (_otp.length() < 6) {
-            _otp = _otp + keypad[i];
-            Serial.print("otp: ");
-            Serial.println(_otp);
-            sound(touchSound);
+    while (_otp.length() == 6) ConfirmOTP(_otp);    // Confirm otp
+    currtouched = cap.touched();
+    if (millis() - otpTypingPrevMillis < otpTypingDelay)
+    {
+      for (uint8_t i = 1; i < 12; i++)
+      {
+        if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) )
+        {
+          if (i != 8)
+          {
+            if (_otp.length() < 6)
+            {
+              _otp = _otp + keypad[i];
+              Serial.print("otp: ");
+              Serial.println(_otp);
+            }
           }
+          else
+          {
+            if (_otp != "")
+            {
+              _otp =  _otp.substring(0, _otp.length() - 1 );
+            }
+            else
+            {
+              otpTyping = !otpTyping;
+              otpWasConfirm = true;
+            }
+          }
+          sound(touchSound);
         }
       }
     }
     lasttouched = currtouched;
   }
   if (!otpWasConfirm) error_count++;
-  otpState(); _otp = ""; otpWasConfirm = false;
+  if (error_count == otp_limit_entry - 1 ) sendMessage();
+  otpState(); otpWasConfirm = false;
   Serial.println("Kết thúc lấy OTP");
 }
-void ledBlink(int j) {
+void sendMessage() {
+  firebaseData.fcm.setNotifyMessage("Cảnh báo", "Ai đó đang cố nhập mã mở khóa, chúng tôi đã khóa bàn phím giúp bạn! ");
+  if (Firebase.sendMessage(firebaseData, 0))//send message to recipient index 0
+  {
+
+    Serial.println("PASSED");
+    Serial.println(firebaseData.fcm.getSendResult());
+    Serial.println("------------------------------------");
+    Serial.println();
+  }
+  else
+  {
+    Serial.println("FAILED");
+    Serial.println("REASON: " + firebaseData.errorReason());
+    Serial.println("------------------------------------");
+    Serial.println();
+  }
+}
+
+void notifyInfo(int j) {
   for (int i = 0; i <= j; i++) {
-    digitalWrite(ledPin, 1);
-      ledcWrite(channel, 255);
+    digitalWrite(LED_RED_PIN, 200);
+    ledcWrite(channel, 255);
     delay(400);
-    digitalWrite(ledPin, 0);
-      ledcWrite(channel, 0);
+    digitalWrite(LED_RED_PIN, 0);
+    ledcWrite(channel, 0);
     delay(100);
   }
 }
@@ -482,6 +501,46 @@ void scanTrustedDevices() {
   pBLEScan->start(1);
   devicesScanPrevMillis = millis();
 }
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(RELAY_PIN, OUTPUT);
+  pinMode(LED_RED_PIN, OUTPUT);
+  pinMode(LED_GREEN_PIN, OUTPUT);
+  pinMode(LED_BLUE_PIN, OUTPUT);
+  if (!cap.begin(0x5A)) {
+    Serial.println("NOT");
+    digitalWrite(LED_RED_PIN, 1);
+    delay(400);
+    digitalWrite(LED_RED_PIN, 0);
+  }
+  else {
+    Serial.println("FOUND");
+    digitalWrite(LED_BLUE_PIN, 1);
+    delay(400);
+    digitalWrite(LED_BLUE_PIN, 0);
+  }
+  ledcSetup(channel, freq, resolution);
+  ledcAttachPin(SPEAKER_PIN, channel);
+  if (!EEPROM.begin(EEPROM_SIZE)) {
+    delay(1000);
+  }
+  modeIndex = EEPROM.read(modeAddress);
+  if (modeIndex == 0) newDeviceTask();
+  else {
+    getDataCredentail();
+    wifiBegin();
+    digitalWrite(RELAY_PIN, 0);
+    Firebase.setInt(firebaseData, lock_state_path, 0);
+    BLEDevice::init("");
+    pBLEScan = BLEDevice::getScan(); //create new scan
+    pBLEScan->setAdvertisedDeviceCallbacks(new ScanDevicesCallbacks());
+    pBLEScan->setActiveScan(true); //active scan uses more power, but get results faster
+    pBLEScan->setInterval(151);
+    pBLEScan->setWindow(150);
+  }
+}
+
 void loop() {
   while (modeIndex == 0) {
     response->notify();
@@ -490,6 +549,7 @@ void loop() {
   }
   if (millis() / 1000 > 1000) ESP.restart();
   currtouched = cap.touched();
+  // WHILE LOCK ON
   while (state == 1) {
     Serial.println("Đang Mở.....");
     if (millis() - stateUnlockPrevMillis >= stateUnlockDelay) lockTheGate();
@@ -499,21 +559,21 @@ void loop() {
       stateUnlockPrevMillis = millis();
       holdOn();
       Firebase.setInt(firebaseData, update_code_path, -99);
-    } else  Serial.println(firebaseData.intData());
-    delay (200);
+    }
+    delay (500);
   }
+
+  // IF * touched
   if (!(currtouched & _BV(0)) && (lasttouched & _BV(0)) ) {
-
-    if ( otp != "" && error_count < otp_limit_entry )  getTypingOtp(); else ledBlink(3);
+    if ( otp != "" && error_count < otp_limit_entry ) {
+      otpTyping = true;
+      getTypingOtp();
+    } else {
+      Serial.println("KHÔNG CÓ MÃ OTP");
+      notifyInfo(1);
+    }
   }
-
-  if (!(currtouched & _BV(8)) && (lasttouched & _BV(8)) )
-    if (deviceFound != -1) {
-      sound(touchSound); openTheGate(); historySave(trusted_devices_name[deviceFound], "trusted_devices");
-    } else ledBlink(2);
   lasttouched = currtouched;
-
   if (millis() - updateDataPrevMillis > updateDataDelay) listenForUpdateData();
   if (millis() - devicesScanPrevMillis > devicesScanDelay) scanTrustedDevices();
-
 }
