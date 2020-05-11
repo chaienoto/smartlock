@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/item_history"
-        android:paddingHorizontal="5dp"
+        android:paddingHorizontal="10dp"
         android:background="@color/colorEven"
         android:orientation="horizontal">
 
@@ -34,9 +34,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_weight="0"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_marginHorizontal="10dp"/>
-
+            android:layout_gravity="center_horizontal|center_vertical"/>
 
     </LinearLayout>
 

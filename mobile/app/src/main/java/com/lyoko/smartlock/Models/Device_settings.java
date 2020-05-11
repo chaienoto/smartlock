@@ -1,14 +1,25 @@
 package com.lyoko.smartlock.Models;
 
 public class Device_settings {
-    String device_name, device_address;
+    String device_name, device_address, type;
     int delay_unlock, otp_limit_entry;
 
-    public Device_settings(String device_name, String device_address, int delay_unlock, int otp_limit_entry) {
+
+
+    public Device_settings(String device_name, String device_address, String type, int delay_unlock, int otp_limit_entry) {
         this.device_name = device_name;
         this.device_address = device_address;
+        this.type = type;
         this.delay_unlock = delay_unlock;
         this.otp_limit_entry = otp_limit_entry;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getDevice_name() {

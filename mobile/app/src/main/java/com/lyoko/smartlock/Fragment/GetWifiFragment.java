@@ -12,25 +12,34 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lyoko.smartlock.Activities.AddDeviceActivity;
 import com.lyoko.smartlock.Adapters.WifiScanAdapter;
 import com.lyoko.smartlock.R;
+import com.lyoko.smartlock.Utils.CheckView;
+
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.lyoko.smartlock.Activities.AddDeviceActivity.add_lock_description;
+import static com.lyoko.smartlock.Activities.AddDeviceActivity.add_lock_step;
+import static com.lyoko.smartlock.Utils.LyokoString.NOT_EMPTY;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class GetWifiFragment extends Fragment implements WifiScanAdapter.OnItemClickedListener {
     EditText ed_wifi_password;
+    ImageView img_wifi_password_show, img_wifi_password_off;
     RecyclerView wifi_list_recycleView;
     WifiManager wifiManager;
     TextView tv_ssid;
@@ -38,7 +47,10 @@ public class GetWifiFragment extends Fragment implements WifiScanAdapter.OnItemC
     ArrayList<String> wifi_ssid_list = new ArrayList<String>();
     BroadcastReceiver wifiScanReceiver;
 
+
     public GetWifiFragment() {
+
+
         // Required empty public constructor
     }
 
@@ -48,8 +60,36 @@ public class GetWifiFragment extends Fragment implements WifiScanAdapter.OnItemC
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_get_wifi, container, false);
         ed_wifi_password = view.findViewById(R.id.ed_wifi_password);
-        tv_ssid = view.findViewById(R.id.tv_ssid);
+        tv_ssid = view.findViewById(R.id.tv_wifi_ssid);
         wifi_list_recycleView = view.findViewById(R.id.wifi_list_recycleView);
+        img_wifi_password_show = view.findViewById(R.id.img_wifi_password_show);
+        img_wifi_password_off = view.findViewById(R.id.img_wifi_password_off);
+
+        add_lock_description.setText(R.string.STEP_DESCRIPTION_2);
+        add_lock_step.setText(R.string.STEP_2);
+
+        AddDeviceActivity.loadingDialog.startLoading("Đang tìm wifi, vui long đợi...");
+
+        img_wifi_password_show.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                img_wifi_password_show.setVisibility(View.INVISIBLE);
+                img_wifi_password_off.setVisibility(View.VISIBLE);
+                ed_wifi_password.setInputType(InputType.TYPE_CLASS_TEXT);
+                ed_wifi_password.setSelection(ed_wifi_password.getText().toString().length());
+
+            }
+        });
+        img_wifi_password_off.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                img_wifi_password_show.setVisibility(View.VISIBLE);
+                img_wifi_password_off.setVisibility(View.INVISIBLE);
+                ed_wifi_password.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                ed_wifi_password.setSelection(ed_wifi_password.getText().toString().length());
+            }
+        });
+
         // create new wifi scan
         wifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (!wifiManager.isWifiEnabled()) wifiManager.setWifiEnabled(true);
@@ -74,6 +114,14 @@ public class GetWifiFragment extends Fragment implements WifiScanAdapter.OnItemC
         AddDeviceActivity.btn_next_step.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (tv_ssid.getText().toString()==""){
+                    Toast.makeText(getContext(), "Vui Lòng chọn wifi", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (CheckView.isEmpty(ed_wifi_password)){
+                    ed_wifi_password.setError(NOT_EMPTY);
+                    return;
+                }
                 AddDeviceActivity.wifi_password = ed_wifi_password.getText().toString();
                 AddDeviceActivity.gotoNextStep(3);
             }
@@ -82,10 +130,13 @@ public class GetWifiFragment extends Fragment implements WifiScanAdapter.OnItemC
     }
 
     private void scanFailure() {
-        Toast.makeText(getContext(), "Không ổn rồi đại vương", Toast.LENGTH_SHORT).show();
+        AddDeviceActivity.loadingDialog.stopLoading();
+        AddDeviceActivity.deniedDialog.startLoading("Không tìm thấy wifi",2000);
     }
 
     private void scanSuccess() {
+        AddDeviceActivity.loadingDialog.stopLoading();
+        AddDeviceActivity.successDialog.startLoading("Thành công, chọn wifi và nhập mật khẩu",1200);
         List<ScanResult> results = wifiManager.getScanResults();
         for (ScanResult result : results){
             wifi_ssid_list.add(result.SSID);

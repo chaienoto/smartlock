@@ -1,7 +1,6 @@
 package com.lyoko.smartlock.Activities;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
@@ -21,6 +20,7 @@ import com.lyoko.smartlock.Utils.SuccessDialog;
 import static com.lyoko.smartlock.Utils.LyokoString.DELAY;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_ADDRESS;
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_NAME;
+import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_TYPE;
 import static com.lyoko.smartlock.Utils.LyokoString.NOT_EMPTY;
 import static com.lyoko.smartlock.Utils.LyokoString.OPEN_DELAY;
 import static com.lyoko.smartlock.Utils.LyokoString.OTP_LIMIT_ENTRY;
@@ -30,6 +30,7 @@ import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 public class LockSettingsActivity extends LyokoActivity {
     String device_address;
     String device_name;
+    String device_type;
     int lock_delay, lock_otp_limit_entry;
     String owner_phone_number;
     Toolbar settings_toolbar;
@@ -42,9 +43,11 @@ public class LockSettingsActivity extends LyokoActivity {
         SetupStatusBar.setup(LockSettingsActivity.this);
         Bundle bundle = getIntent().getExtras();
         assert bundle != null;
+
         device_address = bundle.getString(DEVICE_ADDRESS);
         device_name = bundle.getString(DEVICE_NAME);
         lock_delay = bundle.getInt(DELAY);
+        device_type = bundle.getString(DEVICE_TYPE);
         lock_otp_limit_entry = bundle.getInt(OTP_LIMIT_ENTRY);
 
         settings_toolbar = findViewById(R.id.settings_toolbar);
@@ -100,7 +103,7 @@ public class LockSettingsActivity extends LyokoActivity {
                     et_new_device_name.setError(NOT_EMPTY);
                     return;
                 }
-                new Database_Helper().updateDeviceName(device_address,et_new_device_name.getText().toString());
+                new Database_Helper().updateDeviceName(device_address,device_type,et_new_device_name.getText().toString());
                 new SuccessDialog(LockSettingsActivity.this).startLoading("Sửa tên thiết bị thành công", 800);
 
 
@@ -135,8 +138,7 @@ public class LockSettingsActivity extends LyokoActivity {
                     return;
                 }
                 tv_current_device_name.setText(et_new_delay.getText().toString()+" giây");
-                new Database_Helper().updateDelay(device_address,et_new_delay.getText().toString());
-                new Database_Helper().changed_update_code(phone_login,device_address,OPEN_DELAY);
+                new Database_Helper().updateDelay(device_address,device_type,et_new_delay.getText().toString());
                 new SuccessDialog(LockSettingsActivity.this).startLoading("Đổi thời gian mở khóa thành công", 800);
 
 
@@ -170,8 +172,8 @@ public class LockSettingsActivity extends LyokoActivity {
                     et_new_limit_entry.setError(NOT_EMPTY);
                     return;
                 }
-                new Database_Helper().updateOTPLimitEntry(device_address,et_new_limit_entry.getText().toString());
-                new Database_Helper().changed_update_code(phone_login,device_address,OTP_LIMIT_UPDATE);
+                new Database_Helper().updateOTPLimitEntry(device_address,device_type,et_new_limit_entry.getText().toString());
+
                 new SuccessDialog(LockSettingsActivity.this).startLoading("Đổi giới hạn nhập otp thành công", 800);
             }
         });

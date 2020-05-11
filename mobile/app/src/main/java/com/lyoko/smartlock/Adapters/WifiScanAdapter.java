@@ -47,7 +47,7 @@ public class WifiScanAdapter extends RecyclerView.Adapter<WifiScanAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        holder.tv_wifi_ssid.setText(list.get(position));
+        holder.tv_item_wifi_ssid.setText(list.get(position));
         holder.item_wifi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,12 +62,12 @@ public class WifiScanAdapter extends RecyclerView.Adapter<WifiScanAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_wifi_ssid;
+        TextView tv_item_wifi_ssid;
         LinearLayout item_wifi;
         public ViewHolder(View view) {
             super(view);
             item_wifi = view.findViewById(R.id.item_wifi);
-            tv_wifi_ssid = view.findViewById(R.id.tv_wifi_ssid);
+            tv_item_wifi_ssid = view.findViewById(R.id.tv_item_wifi_ssid);
         }
     }
 

@@ -5,22 +5,25 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Handler;
 
+import com.lyoko.smartlock.Interface.iFindLock;
+
+
 
 public class Find_Device {
     private String device_address ;
     private BluetoothAdapter bluetoothAdapter;
-    private com.lyoko.smartlock.Interface.iFindLock iFindLock;
     private Context context;
     private Boolean isFound;
-    private static final long SCAN_PERIOD = 1000;
-    private static final int SIGNAL_STRENGTH = -60;
-    private boolean mScanning;
-    private Handler handler;
+    private static final long SCAN_PERIOD = 2000;
+    private static final int SIGNAL_STRENGTH = -65;
+    boolean mScanning;
+    Handler handler;
+    iFindLock iFindLock;
 
-    public Find_Device(Context context, String device_address, BluetoothAdapter adapter, com.lyoko.smartlock.Interface.iFindLock iFindLock) {
+    public Find_Device(Context context, String device_address, BluetoothAdapter adapter, iFindLock iFindLock) {
         this.context = context;
-        this.iFindLock = iFindLock;
         this.device_address = device_address;
+        this.iFindLock = iFindLock;
         this.mScanning = false;
         isFound = false;
         handler = new Handler();
@@ -34,14 +37,15 @@ public class Find_Device {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (device.getAddress().equalsIgnoreCase(device_address) && !isFound){
-                            isFound = true;
-                            iFindLock.onDeviceFound(device, rssi);
+                        if (rssi > SIGNAL_STRENGTH){
+                            if (device.getAddress().equalsIgnoreCase(device_address) && !isFound){
+                                isFound = true;
+                                iFindLock.onDeviceFound(device);
+                            }
                         }
                     }
                 });
             }
-//        }
     };
 
     private void scanLeDevice(final boolean enable) {
@@ -50,6 +54,7 @@ public class Find_Device {
                 @Override
                 public void run() {
                     mScanning = false;
+                    if (!isFound) iFindLock.onDeviceNotFound();
                     bluetoothAdapter.stopLeScan(leScanCallback);
                 }
             }, SCAN_PERIOD);
@@ -63,6 +68,7 @@ public class Find_Device {
     }
 
     public void startScan() {
+
         scanLeDevice(true);
     }
 

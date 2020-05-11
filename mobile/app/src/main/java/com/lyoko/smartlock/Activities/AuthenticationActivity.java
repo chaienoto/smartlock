@@ -21,6 +21,8 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.lyoko.smartlock.Interface.iAuth;
 import com.lyoko.smartlock.R;
+import com.lyoko.smartlock.Utils.Database_Helper;
+
 import java.util.concurrent.TimeUnit;
 import static com.lyoko.smartlock.Utils.LyokoString.FORGOT;
 import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_NAME;
@@ -108,17 +110,14 @@ public class AuthenticationActivity extends AppCompatActivity implements iAuth {
                         if (task.isSuccessful()) {
                             switch (mode){
                                 case REGISTER:
-                                    auth_id = task.getResult().getUser().getIdToken(false).toString();
+                                    auth_id = task.getResult().getUser().getUid();
                                     Intent intent = new Intent(AuthenticationActivity.this, RegisterActivity.class);
                                     startActivity(intent);
                                     finish();
                                     return;
                                 case LOGIN:
                                     auth_id = task.getResult().getUser().getUid();
-                                    Intent loginIntent = new Intent(AuthenticationActivity.this, LoginActivity.class);
-                                    loginIntent.putExtra(LOGIN_SAVED,false);
-                                    startActivity(loginIntent);
-                                    finish();
+                                    new Database_Helper().getOwnerName(AuthenticationActivity.this);
                                     return;
                                 case FORGOT:
                                     Intent forgetIntent = new Intent(AuthenticationActivity.this, ForgotPasswordActivity.class);
@@ -178,6 +177,10 @@ public class AuthenticationActivity extends AppCompatActivity implements iAuth {
     @Override
     public void onGetName(String name) {
         phone_name = name;
+        Intent loginIntent = new Intent(AuthenticationActivity.this, LoginActivity.class);
+        loginIntent.putExtra(LOGIN_SAVED,false);
+        startActivity(loginIntent);
+        finish();
 
     }
 }

@@ -23,9 +23,14 @@ import com.lyoko.smartlock.Interface.iQRCheck;
 import com.lyoko.smartlock.LyokoActivity;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Utils.Database_Helper;
+import com.lyoko.smartlock.Utils.DeniedDialog;
+import com.lyoko.smartlock.Utils.LoadingDialog;
 import com.lyoko.smartlock.Utils.Permission;
+import com.lyoko.smartlock.Utils.SuccessDialog;
 
 import static com.lyoko.smartlock.Utils.LyokoString.COLOR_BLUE;
+import static com.lyoko.smartlock.Utils.LyokoString.add_device_address;
+import static com.lyoko.smartlock.Utils.LyokoString.add_device_name;
 
 public class AddDeviceActivity extends LyokoActivity implements iQRCheck,BarcodeScannerFragment.OnGetDeviceAddress {
     private Permission permission;
@@ -36,12 +41,15 @@ public class AddDeviceActivity extends LyokoActivity implements iQRCheck,Barcode
     public static TextView add_lock_description;
     public static TextView add_lock_step;
     public static Button btn_next_step;
-    public EditText add_device_name;
-    public static String device_name;
+
     public static String device_mac_address;
     public static String wifi_ssid;
     public static String wifi_password;
+    public static String device_type;
     Database_Helper db_service = new Database_Helper();
+    public static LoadingDialog loadingDialog;
+    public static SuccessDialog successDialog;
+    public static DeniedDialog deniedDialog;
 
 
 
@@ -52,7 +60,9 @@ public class AddDeviceActivity extends LyokoActivity implements iQRCheck,Barcode
         btn_next_step = findViewById(R.id.btn_next_step);
         add_lock_description = findViewById(R.id.add_lock_description);
         add_lock_step = findViewById(R.id.add_lock_step);
-        add_device_name = findViewById(R.id.add_device_name);
+        loadingDialog = new LoadingDialog(this);
+        successDialog = new SuccessDialog(this);
+        deniedDialog = new DeniedDialog(this);
 
         getWindow().setStatusBarColor(COLOR_BLUE);
         permission = new Permission(this);
@@ -65,13 +75,6 @@ public class AddDeviceActivity extends LyokoActivity implements iQRCheck,Barcode
         manager = getSupportFragmentManager();
         displayFragment(GetDeviceNameFragment.class);
 
-        btn_next_step.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gotoNextStep(1);
-
-            }
-        });
     }
 
     public void checkBluetoothEnable() {
@@ -84,23 +87,16 @@ public class AddDeviceActivity extends LyokoActivity implements iQRCheck,Barcode
     public static void gotoNextStep(int step) {
         Log.d("step", step+"");
         switch (step){
-            case 1:
-                device_name = GetDeviceNameFragment.add_device_name.getText().toString();
-                add_lock_description.setText(R.string.STEP_DESCRIPTION_2);
-                add_lock_step.setText(R.string.STEP_2);
-                displayFragment(BarcodeScannerFragment.class);
-                break;
             case 2:
-                add_lock_description.setText(R.string.STEP_DESCRIPTION_3);
-                add_lock_step.setText(R.string.STEP_3);
                 displayFragment(GetWifiFragment.class);
                 break;
             case 3:
-                add_lock_description.setText(R.string.STEP_DESCRIPTION_4);
-                add_lock_step.setText(R.string.STEP_4);
+                displayFragment(BarcodeScannerFragment.class);
+                break;
+            case 4:
                 displayFragment(AutoSetupDeviceFragment.class);
                 break;
-            case 4: break;
+
         }
     }
 
@@ -129,32 +125,60 @@ public class AddDeviceActivity extends LyokoActivity implements iQRCheck,Barcode
     }
 
     @Override
-    public void onDeviceAddressSuitable(String address) {
-        Log.d("QR Scan", address);
+    public void onDeviceAddressSuitable(String address, String type) {
+        device_type = type;
         db_service.checkAuthenticDevice(address,this);
 
     }
 
     @Override
     public void onDeviceAddressUnSuitable() {
-        Toast.makeText(AddDeviceActivity.this, "Mã QR không phù hợp", Toast.LENGTH_SHORT).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AddDeviceActivity.deniedDialog.startLoading("Mã QR không phù hợp",1000);
+            }
+        });
+        resetAddDeviceProcess();
+    }
+
+    private void resetAddDeviceProcess() {
+        add_device_name = "";
+        add_device_address = "";
+        device_mac_address = "";
+        wifi_ssid = "";
+        wifi_password = "";
+        device_type = "";
+        displayFragment(GetDeviceNameFragment.class);
     }
 
     @Override
     public void onNotOwner(String address) {
-        Toast.makeText(AddDeviceActivity.this, "Ổ Khóa đã được đăng kí bởi số điện thoại khác", Toast.LENGTH_SHORT).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                deniedDialog.startLoading("Thiết bị đã được đăng kí bởi số điện thoại khác",1000);
+                resetAddDeviceProcess();
+            }
+        });
 
     }
 
     @Override
     public void onAsOwner(String address) {
-        Toast.makeText(AddDeviceActivity.this, "Bạn đã đăng kí ổ khóa này rồi", Toast.LENGTH_SHORT).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                deniedDialog.startLoading("Bạn đã đăng kí ổ khóa này rồi",1000);
+                resetAddDeviceProcess();
+            }
+        });
     }
 
     @Override
     public void onReadyToAddDevice(String address) {
         device_mac_address = address;
-        gotoNextStep(2);
+        gotoNextStep(4);
     }
 
 }

@@ -25,6 +25,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".Lyoko"
@@ -36,7 +38,7 @@
         <activity android:name=".Activities.MyAccountActivity"></activity>
         <activity android:name=".Activities.CanRemoteDevicesActivity" />
         <activity android:name=".Activities.LockSettingsActivity" />
-        <activity android:name=".Activities.AutoUnlockActivity" />
+        <activity android:name=".Activities.AutoUnlockDevicesActivity" />
         <activity android:name=".Activities.ForgotPasswordActivity" />
         <activity
             android:name=".Activities.CheckPhoneNumberActivity"
@@ -87,13 +89,16 @@
             android:name="com.google.android.gms.vision.DEFENDENCIES"
             android:value="barcode" />
 
-        <service
-            android:name=".LyokoMessage"
-            android:exported="false">
+        <service  android:name=".LyokoNotificationService"
+            android:enabled="true" />
+
+        <receiver android:name=".StartLyokoServiceAtBoot" >
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
             </intent-filter>
-        </service>
+        </receiver>
+
 
 
     </application>

@@ -25,7 +25,7 @@ public class  MACSuitable {
 
     public static Boolean check(String address){
        for (String s: MAC_DEFAULT){
-           if (address.contains(s)){
+           if (address.toUpperCase().contains(s)){
                Log.d("match with",s);
                return true;
            }

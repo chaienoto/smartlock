@@ -14,6 +14,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import static com.lyoko.smartlock.Utils.FormatData.hexToString;
+import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_APPLICATION_COMMAND_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_CHIP_ID_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_CLIENT_CONFIG_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_OWNER_PHONE_NUMBER_UUID;
@@ -21,7 +23,9 @@ import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_RESPONSE_UUID
 import static com.lyoko.smartlock.Utils.LyokoString.CHARACTERISTIC_WIFI_CREDENTIAL_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.SERVICE_LYOKO_UUID;
 import static com.lyoko.smartlock.Utils.LyokoString.add_device_address;
+import static com.lyoko.smartlock.Utils.LyokoString.add_device_name;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_login_password;
 
 public class BluetoothLeService extends Service {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
@@ -34,15 +38,10 @@ public class BluetoothLeService extends Service {
     private Context context;
     private  boolean autoConnect;
     private BluetoothDevice bluetoothDevice;
-    BluetoothGattCharacteristic wifiCredential, ownerPhoneNumber, response, chipID;
+    BluetoothGattCharacteristic wifiCredential, ownerPhoneNumber, response, chipID, command;
 
 
-    public final static String ACTION_GATT_CONNECTED = "com.lyoko.smartlock.Services.BluetoothLeService.ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED = "com.lyoko.smartlock.Services.BluetoothLeService.ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED = "com.lyoko.smartlock.Services.BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE = "com.lyoko.smartlock.Services.BluetoothLeService.ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_UUID = "com.lyoko.smartlock.Services.BluetoothLeService.EXTRA_UUID";
-    public final static String EXTRA_DATA = "com.lyoko.smartlock.Services.BluetoothLeService.EXTRA_DATA";
+
 
 
     public BluetoothLeService(Context context, boolean autoConnect, BluetoothDevice bluetoothDevice, com.lyoko.smartlock.Interface.iFindLock iFindLock) {
@@ -68,7 +67,6 @@ public class BluetoothLeService extends Service {
             String intentAction;
             super.onConnectionStateChange(gatt, status, newState);
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-
                 Log.i(TAG, "Connected to GATT server.");
                 Log.i(TAG, "Attempting to start service discovery:" +
                         gatt.discoverServices());
@@ -80,7 +78,6 @@ public class BluetoothLeService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-
                 iFindLock.onConnected();
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
@@ -90,33 +87,37 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            response = gatt.getService(SERVICE_LYOKO_UUID).getCharacteristic(CHARACTERISTIC_RESPONSE_UUID);
             enableNotify(response);
+        }
+
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicRead(gatt, characteristic, status);
+            add_device_address = chipID.getStringValue(0);
+             Log.d("chipID",add_device_address);
+             command.setValue("143");
+             gatt.writeCharacteristic(command);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
             int format = BluetoothGattCharacteristic.FORMAT_UINT8;
-            String percent = String.format(characteristic.getIntValue(format, 0).toString());
-            Log.d("Value", percent);
-            switch (percent){
+            String responseCode = String.format(characteristic.getIntValue(format, 0).toString());
+            Log.d("Value", responseCode);
+            switch (responseCode) {
                 case "1":
-                    ownerPhoneNumber = gatt.getService(SERVICE_LYOKO_UUID).getCharacteristic(CHARACTERISTIC_OWNER_PHONE_NUMBER_UUID);
-                    ownerPhoneNumber.setValue(phone_login);
+                    ownerPhoneNumber.setValue(phone_login+"|"+phone_login_password+"*"+add_device_name);
                     gatt.writeCharacteristic(ownerPhoneNumber);
                     break;
                 case "2":
-                    chipID = gatt.getService(SERVICE_LYOKO_UUID).getCharacteristic(CHARACTERISTIC_CHIP_ID_UUID);
-                    chipID.setValue(add_device_address);
-                    gatt.writeCharacteristic(chipID);
+                    gatt.readCharacteristic(chipID);
+                    command.setValue("143");
                     break;
                 case "3":
                     iFindLock.onComplete();
                     break;
             }
-
-
 
         }
     };
@@ -145,6 +146,10 @@ public class BluetoothLeService extends Service {
 
 
     public void sendInitialInfo(String wifi_ssid, String wifi_password) {
+        response = gatt.getService(SERVICE_LYOKO_UUID).getCharacteristic(CHARACTERISTIC_RESPONSE_UUID);
+        command = gatt.getService(SERVICE_LYOKO_UUID).getCharacteristic(CHARACTERISTIC_APPLICATION_COMMAND_UUID);
+        chipID = gatt.getService(SERVICE_LYOKO_UUID).getCharacteristic(CHARACTERISTIC_CHIP_ID_UUID);
+        ownerPhoneNumber = gatt.getService(SERVICE_LYOKO_UUID).getCharacteristic(CHARACTERISTIC_OWNER_PHONE_NUMBER_UUID);
         wifiCredential = gatt.getService(SERVICE_LYOKO_UUID).getCharacteristic(CHARACTERISTIC_WIFI_CREDENTIAL_UUID);
         wifiCredential.setValue(wifi_ssid+"|"+wifi_password);
         gatt.writeCharacteristic(wifiCredential);

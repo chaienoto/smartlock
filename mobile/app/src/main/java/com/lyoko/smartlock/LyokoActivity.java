@@ -22,12 +22,25 @@ public class LyokoActivity extends AppCompatActivity implements iTimeOut {
         super.onCreate(savedInstanceState);
         ((Lyoko)getApplication()).registerLoginSession(this);
         ((Lyoko)getApplication()).startLoginSession();
+
     }
 
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
         ((Lyoko)getApplication()).onUserInteracted();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ((Lyoko)getApplication()).startLoginSession();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ((Lyoko)getApplication()).checkTimer();
     }
 
     @Override
@@ -55,6 +68,7 @@ public class LyokoActivity extends AppCompatActivity implements iTimeOut {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(LyokoActivity.this, LoginActivity.class);
+                        intent .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.putExtra(LOGIN_SAVED, true);
                         startActivity(intent);
                         finish();

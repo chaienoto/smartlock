@@ -34,6 +34,7 @@ public class TotalDevicesAdapter extends RecyclerView.Adapter<TotalDevicesAdapte
         this.context = context;
         this.list = list;
 
+
     }
 
 
@@ -51,26 +52,27 @@ public class TotalDevicesAdapter extends RecyclerView.Adapter<TotalDevicesAdapte
         final Device_info info = list.get(position);
         holder.img_device_state.setBackgroundResource(getBackground(info.getState()));
         holder.tv_device_name.setText(info.getName());
+        if (info.getOwner() != phone_login) holder.tv_device_name.setBackgroundResource(R.drawable.cardview_bg);
         holder.img_device_state.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int _state, _bg;
                 Database_Helper db_helper = new Database_Helper();
                 switch (info.getState()){
-                    case 0: _state = OPEN_LOCK; _bg = R.drawable.ic_power_on; break;
-                    case 1: _state = HOLD_LOCK; _bg = R.drawable.ic_power_hold; break;
-                    default: _state = CLOSE_LOCK; _bg = R.drawable.ic_power_off;
+                    case 0: _state = OPEN_LOCK;
+                            db_helper.saveHistory(info.getOwner(),info.getAddress(),phone_name);
+                            break;
+                    default: _state = CLOSE_LOCK;
                 }
-                db_helper.changed_update_code(info.getOwner(),info.getAddress(),_state);
-                db_helper.saveHistory(info.getOwner(),info.getAddress(),phone_name);
-                holder.img_device_state.setBackgroundResource(_bg);
+                db_helper.changed_update_code(info.getOwner(),info.getAddress(),info.getType(),_state);
+
             }
         });
         holder.img_device_state.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 if ( info.getState() == 1) {
-                    new Database_Helper().changed_update_code(phone_login,info.getAddress(),HOLD_LOCK);
+                    new Database_Helper().changed_update_code(phone_login,info.getAddress(), info.getType(), HOLD_LOCK);
                     holder.img_device_state.setBackgroundResource(R.drawable.ic_power_hold);
                 }
                 return true;
@@ -79,7 +81,7 @@ public class TotalDevicesAdapter extends RecyclerView.Adapter<TotalDevicesAdapte
         holder.item_device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callback.onDeviceClickedListener(info.getOwner(),info.getAddress(), info.getName());
+                callback.onDeviceClickedListener(info.getOwner(),info.getAddress(), info.getName(), info.getType());
             }
         });
     }
@@ -113,7 +115,7 @@ public class TotalDevicesAdapter extends RecyclerView.Adapter<TotalDevicesAdapte
     }
 
     public interface OnDeviceClickedListener {
-        void onDeviceClickedListener(String owner, String device_address, String device_name);
+        void onDeviceClickedListener(String owner, String device_address, String device_name, String type);
     }
 
 

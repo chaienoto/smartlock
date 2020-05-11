@@ -13,9 +13,15 @@ public class Device_info {
         this.state = state;
     }
 
-    public Device_info(String owner, String address) {
+    public Device_info(String owner, String address ) {
         this.owner = owner;
         this.address = address;
+    }
+
+    public Device_info(String owner, String address, String type) {
+        this.owner = owner;
+        this.address = address;
+        this.type = type;
     }
 
     public String getOwner() {

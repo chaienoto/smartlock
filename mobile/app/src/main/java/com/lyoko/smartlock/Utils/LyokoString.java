@@ -12,6 +12,8 @@ public class LyokoString {
     public final static String FORGOT = "-1";
     public final static String RESET = "-99";
 
+    public static final String ALERT_CODE = "alert_code";
+
 
     // SHARES PREFERENCE
     public final static String LOGGED_PREFERENCE = "loggedPref";
@@ -37,7 +39,9 @@ public class LyokoString {
     // LYOKO's USER
     public static String phone_login = null;
     public static String phone_name = null;
+    public static String phone_login_password = null;
     public static String add_device_address = null;
+    public static String add_device_name = null;
     public static String auth_id = null;
 
     public final static String OWNER_NAME = "owner_name";
@@ -89,6 +93,7 @@ public class LyokoString {
     public final static UUID CHARACTERISTIC_RESPONSE_UUID = UUID.fromString("459d013b-061c-430b-a4fe-734cc22012cb");
     public final static UUID CHARACTERISTIC_OWNER_PHONE_NUMBER_UUID = UUID.fromString("e7608c36-76e7-4e9c-9263-1786f7a2f854");
     public final static UUID CHARACTERISTIC_CHIP_ID_UUID = UUID.fromString("95374a93-101c-4f2c-a590-2e8fcb3dfd37");
+    public final static UUID CHARACTERISTIC_APPLICATION_COMMAND_UUID = UUID.fromString("c6014093-e175-41e8-a6bf-96964c7dfa71");
         public final static UUID CHARACTERISTIC_CLIENT_CONFIG_UUID = FormatData.convertFromInteger(0x2902);
     // COLOR
     public final static int COLOR_BLUE = Color.parseColor("#3498db");
@@ -106,7 +111,7 @@ public class LyokoString {
     // UNLOCK_TYPE
     public final static String UNLOCK_TYPE_SMARTPHONE = "smartphone";
     public final static String UNLOCK_TYPE_OTP = "otp";
-    public final static String UNLOCK_TYPE_FINGERPRINT = "fingerprint";
+    public final static String UNLOCK_TYPE_AUTO = "trusted_devices";
 
 
 }

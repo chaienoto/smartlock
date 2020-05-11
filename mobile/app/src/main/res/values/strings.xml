@@ -10,8 +10,8 @@
     <string name="STEP_3">Step 3/4</string>
     <string name="STEP_4">Step 4/4</string>
     <string name="STEP_DESCRIPTION_1">Điền tên của ổ khóa. Tên này sẽ thay thế tên mặc định của hệ thống</string>
-    <string name="STEP_DESCRIPTION_2">Tìm và quét mã QR của ổ khóa bên trong vỏ hộp</string>
-    <string name="STEP_DESCRIPTION_3">Chọn và điền mật khẩu wifi để ổ khóa có thể connect đến server và tự động setup</string>
+    <string name="STEP_DESCRIPTION_2">Chọn và điền mật khẩu wifi để ổ khóa có thể connect đến server và tự động setup</string>
+    <string name="STEP_DESCRIPTION_3">Tìm và quét mã QR của ổ khóa bên trong vỏ hộp</string>
     <string name="STEP_DESCRIPTION_4">Setup thiết bị. Quá trình này diễn ra tự động</string>
 
 

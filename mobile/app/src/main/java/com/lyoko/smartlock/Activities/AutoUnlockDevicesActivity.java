@@ -1,7 +1,6 @@
 package com.lyoko.smartlock.Activities;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,17 +31,20 @@ import com.lyoko.smartlock.Utils.SetupStatusBar;
 import java.util.ArrayList;
 
 import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_ADDRESS;
+import static com.lyoko.smartlock.Utils.LyokoString.DEVICE_TYPE;
 import static com.lyoko.smartlock.Utils.LyokoString.OWNER_PHONE_NUMBER;
 import static com.lyoko.smartlock.Utils.LyokoString.TRUSTED_DEVICES_ADDRESS;
 import static com.lyoko.smartlock.Utils.LyokoString.TRUSTED_DEVICES_NAME;
+import static com.lyoko.smartlock.Utils.LyokoString.TRUSTED_DEVICES_UPDATE;
+import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 
-public class AutoUnlockActivity extends LyokoActivity implements UnknownDevicesAdapter.OnUnknownBLEDeviceClickedListener, TrustedDevicesAdapter.OnTrustedDeviceClickedListener, iTrustedDevice {
+public class AutoUnlockDevicesActivity extends LyokoActivity implements UnknownDevicesAdapter.OnUnknownBLEDeviceClickedListener, TrustedDevicesAdapter.OnTrustedDeviceClickedListener, iTrustedDevice {
     private static final int REQUEST_ENABLE_BT = 1;
     Toolbar trusted_devices_toolbar;
     static RecyclerView trusted_device_recycle_view;
     Button btn_add_trusted_device;
     String device_count = "0";
-    String add_trusted_device_name, add_trusted_device_address;
+    String add_trusted_device_name, add_trusted_device_address, device_type;
     ArrayList<BLE_Device> unknownList = new ArrayList<>();
     ArrayList<String> _unknownList = new ArrayList<>();
     ArrayList<String> trustedList = new ArrayList<>();
@@ -52,25 +54,29 @@ public class AutoUnlockActivity extends LyokoActivity implements UnknownDevicesA
     private boolean mScanning;
     private Handler handler;
     private static final long SCAN_PERIOD = 3000;
-    private String current_device_address, owner_phone_number;
+    String current_device_address, owner_phone_number;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_auto_unlock);
-        SetupStatusBar.setup(AutoUnlockActivity.this);
+        setContentView(R.layout.activity_auto_unlock_devices);
+        SetupStatusBar.setup(AutoUnlockDevicesActivity.this);
         trusted_devices_toolbar = findViewById(R.id.trusted_devices_toolbar);
         trusted_device_recycle_view = findViewById(R.id.trusted_device_recycle_view);
         btn_add_trusted_device = findViewById(R.id.btn_add_trusted_device);
-        loadingDialog = new LoadingDialog(AutoUnlockActivity.this);
+        loadingDialog = new LoadingDialog(AutoUnlockDevicesActivity.this);
         trusted_devices_toolbar.setTitle("Quản lý thiết bị Auto Unlock");
 //        setSupportActionBar(trusted_devices_toolbar);
 
         Bundle bundle = getIntent().getExtras();
         current_device_address = bundle.getString(DEVICE_ADDRESS);
         owner_phone_number = bundle.getString(OWNER_PHONE_NUMBER);
+        device_type = bundle.getString(DEVICE_TYPE);
+
+
+
 
         new Database_Helper().getTrustedDevice(current_device_address, this);
         loadingDialog.startLoading("Đang lấy giữ liệu");
@@ -134,7 +140,7 @@ public class AutoUnlockActivity extends LyokoActivity implements UnknownDevicesA
     }
 
     private void showUnknownDevice() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(AutoUnlockActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(AutoUnlockDevicesActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_scanned_unknown_devices,null);
         RecyclerView unknown_device_recycle_view = view.findViewById(R.id.unknown_device_recycle_view);
@@ -156,8 +162,8 @@ public class AutoUnlockActivity extends LyokoActivity implements UnknownDevicesA
         tv_add_trusted_device_confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(AutoUnlockActivity.this, "Thêm Thành Công", Toast.LENGTH_SHORT).show();
-                new Database_Helper().addTrustedDevice(current_device_address, device_count, add_trusted_device_name, add_trusted_device_address);
+                Toast.makeText(AutoUnlockDevicesActivity.this, "Thêm Thành Công", Toast.LENGTH_SHORT).show();
+                new Database_Helper().addTrustedDevice(current_device_address, device_count, add_trusted_device_name, add_trusted_device_address, device_type);
                 dialog.dismiss();
             }
         });
@@ -185,7 +191,7 @@ public class AutoUnlockActivity extends LyokoActivity implements UnknownDevicesA
 
     @Override
     public void onTrustedDeviceClickedListener(final int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(AutoUnlockActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(AutoUnlockDevicesActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         final View view = inflater.inflate(R.layout.dialog_remove_trusted_device,null);
         TextView tv_trusted_device_name = view.findViewById(R.id.tv_trusted_device_name);
@@ -202,13 +208,15 @@ public class AutoUnlockActivity extends LyokoActivity implements UnknownDevicesA
             @Override
             public void onClick(View v) {
                 trustedList.remove(position);
-                UnknownDevicesAdapter unknownDevicesAdapter = new UnknownDevicesAdapter(AutoUnlockActivity.this, unknownList);
-                unknownDevicesAdapter.setOnUnknownBLEDeviceClickedListener(AutoUnlockActivity.this);
+                UnknownDevicesAdapter unknownDevicesAdapter = new UnknownDevicesAdapter(AutoUnlockDevicesActivity.this, unknownList);
+                unknownDevicesAdapter.setOnUnknownBLEDeviceClickedListener(AutoUnlockDevicesActivity.this);
                 trusted_device_recycle_view.setAdapter(unknownDevicesAdapter);
-                trusted_device_recycle_view.setLayoutManager(new LinearLayoutManager(AutoUnlockActivity.this));
-                Toast.makeText(AutoUnlockActivity.this, "Xóa Thành Công", Toast.LENGTH_SHORT).show();
+                trusted_device_recycle_view.setLayoutManager(new LinearLayoutManager(AutoUnlockDevicesActivity.this));
+                Toast.makeText(AutoUnlockDevicesActivity.this, "Xóa Thành Công", Toast.LENGTH_SHORT).show();
                 new Database_Helper().updateTrustedDevices(position,current_device_address,TRUSTED_DEVICES_ADDRESS);
                 new Database_Helper().updateTrustedDevices(position,current_device_address,TRUSTED_DEVICES_NAME);
+                new Database_Helper().changed_update_code(owner_phone_number,current_device_address,device_type,TRUSTED_DEVICES_UPDATE);
+
                 dialog.dismiss();
             }
         });
@@ -228,7 +236,7 @@ public class AutoUnlockActivity extends LyokoActivity implements UnknownDevicesA
         trustedList = list;
         loadingDialog.stopLoading();
         device_count = String.valueOf(list.size());
-        TrustedDevicesAdapter adapter = new TrustedDevicesAdapter(AutoUnlockActivity.this, trustedList);
+        TrustedDevicesAdapter adapter = new TrustedDevicesAdapter(AutoUnlockDevicesActivity.this, trustedList);
         adapter.setOnTrustedDeviceClickedListener(this);
         trusted_device_recycle_view.setAdapter(adapter);
         trusted_device_recycle_view.setLayoutManager(new LinearLayoutManager(this));
@@ -236,7 +244,7 @@ public class AutoUnlockActivity extends LyokoActivity implements UnknownDevicesA
 
     @Override
     public void noDeviceToShow() {
-        Toast.makeText(AutoUnlockActivity.this, "Không có gì", Toast.LENGTH_SHORT).show();
+        Toast.makeText(AutoUnlockDevicesActivity.this, "Không có gì", Toast.LENGTH_SHORT).show();
 
     }
 }

@@ -56,7 +56,7 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements iChec
 
 
     @Override
-    public void phoneNumExist(final String user_name) {
+    public void phoneNumExist() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.sign_in_dialog,null);
@@ -72,7 +72,6 @@ public class CheckPhoneNumberActivity extends AppCompatActivity implements iChec
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         phone_login = phoneNumber;
-                        phone_name = user_name;
                         Intent intent = new Intent(CheckPhoneNumberActivity.this, AuthenticationActivity.class);
                         intent.putExtra(VERIFIED_MODE, LOGIN);
                         startActivity(intent);

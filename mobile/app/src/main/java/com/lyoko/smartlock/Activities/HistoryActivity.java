@@ -40,9 +40,7 @@ public class HistoryActivity extends LyokoActivity implements iHistory {
         history_list_layout = findViewById(R.id.history_list_layout);
 
         toolbar.setTitle("History");
-        getWindow().setStatusBarColor(COLOR_BLUE);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         Bundle bundle = getIntent().getExtras();
         current_device_address = bundle.getString(DEVICE_ADDRESS);

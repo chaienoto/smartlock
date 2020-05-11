@@ -1,92 +1,75 @@
 package com.lyoko.smartlock.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.lyoko.smartlock.Adapters.TotalDevicesAdapter;
+import com.lyoko.smartlock.Interface.iAuth;
 import com.lyoko.smartlock.LyokoActivity;
+import com.lyoko.smartlock.LyokoNotificationService;
 import com.lyoko.smartlock.Models.Device_info;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Utils.Database_Helper;
 import com.lyoko.smartlock.Interface.iDeviceList;
 import com.lyoko.smartlock.Utils.DialogShow;
-import com.lyoko.smartlock.Utils.LoadingDialog;
 import com.lyoko.smartlock.Utils.SetupStatusBar;
-import com.lyoko.smartlock.Utils.SuccessDialog;
 
 import java.util.ArrayList;
 
+import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_NAME;
+import static com.lyoko.smartlock.Utils.LyokoString.LOGGED_PREFERENCE;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_login;
 import static com.lyoko.smartlock.Utils.LyokoString.phone_name;
 
-public class MainActivity extends LyokoActivity implements iDeviceList, TotalDevicesAdapter.OnDeviceClickedListener  {
+public class MainActivity extends LyokoActivity implements iAuth,iDeviceList, TotalDevicesAdapter.OnDeviceClickedListener  {
     Database_Helper db = new Database_Helper();
-    RecyclerView device_list_recycle_view;
-    ArrayList<Device_info> ownList = new ArrayList<>();
-    ArrayList<Device_info> canRemoteList = new ArrayList<>();
+    RecyclerView device_list_recycle_view, sub_device_list_recycle_view;
     TextView tv6;
-    LoadingDialog loadingDialog;
-    SuccessDialog successDialog;
     Toolbar devices_toolbar;
-    RelativeLayout device_list_layout;
     ImageView img_find_device;
+    int listEmptyCount = 0;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SetupStatusBar.setup(MainActivity.this);
         tv6 = findViewById(R.id.tv6);
-        device_list_layout = findViewById(R.id.device_list_layout);
         img_find_device = findViewById(R.id.img_find_device);
         devices_toolbar = findViewById(R.id.devices_toolbar);
-        loadingDialog = new LoadingDialog(this);
-        successDialog = new SuccessDialog(this);
-        devices_toolbar.setTitle(phone_name.substring(0,1).toUpperCase() + phone_name.substring(1).toLowerCase()+"'s"+" home");
-        setSupportActionBar(devices_toolbar);
-        getFCMToken();
         device_list_recycle_view = findViewById(R.id.device_list_recycle_view);
-        loadingDialog.startLoading("Đang Lấy dữ liệu");
-        db.getOwnDevices(this);
+        sub_device_list_recycle_view = findViewById(R.id.sub_device_list_recycle_view);
+        setSupportActionBar(devices_toolbar);
+        db.getOwnerName(this);
+//        startForegroundService(new Intent(this, LyokoNotificationService.class));
+        db.getOwnDevices(this,this);
         db.getRemoteDevice(this);
     }
 
-    private void getFCMToken() {
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w("TOKEN", "getInstanceId failed", task.getException());
-                            return;
-                        }
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-                        new Database_Helper().updateToken(phone_login,token);
-                    }
-                });
 
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        devices_toolbar.setTitle(phone_name.substring(0,1).toUpperCase() + phone_name.substring(1).toLowerCase()+"'s"+" home");
         getMenuInflater().inflate(R.menu.menu_devices, menu);
         return true;
     }
@@ -108,11 +91,8 @@ public class MainActivity extends LyokoActivity implements iDeviceList, TotalDev
     }
 
     @Override
-    public void showOwnDevices(ArrayList<Device_info> list) {
-        ownList = list;
-        if (canRemoteList.size()!=0)
-        list.addAll(canRemoteList);
-        TotalDevicesAdapter adapter = new TotalDevicesAdapter(this, list);
+    public void showOwnDevices(ArrayList<Device_info> own) {
+        TotalDevicesAdapter adapter = new TotalDevicesAdapter(this, own);
         device_list_recycle_view.setAdapter(adapter);
         adapter.setOnDeviceClickedListener(this);
         device_list_recycle_view.setLayoutManager(new GridLayoutManager(this,2));
@@ -120,37 +100,47 @@ public class MainActivity extends LyokoActivity implements iDeviceList, TotalDev
     }
 
     @Override
-    public void showRemoteDevices(ArrayList<Device_info> list) {
-        loadingDialog.stopLoading();
-        successDialog.startLoading("Lấy dữ liệu thành công",1000);
-        canRemoteList= list;
-        if (ownList.size()!=0)
-        list.addAll(ownList);
-        TotalDevicesAdapter adapter = new TotalDevicesAdapter(this, list);
-        device_list_recycle_view.setAdapter(adapter);
+    public void showRemoteDevices(ArrayList<Device_info> remove) {
+        TotalDevicesAdapter adapter = new TotalDevicesAdapter(this, remove);
+        sub_device_list_recycle_view.setAdapter(adapter);
         adapter.setOnDeviceClickedListener(this);
-        device_list_recycle_view.setLayoutManager(new GridLayoutManager(this,2));
+        sub_device_list_recycle_view.setLayoutManager(new GridLayoutManager(this,2));
     }
 
     @Override
     public void notThingToShow() {
-        img_find_device.setVisibility(View.VISIBLE);
-        tv6.setVisibility(View.VISIBLE);
-        img_find_device.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddDeviceActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        listEmptyCount ++;
+        if (listEmptyCount == 2){
+            img_find_device.setVisibility(View.VISIBLE);
+            tv6.setVisibility(View.VISIBLE);
+            img_find_device.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listEmptyCount = 0;
+                    Intent intent = new Intent(MainActivity.this, AddDeviceActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
     }
 
 
     @Override
-    public void onDeviceClickedListener(String owner, String device_address, String device_name) {
+    public void onDeviceClickedListener(String owner, String device_address, String device_name, String type) {
         boolean master;
         if (phone_login.equals(owner)) master = true; else master = false;
-        DialogShow.showLockFunction(this, owner, device_address, device_name, master );
+        DialogShow.showLockFunction(this, owner, device_address, device_name, type, master );
+    }
+
+    @Override
+    public void onGetName(String name) {
+        if (name.equals(phone_name)) {
+            SharedPreferences.Editor editor;
+            editor = getSharedPreferences(LOGGED_PREFERENCE, MODE_PRIVATE).edit();
+            editor.putString(LOGGED_NAME, phone_name).apply();
+            phone_name = name;
+            devices_toolbar.setTitle(phone_name.substring(0, 1).toUpperCase() + phone_name.substring(1).toLowerCase() + "'s" + " home");
+        }
     }
 }

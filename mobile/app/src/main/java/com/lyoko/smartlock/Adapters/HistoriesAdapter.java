@@ -84,8 +84,8 @@ public class HistoriesAdapter extends RecyclerView.Adapter<HistoriesAdapter.View
         switch (unlock_type){
             case LyokoString.UNLOCK_TYPE_SMARTPHONE:
                 return R.drawable.ic_phone_unlock ;
-            case LyokoString.UNLOCK_TYPE_FINGERPRINT:
-                return R.drawable.ic_fingerprint;
+            case LyokoString.UNLOCK_TYPE_AUTO:
+                return R.drawable.ic_trusted_devices;
             case LyokoString.UNLOCK_TYPE_OTP:
                 return R.drawable.ic_otp;
             default:

@@ -6,7 +6,10 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Vibrator;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -18,9 +21,13 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.lyoko.smartlock.Activities.AddDeviceActivity;
 import com.lyoko.smartlock.R;
 import com.lyoko.smartlock.Utils.MACSuitable;
 import java.io.IOException;
+
+import static com.lyoko.smartlock.Activities.AddDeviceActivity.add_lock_description;
+import static com.lyoko.smartlock.Activities.AddDeviceActivity.add_lock_step;
 
 
 public class BarcodeScannerFragment extends Fragment {
@@ -42,6 +49,8 @@ public class BarcodeScannerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_barcode_scanner, container, false);
+        add_lock_description.setText(R.string.STEP_DESCRIPTION_3);
+        add_lock_step.setText(R.string.STEP_3);
         surfaceView = view.findViewById(R.id.surfaceView);
         scannerLayout = view.findViewById(R.id.scannerLayout);
 
@@ -78,31 +87,42 @@ public class BarcodeScannerFragment extends Fragment {
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> qrCode = detections.getDetectedItems();
                 if (qrCode.size() != 0) {
-                    String s = (qrCode.valueAt(0).displayValue);
-                    if (MACSuitable.check(s)){
-                        callback.onDeviceAddressSuitable(s);
-                        getFragmentManager().beginTransaction().remove(BarcodeScannerFragment.this).commit();
-                    } else {
-                        callback.onDeviceAddressUnSuitable();
+                    String data = (qrCode.valueAt(0).displayValue);
+                    if (data.length()<=17)
+                    {
+                        notSuitable();
+                        return;
+                    }
+                    String address = data.substring(0,17);
+                    String type = data.substring(18);
+                    if (MACSuitable.check(address))
+                    {
+                        shake();
+                        callback.onDeviceAddressSuitable(address,type);
                         getFragmentManager().beginTransaction().remove(BarcodeScannerFragment.this).commit();
                     }
+                    else notSuitable();
                 }
             }
         });
         return  view;
     }
 
+    private void notSuitable() {
+        shake();
+        callback.onDeviceAddressUnSuitable();
+        getFragmentManager().beginTransaction().remove(BarcodeScannerFragment.this).commit();
+    }
+
+    private void shake() {
+        Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(300);
+    }
 
 
     public  interface  OnGetDeviceAddress{
-        void onDeviceAddressSuitable(String address);
+        void onDeviceAddressSuitable(String address, String type);
         void onDeviceAddressUnSuitable();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Vibrator vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        vibrator.vibrate(500);
-    }
 }
